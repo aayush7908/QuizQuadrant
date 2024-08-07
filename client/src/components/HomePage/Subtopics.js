@@ -6,7 +6,7 @@ export default function Subtopics({ subtopic }) {
             <Link
                 to={"/practice"}
                 state={{ bySubject: false, subject: null, subtopic: subtopic, total: subtopic.noq }}
-                className='text-lg hover:underline hover:font-bold hover:text-red-700 text-start inline-block'
+                className='text-lg hover:underline hover:font-bold hover:text-red-700 text-start'
             >
                 {subtopic.subtopicName}
             </Link>

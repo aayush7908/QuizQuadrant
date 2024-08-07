@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "firebase": "^10.10.0",
-    "uuid": "^9.0.1"
-  }
-}

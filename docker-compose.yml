@@ -1,0 +1,46 @@
+services:
+  database:
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_DATABASE: quizquadrant
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - quizquadrant-network
+  
+  server:
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    environment:
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+    networks:
+      - quizquadrant-network
+    depends_on:
+      - database
+
+  client:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL}
+      REACT_APP_FIREBASE_API_KEY: ${REACT_APP_FIREBASE_API_KEY}
+      REACT_APP_FIREBASE_AUTH_DOMAIN: ${REACT_APP_FIREBASE_AUTH_DOMAIN}
+      REACT_APP_FIREBASE_PROJECT_ID: ${REACT_APP_FIREBASE_PROJECT_ID}
+      REACT_APP_FIREBASE_STORAGE_BUCKET: ${REACT_APP_FIREBASE_STORAGE_BUCKET}
+      REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${REACT_APP_FIREBASE_MESSAGING_SENDER_ID}
+      REACT_APP_FIREBASE_APP_ID: ${REACT_APP_FIREBASE_APP_ID}
+      REACT_APP_FIREBASE_MEASUREMENT_ID: ${REACT_APP_FIREBASE_MEASUREMENT_ID}
+    networks:
+      - quizquadrant-network
+
+networks:
+  quizquadrant-network:
