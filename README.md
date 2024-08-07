@@ -1,16 +1,45 @@
 # QuizQuadrant
 
-## Description
-QuizQuadrant is a web application that aims for providing online examination environment. This App has two type of users: **1. Students** and **2. Teachers**
 
-Teachers can create new questions related to specific subject and subtopic, which can be published publically which can help students in their preparations. Teachers can also create examinations and select the allowed candidates.
+## Introduction
 
-Students can see all ongoing exams in their dashboard. Apart from that, they can also see all previously conducted exams and exams scheduled for future.
+QuizQuadrant is a web application designed to provide an online examination environment and a platform for practicing quiz questions. It has to two distinct types of users: Students and Teachers.
 
-Once the examination is over, teacher can generate results with the help of application, which then published. Once the results are published, students can check leaderboard.
 
-This project helped me gain a practical exposure to:
+## Tech Stack
+
 - Spring Boot
 - MySQL
 - React.js
-- Authentication and Route Protection
+
+
+## Key Features
+
+### Teacher Account
+- Create and publish new questions related to specific subjects and subtopics.
+- Make questions publicly available to help students in their preparation.
+- Design examinations and specify allowed candidates.
+
+### Student Account
+- Access a personalized dashboard to view all ongoing exams.
+- Access previously conducted exams and those scheduled for the future.
+- Maintain a clear view of their examination timeline for better preparation.
+
+### Examination and Results
+- Teachers can generate and publish results once an examination is completed.
+- The application ensures accuracy and transparency in the results.
+- Students can check the leaderboard to see their performance relative to their peers.
+
+
+## Learning Outcomes
+
+Developing QuizQuadrant provided me with a practical exposure to:
+- Building backend services with Spring Boot.
+- Managing databases with MySQL.
+- Creating dynamic and responsive UIs using React.js.
+- Implementing secure authentication and route protection.
+
+
+## Contributors
+- Aayush Dalal ([aayush7908](https://github.com/aayush7908))
+- Dhruv Bhatt ([dhruvbhatt553](https://github.com/dhruvbhatt553))
