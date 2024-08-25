@@ -1,17 +1,20 @@
-package com.example.quizquadrant.model;
+package com.example.quizquadrant.model.key;
 
+import com.example.quizquadrant.model.ExamQuestion;
+import com.example.quizquadrant.model.Option;
+import com.example.quizquadrant.model.User;
+import lombok.*;
 import lombok.EqualsAndHashCode;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
 
 import java.io.Serializable;
 
-@EqualsAndHashCode
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode
 public class ExamResponseKey implements Serializable {
-    //private Exam exam;
     private User user;
-    private PrivateQuestion privateQuestion;
+    private ExamQuestion examQuestion;
+    private Option option;
 }

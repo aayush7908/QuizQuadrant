@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.UUID;
+
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -14,46 +15,29 @@ import lombok.*;
 public class Solution {
 
     @Id
-    @SequenceGenerator(
-            name = "solution_sequence",
-            sequenceName = "solution_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "solution_sequence"
-    )
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(
             name = "statement",
             nullable = false,
-            columnDefinition = "LONGTEXT"
+            columnDefinition = "TEXT"
     )
     private String statement;
 
     @Column(
-            name = "hasImage",
-            nullable = false,
-            columnDefinition = "BOOLEAN"
+            name = "image_url",
+            columnDefinition = "TINYTEXT"
     )
-    private Boolean hasImage;
+    private String imageUrl;
 
-    @OneToOne(
-            mappedBy = "solution",
-            cascade = CascadeType.REMOVE
+    @OneToOne
+    @JoinColumn(
+            name = "question_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_solution_question")
     )
     @JsonBackReference
     private Question question;
-
-
-
-
-//    constructor
-
-    public Solution(String statement, Boolean hasImage) {
-        this.statement = statement;
-        this.hasImage = hasImage;
-    }
 
 }

@@ -1,65 +1,54 @@
 package com.example.quizquadrant.model;
 
+import com.example.quizquadrant.model.key.ExamResponseKey;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "exam_response")
-@IdClass(ExamResponseKey.class)
 @Data
 @NoArgsConstructor
-public class ExamResponses {
+@AllArgsConstructor
+@Table(name = "exam_response")
+@IdClass(ExamResponseKey.class)
+public class ExamResponse {
+
     @Id
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_examresponse_user")
+    )
+    @JsonBackReference
     private User user;
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "question_id")
-    private Question question;
-
-    @Column(
-            name = "optionAMarked",
-            nullable = false,
-            columnDefinition = "BOOLEAN"
+    @JoinColumn(
+            name = "exam_id",
+            referencedColumnName = "exam_id",
+            foreignKey = @ForeignKey(name = "fk_examresponse_examquestion")
     )
-    private Boolean optionAMarked;
-
-    @Column(
-            name = "optionBMarked",
-            nullable = false,
-            columnDefinition = "BOOLEAN"
+    @JoinColumn(
+            name = "question_id",
+            referencedColumnName = "question_id",
+            foreignKey = @ForeignKey(name = "fk_examresponse_examquestion")
     )
-    private Boolean optionBMarked;
+    @JsonBackReference
+    private ExamQuestion examQuestion;
 
-    @Column(
-            name = "optionCMarked",
-            nullable = false,
-            columnDefinition = "BOOLEAN"
+    @Id
+    @ManyToOne
+    @JoinColumn(
+            name = "option_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_examresponse_option")
     )
-    private Boolean optionCMarked;
-
-    @Column(
-            name = "optionDMarked",
-            nullable = false,
-            columnDefinition = "BOOLEAN"
-    )
-    private Boolean optionDMarked;
-    
-    
-    
-    
-//     constructor
-
-     public ExamResponses(User user, PrivateQuestion privateQuestion, Boolean optionAMarked, Boolean optionBMarked, Boolean optionCMarked, Boolean optionDMarked) {
-        this.user = user;
-        this.privateQuestion = privateQuestion;
-        this.optionAMarked = optionAMarked;
-        this.optionBMarked = optionBMarked;
-        this.optionCMarked = optionCMarked;
-        this.optionDMarked = optionDMarked;
-    }
+    @JsonBackReference
+    private Option option;
 
 }

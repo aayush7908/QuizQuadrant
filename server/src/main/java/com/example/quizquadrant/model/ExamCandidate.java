@@ -1,6 +1,6 @@
 package com.example.quizquadrant.model;
 
-import com.example.quizquadrant.model.key.ResultKey;
+import com.example.quizquadrant.model.key.ExamCandidateKey;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -11,44 +11,43 @@ import lombok.*;
 @AllArgsConstructor
 @Entity
 @Table(name = "result")
-@IdClass(ResultKey.class)
-public class Result {
+@IdClass(ExamCandidateKey.class)
+public class ExamCandidate {
 
     @Id
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(
             name = "user_id",
             referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_result_user")
+            foreignKey = @ForeignKey(name = "fk_examcandidate_user")
     )
+    @JsonBackReference
     private User user;
 
     @Id
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(
             name = "exam_id",
             referencedColumnName = "id",
-            foreignKey = @ForeignKey(name = "fk_result_exam")
+            foreignKey = @ForeignKey(name = "fk_examcandidate_exam")
     )
+    @JsonBackReference
     private Exam exam;
 
-    @Column (
+    @Column(
             name = "is_present",
             nullable = false
     )
     private Boolean isPresent;
 
-    @Column (
-            name = "is_finished",
-            nullable = false
+    @Column(
+            name = "exam_finished_on",
+            columnDefinition = "DATETIME"
     )
-    private Boolean isFinished;
+    private Boolean examFinishedOn;
 
     @Column(
             name = "obtained_marks",
-            nullable = false,
             columnDefinition = "INTEGER"
     )
     private Integer obtainedMarks;

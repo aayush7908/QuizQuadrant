@@ -11,7 +11,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class ResultKey implements Serializable {
+public class ExamCandidateKey implements Serializable {
     private Exam exam;
     private User user;
 }
