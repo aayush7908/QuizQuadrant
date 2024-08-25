@@ -9,10 +9,19 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useState } from "react"
 import { schema } from "@/lib/zod-schema/forgot-password/password"
+import { useToast } from "@/components/ui/use-toast"
+import { req } from "@/lib/type/request/user/reset-password"
+import { resetPasswordAPI } from "@/actions/user/reset-password"
+import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
+import { SubmitButton } from "../../SubmitButton"
 
-export default function PasswordForm({ page, changePage }: { page: number, changePage: Function }) {
+export default function PasswordForm({ page, changePage, email }: { page: number, changePage: Function, email: string }) {
 
     const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { toast } = useToast();
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -22,10 +31,26 @@ export default function PasswordForm({ page, changePage }: { page: number, chang
         }
     });
 
-    const onSubmit = async (data: z.infer<typeof schema>) => {
-        console.log(data);
-        alert("forgot-password => reset-password");
-        changePage(page + 1);
+    const onSubmit = async (formData: z.infer<typeof schema>) => {
+        setIsProcessing(true);
+        const reqBody = {
+            email: email,
+            password: formData.password,
+            token: ""
+        } as req;
+        const { success, error } = await resetPasswordAPI(reqBody);
+        if (success) {
+            toast({
+                title: "Password changed successfully"
+            });
+            router.push("/auth/login");
+        } else if (error) {
+            toast({
+                title: error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
     }
 
     return (
@@ -40,7 +65,7 @@ export default function PasswordForm({ page, changePage }: { page: number, chang
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input {...field} type={isPasswordVisible ? "text" : "password"} required />
+                                        <Input {...field} type={isPasswordVisible ? "text" : "password"} required autoFocus={true} />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -66,9 +91,7 @@ export default function PasswordForm({ page, changePage }: { page: number, chang
                         <Checkbox id="showPassword" onClick={() => setIsPasswordVisible(isPasswordVisible => !isPasswordVisible)} />
                         <label htmlFor="showPassword">Show Password</label>
                     </div>
-                    <Button type="submit" className="w-full">
-                        Reset Password
-                    </Button>
+                    <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
                 </div>
             </form>
         </Form>

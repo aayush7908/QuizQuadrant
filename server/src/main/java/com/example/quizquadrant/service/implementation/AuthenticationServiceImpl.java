@@ -75,6 +75,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         AuthenticationResponseDto
                                 .builder()
                                 .token(token)
+                                .user(
+                                        UserDto
+                                                .builder()
+                                                .id(user.getId())
+                                                .email(user.getEmail())
+                                                .isEmailVerified(user.getIsEmailVerified())
+                                                .build()
+                                )
                                 .build()
                 );
     }
@@ -111,6 +119,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         AuthenticationResponseDto
                                 .builder()
                                 .token(token)
+                                .user(
+                                        UserDto
+                                                .builder()
+                                                .id(user.getId())
+                                                .email(user.getEmail())
+                                                .isEmailVerified(user.getIsEmailVerified())
+                                                .build()
+                                )
                                 .build()
                 );
     }
@@ -178,6 +194,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         AuthenticationResponseDto
                                 .builder()
                                 .token(token)
+                                .user(
+                                        UserDto
+                                                .builder()
+                                                .id(user.getId())
+                                                .email(user.getEmail())
+                                                .isEmailVerified(user.getIsEmailVerified())
+                                                .build()
+                                )
                                 .build()
                 );
     }

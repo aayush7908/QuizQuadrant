@@ -27,10 +27,14 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/api/auth/**",
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/auth/forgot-password",
+                                "/api/auth/verify-email",
                                 "/api/user/reset-password"
                         ).permitAll()
                         .requestMatchers(
+                                "/api/auth/authenticate",
                                 "/api/user/**"
                         ).hasAnyAuthority(Role.STUDENT.name(), Role.TEACHER.name(), Role.ADMIN.name())
                         .requestMatchers(

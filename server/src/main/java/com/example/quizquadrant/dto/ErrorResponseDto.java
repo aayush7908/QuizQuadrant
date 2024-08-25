@@ -4,6 +4,6 @@ import lombok.Builder;
 
 @Builder
 public record ErrorResponseDto(
-        String msg
+        String errorMessage
 ) {
 }

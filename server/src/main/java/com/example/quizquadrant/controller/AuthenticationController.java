@@ -22,7 +22,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponseDto> register(
+    public ResponseEntity<AuthenticationResponseDto> login(
             @RequestBody LoginRequestDto loginRequestDto
     ) throws Exception {
         return authenticationService.login(loginRequestDto);

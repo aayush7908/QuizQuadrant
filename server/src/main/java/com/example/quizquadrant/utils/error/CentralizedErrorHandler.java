@@ -26,7 +26,7 @@ public class CentralizedErrorHandler {
                 .body(
                         ErrorResponseDto
                                 .builder()
-                                .msg(error.getErrorMsg())
+                                .errorMessage(error.getErrorMsg())
                                 .build()
                 );
     }
@@ -39,7 +39,7 @@ public class CentralizedErrorHandler {
                 .body(
                         ErrorResponseDto
                                 .builder()
-                                .msg("Internal Server Error")
+                                .errorMessage("Internal Server Error")
                                 .build()
                 );
     }

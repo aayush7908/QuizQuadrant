@@ -16,9 +16,14 @@ import PasswordForm from "@/components/custom/auth/forgot-password/PasswordForm"
 export default function ForgotPassword() {
 
     const [page, setPage] = useState<number>(1);
+    const [email, setEmail] = useState<string>("");
 
-    const changePassword = (newPage: number) => {
+    const changePage = (newPage: number) => {
         setPage(newPage);
+    }
+
+    const changeEmail = (newEmail: string) => {
+        setEmail(newEmail);
     }
 
     return (
@@ -32,13 +37,13 @@ export default function ForgotPassword() {
                 </CardDescription>
             </CardHeader>
             <CardContent className={`${page === 1 ? "block" : "hidden"}`}>
-                <EmailForm page={page} changePage={changePassword} />
+                <EmailForm page={page} changePage={changePage} changeEmail={changeEmail} />
             </CardContent>
             <CardContent className={`${page === 2 ? "block" : "hidden"}`}>
-                <OtpForm page={page} changePage={changePassword} />
+                <OtpForm page={page} changePage={changePage} email={email} />
             </CardContent>
             <CardContent className={`${page === 3 ? "block" : "hidden"}`}>
-                <PasswordForm page={page} changePage={changePassword} />
+                <PasswordForm page={page} changePage={changePage} email={email} />
             </CardContent>
             <CardFooter>
                 <div className="text-center text-sm flex w-full justify-center gap-2">

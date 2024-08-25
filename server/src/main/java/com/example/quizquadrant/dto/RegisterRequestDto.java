@@ -11,7 +11,6 @@ public record RegisterRequestDto(
         String password,
         String firstName,
         String lastName,
-        String profileImageUrl,
         String role
 ) {
 }

@@ -16,13 +16,24 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { schema } from "@/lib/zod-schema/register/register"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { registerAPI } from "@/actions/auth/register"
+import { req } from "@/lib/type/request/auth/register"
+import { AuthContext } from "@/context/auth/AuthContext"
+import { useToast } from "@/components/ui/use-toast"
+import { Loader, Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { SubmitButton } from "@/components/custom/SubmitButton"
 
 export default function Register() {
 
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { authenticate } = useContext(AuthContext);
+    const { toast } = useToast();
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -36,9 +47,29 @@ export default function Register() {
         }
     });
 
-    const onSubmit = async (data: z.infer<typeof schema>) => {
-        console.log(data);
-        alert("register");
+    const onSubmit = async (formData: z.infer<typeof schema>) => {
+        setIsProcessing(true);
+        const reqBody = {
+            email: formData.email,
+            password: formData.password,
+            firstName: formData.firstName,
+            lastName: formData.lastName,
+            role: formData.role
+        } as req;
+        const { success, data, error } = await registerAPI(reqBody);
+        if (success && data) {
+            authenticate(data.user);
+            toast({
+                title: "Account created successfully"
+            });
+            router.push("/account/verify-email");
+        } else if (error) {
+            toast({
+                title: error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
     }
 
     return (
@@ -169,9 +200,7 @@ export default function Register() {
                             </div>
                         </div>
                         <div className="flex justify-center mt-4">
-                            <Button type="submit">
-                                Register
-                            </Button>
+                            <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
                         </div>
                     </CardContent>
                 </Card>

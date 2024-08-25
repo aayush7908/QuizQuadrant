@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from "@/components/ui/button"
 import {
     DropdownMenu,
@@ -7,10 +9,15 @@ import {
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import { AuthContext } from "@/context/auth/AuthContext"
 import { CircleUser, LogIn, LogOut, Menu, Package2, Search } from "lucide-react"
 import Link from "next/link"
+import { useContext } from "react"
 
 export default function Navbar() {
+
+    const { user } = useContext(AuthContext);
+
     return (
         <header className="fixed z-10 top-0 w-full h-[4rem] border-b-2 bg-muted px-4 md:px-6">
             <nav className="h-full w-full">
@@ -22,33 +29,41 @@ export default function Navbar() {
                     </li>
                     <li className="hidden md:flex">
                         <ul className="flex gap-5 justify-end items-center">
-                            <li>
-                                <Link href={"/auth/login"}>
-                                    <LogIn />
-                                </Link>
-                            </li>
-                            <li>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <Button variant="secondary" size="icon" className="rounded-full">
-                                            <CircleUser />
-                                        </Button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end">
-                                        <Link href={"/u/abcd-abcd-abcd"}>
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                Profile
-                                            </DropdownMenuItem>
+                            {
+                                user && (
+                                    <li>
+                                        <DropdownMenu>
+                                            <DropdownMenuTrigger asChild>
+                                                <Button variant="secondary" size="icon" className="rounded-full">
+                                                    <CircleUser />
+                                                </Button>
+                                            </DropdownMenuTrigger>
+                                            <DropdownMenuContent align="end">
+                                                <Link href={"/account/profile"}>
+                                                    <DropdownMenuItem className="cursor-pointer">
+                                                        Profile
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                                <DropdownMenuSeparator />
+                                                <Link href={"/auth/logout"}>
+                                                    <DropdownMenuItem className="cursor-pointer">
+                                                        Logout
+                                                    </DropdownMenuItem>
+                                                </Link>
+                                            </DropdownMenuContent>
+                                        </DropdownMenu>
+                                    </li>
+                                )
+                            }
+                            {
+                                !user && (
+                                    <li>
+                                        <Link href={"/auth/login"}>
+                                            <LogIn />
                                         </Link>
-                                        <DropdownMenuSeparator />
-                                        <Link href={"/auth/logout"}>
-                                            <DropdownMenuItem className="cursor-pointer">
-                                                Logout
-                                            </DropdownMenuItem>
-                                        </Link>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            </li>
+                                    </li>
+                                )
+                            }
                         </ul>
                     </li>
                     <li className="md:hidden">

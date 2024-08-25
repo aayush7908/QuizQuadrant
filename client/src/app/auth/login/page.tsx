@@ -16,12 +16,23 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { useState } from "react"
+import { useContext, useState } from "react"
 import { schema } from "@/lib/zod-schema/login/login"
+import { AuthContext } from "@/context/auth/AuthContext"
+import { useToast } from "@/components/ui/use-toast"
+import { req } from "@/lib/type/request/auth/login"
+import { loginAPI } from "@/actions/auth/login"
+import { Loader2 } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { SubmitButton } from "@/components/custom/SubmitButton"
 
 export default function Login() {
 
-    const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+    const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { authenticate } = useContext(AuthContext);
+    const { toast } = useToast();
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -31,9 +42,26 @@ export default function Login() {
         }
     });
 
-    const onSubmit = async (data: z.infer<typeof schema>) => {
-        console.log(data);
-        alert("login");
+    const onSubmit = async (formData: z.infer<typeof schema>) => {
+        setIsProcessing(true);
+        const reqBody = {
+            email: formData.email,
+            password: formData.password
+        } as req;
+        const { success, data, error } = await loginAPI(reqBody);
+        if (success && data) {
+            authenticate(data.user);
+            toast({
+                title: "Logged in successfully"
+            });
+            router.push("/");
+        } else if (error) {
+            toast({
+                title: error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
     }
 
     return (
@@ -87,9 +115,7 @@ export default function Login() {
                                     Forgot your password?
                                 </Link>
                             </div>
-                            <Button type="submit" className="w-full">
-                                Login
-                            </Button>
+                            <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}

@@ -14,6 +14,7 @@ public record UserDto(
         String lastName,
         String profileImageUrl,
         LocalDateTime accountCreatedOn,
-        String role
+        String role,
+        Boolean isEmailVerified
 ) {
 }

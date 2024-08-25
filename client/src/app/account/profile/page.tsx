@@ -1,7 +1,6 @@
 "use client"
 
 import NameForm from "@/components/custom/account/profile/NameForm";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CircleUser } from "lucide-react";
 import { useState } from "react";

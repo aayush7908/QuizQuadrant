@@ -7,11 +7,20 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
+import { AuthContext } from "@/context/auth/AuthContext";
+import { removeToken } from "@/lib/cookie-store";
+import { useRouter } from "next/navigation";
+import { useContext } from "react"
 
 export default function Logout() {
 
+    const { logout } = useContext(AuthContext);
+    const router = useRouter();
+
     const onSubmit = async () => {
-        alert("logout");
+        removeToken();
+        logout();
+        router.push("/");
     }
 
     return (

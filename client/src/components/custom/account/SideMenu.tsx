@@ -1,41 +1,6 @@
 "use client"
 
-import Link from "next/link"
-import {
-    AlarmClock,
-    Bell,
-    CircleCheckBig,
-    CircleUser,
-    FileCheck,
-    Home,
-    LineChart,
-    Menu,
-    Package,
-    Package2,
-    Radio,
-    Search,
-    ShoppingCart,
-    Users,
-} from "lucide-react"
-
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { usePathname } from "next/navigation"
 import { SideMenuNav } from "./SideMenuNav"
