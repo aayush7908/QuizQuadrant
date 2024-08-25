@@ -5,7 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(name = "examResponses")
+@Table(name = "exam_response")
 @IdClass(ExamResponseKey.class)
 @Data
 @NoArgsConstructor
@@ -17,8 +17,8 @@ public class ExamResponses {
 
     @Id
     @ManyToOne
-    @JoinColumn(name = "privatequestion_id")
-    private PrivateQuestion privateQuestion;
+    @JoinColumn(name = "question_id")
+    private Question question;
 
     @Column(
             name = "optionAMarked",

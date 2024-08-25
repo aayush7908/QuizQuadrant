@@ -1,12 +1,12 @@
 package com.example.quizquadrant.model;
 
+import com.example.quizquadrant.model.key.ResultKey;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -17,34 +17,40 @@ public class Result {
     @Id
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "user_id")
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_result_user")
+    )
     private User user;
 
     @Id
     @ManyToOne
     @JsonBackReference
-    @JoinColumn(name = "exam_id")
+    @JoinColumn(
+            name = "exam_id",
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_result_exam")
+    )
     private Exam exam;
 
     @Column (
-            name = "isPresent",
+            name = "is_present",
             nullable = false
     )
     private Boolean isPresent;
 
     @Column (
-            name = "isFinished",
+            name = "is_finished",
             nullable = false
     )
     private Boolean isFinished;
 
-
-
     @Column(
-            name = "marks",
+            name = "obtained_marks",
             nullable = false,
             columnDefinition = "INTEGER"
     )
-    private Integer marks;
+    private Integer obtainedMarks;
 
 }
