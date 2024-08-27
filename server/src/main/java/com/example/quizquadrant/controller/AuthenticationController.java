@@ -35,6 +35,13 @@ public class AuthenticationController {
         return authenticationService.forgotPassword(loginRequestDto);
     }
 
+    @PostMapping("/resend-otp")
+    public ResponseEntity<BooleanResponseDto> resendOtp(
+            @RequestBody LoginRequestDto loginRequestDto
+    ) throws Exception {
+        return authenticationService.forgotPassword(loginRequestDto);
+    }
+
     @PostMapping("/verify-email")
     public ResponseEntity<AuthenticationResponseDto> verifyEmail(
             @RequestBody VerifyEmailRequestDto verifyEmailRequestDto

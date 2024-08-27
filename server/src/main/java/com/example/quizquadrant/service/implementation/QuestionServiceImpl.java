@@ -1,17 +1,14 @@
 package com.example.quizquadrant.service.implementation;
 
-import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.OptionDto;
-import com.example.quizquadrant.dto.QuestionDto;
+import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.model.Option;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subtopic;
 import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.model.type.QuestionType;
+import com.example.quizquadrant.model.type.Role;
 import com.example.quizquadrant.repository.QuestionRepository;
-import com.example.quizquadrant.service.OptionService;
-import com.example.quizquadrant.service.QuestionService;
-import com.example.quizquadrant.service.SolutionService;
-import com.example.quizquadrant.service.SubtopicService;
+import com.example.quizquadrant.service.*;
 import com.example.quizquadrant.utils.error.AccessDeniedError;
 import com.example.quizquadrant.utils.error.NotFoundError;
 import com.example.quizquadrant.utils.validation.ValidationService;
@@ -21,6 +18,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,6 +32,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final SubtopicService subtopicService;
     private final SolutionService solutionService;
     private final OptionService optionService;
+    private final UserService userService;
 
     @Override
     public ResponseEntity<BooleanResponseDto> create(
@@ -43,6 +43,9 @@ public class QuestionServiceImpl implements QuestionService {
 
 //        find authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+//        authorize user
+        userService.authorizeUser(user);
 
 //        save question, solution and options in database
         Question question = create(questionDto, questionDto.isPublic(), user);
@@ -60,7 +63,8 @@ public class QuestionServiceImpl implements QuestionService {
 
     @Override
     public ResponseEntity<BooleanResponseDto> update(
-            QuestionDto questionDto
+            QuestionDto questionDto,
+            String id
     ) throws Exception {
 //        validate input data
         validationService.validateUpdateQuestionInput(questionDto);
@@ -72,7 +76,10 @@ public class QuestionServiceImpl implements QuestionService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 //        fetch question by id
-        Question question = getQuestionById(questionDto.id());
+        Question question = getById(UUID.fromString(id));
+
+//        authorize user
+        userService.authorizeUser(user);
 
 //        authorize user permissions on question
         authorizeUserQuestion(user, question);
@@ -116,7 +123,10 @@ public class QuestionServiceImpl implements QuestionService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 //        fetch question by id
-        Question question = getQuestionById(UUID.fromString(id));
+        Question question = getById(UUID.fromString(id));
+
+//        authorize user
+        userService.authorizeUser(user);
 
 //        authorize user permissions on question
         authorizeUserQuestion(user, question);
@@ -136,7 +146,142 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question getQuestionById(
+    public ResponseEntity<List<QuestionDto>> getMyQuestions() throws Exception {
+//        find authenticated user
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+//        fetch questions created by user
+        List<Question> questions = questionRepository.findByCreatedBy(user);
+
+//        create list of question dto
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        for (Question question : questions) {
+//            create list of option dtos
+            List<OptionDto> optionDtos = new ArrayList<>();
+            for (Option option : question.getOptions()) {
+//                create option dto and add it to option dto list
+                optionDtos.add(
+                        OptionDto
+                                .builder()
+                                .id(option.getId())
+                                .statement(option.getStatement())
+                                .imageUrl(option.getImageUrl())
+                                .isCorrect(option.getIsCorrect())
+                                .build()
+                );
+            }
+
+//            create subtopic dto
+            SubtopicDto subtopicDto = SubtopicDto
+                    .builder()
+                    .id(question.getSubtopic().getId())
+                    .name(question.getSubtopic().getName())
+                    .subject(
+                            SubjectDto
+                                    .builder()
+                                    .id(question.getSubtopic().getSubject().getId())
+                                    .name(question.getSubtopic().getSubject().getName())
+                                    .build()
+                    )
+                    .build();
+
+//            create solution dto
+            SolutionDto solutionDto = SolutionDto
+                    .builder()
+                    .id(question.getSolution().getId())
+                    .statement(question.getSolution().getStatement())
+                    .imageUrl(question.getSolution().getImageUrl())
+                    .build();
+
+//            create question dto and add it to question dto list
+            questionDtos.add(
+                    QuestionDto
+                            .builder()
+                            .id(question.getId())
+                            .type(question.getType().name())
+                            .isPublic(question.getIsPublic())
+                            .statement(question.getStatement())
+                            .imageUrl(question.getImageUrl())
+                            .lastModifiedOn(question.getLastModifiedOn())
+                            .subtopic(subtopicDto)
+                            .options(optionDtos)
+                            .solution(solutionDto)
+                            .build()
+            );
+        }
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(questionDtos);
+    }
+
+    @Override
+    public ResponseEntity<QuestionDto> getById(
+            String id
+    ) throws Exception {
+//        fetch question by id
+        Question question = getById(UUID.fromString(id));
+
+//        create list of option dtos
+        List<OptionDto> optionDtos = new ArrayList<>();
+        for (Option option : question.getOptions()) {
+//            create option dto and add it to option dto list
+            optionDtos.add(
+                    OptionDto
+                            .builder()
+                            .id(option.getId())
+                            .statement(option.getStatement())
+                            .imageUrl(option.getImageUrl())
+                            .isCorrect(option.getIsCorrect())
+                            .build()
+            );
+        }
+
+//        create subtopic dto
+        SubtopicDto subtopicDto = SubtopicDto
+                .builder()
+                .id(question.getSubtopic().getId())
+                .name(question.getSubtopic().getName())
+                .subject(
+                        SubjectDto
+                                .builder()
+                                .id(question.getSubtopic().getSubject().getId())
+                                .name(question.getSubtopic().getSubject().getName())
+                                .build()
+                )
+                .build();
+
+//        create solution dto
+        SolutionDto solutionDto = SolutionDto
+                .builder()
+                .id(question.getSolution().getId())
+                .statement(question.getSolution().getStatement())
+                .imageUrl(question.getSolution().getImageUrl())
+                .build();
+
+//        create question dto
+        QuestionDto questionDto = QuestionDto
+                .builder()
+                .id(question.getId())
+                .type(question.getType().name())
+                .isPublic(question.getIsPublic())
+                .statement(question.getStatement())
+                .imageUrl(question.getImageUrl())
+                .lastModifiedOn(question.getLastModifiedOn())
+                .subtopic(subtopicDto)
+                .options(optionDtos)
+                .solution(solutionDto)
+                .build();
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(questionDto);
+    }
+
+    @Override
+    public Question getById(
             UUID id
     ) throws Exception {
         Optional<Question> questionOptional = questionRepository.findById(id);
@@ -189,7 +334,10 @@ public class QuestionServiceImpl implements QuestionService {
             User user,
             Question question
     ) throws Exception {
-        if (!user.getId().equals(question.getCreatedBy().getId())) {
+        if (
+                user.getRole() != Role.ADMIN &&
+                        !user.getId().equals(question.getCreatedBy().getId())
+        ) {
             throw new AccessDeniedError();
         }
     }

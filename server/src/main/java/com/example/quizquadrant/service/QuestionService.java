@@ -6,6 +6,7 @@ import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface QuestionService {
@@ -18,7 +19,8 @@ public interface QuestionService {
 
     @Transactional(rollbackFor = Exception.class)
     ResponseEntity<BooleanResponseDto> update(
-            QuestionDto questionDto
+            QuestionDto questionDto,
+            String id
     ) throws Exception;
 
     @Transactional(rollbackFor = Exception.class)
@@ -26,8 +28,14 @@ public interface QuestionService {
             String id
     ) throws Exception;
 
+    ResponseEntity<List<QuestionDto>> getMyQuestions() throws Exception;
+
+    ResponseEntity<QuestionDto> getById(
+            String id
+    ) throws Exception;
+
     //    helper methods
-    Question getQuestionById(
+    Question getById(
             UUID id
     ) throws Exception;
 

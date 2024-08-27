@@ -2,6 +2,7 @@ package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
 import com.example.quizquadrant.dto.QuestionDto;
+import com.example.quizquadrant.dto.SubjectDto;
 import com.example.quizquadrant.dto.SubtopicDto;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subject;
@@ -71,7 +72,8 @@ public class SubtopicServiceImpl implements SubtopicService {
 
     @Override
     public ResponseEntity<BooleanResponseDto> update(
-            SubtopicDto subtopicDto
+            SubtopicDto subtopicDto,
+            String id
     ) throws Exception {
 //        validate input data
         validationService.validateUpdateSubtopicInput(subtopicDto);
@@ -80,7 +82,7 @@ public class SubtopicServiceImpl implements SubtopicService {
         String subtopicName = subtopicDto.name().toUpperCase();
 
 //        fetch subtopic by id
-        Subtopic subtopic = getSubtopicById(subtopicDto.id());
+        Subtopic subtopic = getSubtopicById(UUID.fromString(id));
 
 //        fetch subject by id
         Subject subject = subjectService.getSubjectById(subtopicDto.subject().id());
@@ -121,6 +123,32 @@ public class SubtopicServiceImpl implements SubtopicService {
                         BooleanResponseDto
                                 .builder()
                                 .success(true)
+                                .build()
+                );
+    }
+
+    @Override
+    public ResponseEntity<SubtopicDto> getById(
+            String id
+    ) throws Exception {
+//        fetch subtopic by id
+        Subtopic subtopic = getSubtopicById(UUID.fromString(id));
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(
+                        SubtopicDto
+                                .builder()
+                                .id(subtopic.getId())
+                                .name(subtopic.getName())
+                                .subject(
+                                        SubjectDto
+                                                .builder()
+                                                .id(subtopic.getSubject().getId())
+                                                .name(subtopic.getSubject().getName())
+                                                .build()
+                                )
                                 .build()
                 );
     }

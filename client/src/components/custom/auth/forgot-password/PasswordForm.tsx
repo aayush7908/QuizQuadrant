@@ -91,7 +91,7 @@ export default function PasswordForm({ page, changePage, email }: { page: number
                         <Checkbox id="showPassword" onClick={() => setIsPasswordVisible(isPasswordVisible => !isPasswordVisible)} />
                         <label htmlFor="showPassword">Show Password</label>
                     </div>
-                    <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
+                    <SubmitButton type="submit" displayName="Save" isProcessing={isProcessing} onSubmit={() => { }} />
                 </div>
             </form>
         </Form>

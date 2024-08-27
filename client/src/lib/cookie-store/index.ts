@@ -23,10 +23,15 @@ const setPasswordResetToken = (token: string) => {
     Cookies.set(PASSWORD_RESET_TOKEN_NAME, token);
 }
 
+const removePasswordResetToken = () => {
+    Cookies.remove(PASSWORD_RESET_TOKEN_NAME);
+}
+
 export {
     getToken,
     setToken,
     removeToken,
     getPasswordResetToken,
-    setPasswordResetToken
+    setPasswordResetToken,
+    removePasswordResetToken
 }

@@ -2,10 +2,11 @@ package com.example.quizquadrant.controller;
 
 import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.service.QuestionService;
-import com.example.quizquadrant.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @CrossOrigin
@@ -22,11 +23,12 @@ public class QuestionController {
         return questionService.create(questionDto);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{id}")
     public ResponseEntity<BooleanResponseDto> update(
+            @PathVariable String id,
             @RequestBody QuestionDto questionDto
     ) throws Exception {
-        return questionService.update(questionDto);
+        return questionService.update(questionDto, id);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -34,6 +36,18 @@ public class QuestionController {
             @PathVariable String id
     ) throws Exception {
         return questionService.delete(id);
+    }
+
+    @GetMapping("/get/my")
+    public ResponseEntity<List<QuestionDto>> getMyQuestions() throws Exception {
+        return questionService.getMyQuestions();
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<QuestionDto> getById(
+            @PathVariable String id
+    ) throws Exception {
+        return questionService.getById(id);
     }
 
 }

@@ -48,4 +48,9 @@ public class UserController {
         return userService.delete();
     }
 
+    @GetMapping("/get/profile")
+    public ResponseEntity<UserDto> getProfile() throws Exception {
+        return userService.getProfile();
+    }
+
 }

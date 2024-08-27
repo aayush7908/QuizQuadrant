@@ -10,9 +10,11 @@ import { schema } from "@/lib/zod-schema/forgot-password/otp"
 import { useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
 import { req } from "@/lib/type/request/auth/verify-email"
+import { req as resendOtpReq } from "@/lib/type/request/auth/forgot-password"
 import { verifyEmailAPI } from "@/actions/auth/verify-email"
 import { Loader2 } from "lucide-react"
 import { SubmitButton } from "../../SubmitButton"
+import { resendOtpAPI } from "@/actions/auth/resend-otp"
 
 export default function OtpForm({ page, changePage, email }: { page: number, changePage: Function, email: string }) {
 
@@ -47,6 +49,25 @@ export default function OtpForm({ page, changePage, email }: { page: number, cha
         setIsProcessing(false);
     }
 
+    const handleResendOtp = async () => {
+        setIsProcessing(true);
+        const reqBody = {
+            email: email
+        } as resendOtpReq;
+        const { success, error } = await resendOtpAPI(reqBody);
+        if (success) {
+            toast({
+                title: "OTP sent to your email"
+            });
+        } else if (error) {
+            toast({
+                title: error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
+    }
+
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)}>
@@ -66,7 +87,8 @@ export default function OtpForm({ page, changePage, email }: { page: number, cha
                             )}
                         />
                     </div>
-                    <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
+                    <SubmitButton type="submit" displayName="Verify" isProcessing={isProcessing} onSubmit={() => { }} />
+                    <SubmitButton type="button" displayName="Resend OTP" isProcessing={isProcessing} onSubmit={handleResendOtp} />
                 </div>
             </form>
         </Form>

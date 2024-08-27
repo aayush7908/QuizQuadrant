@@ -1,9 +1,6 @@
 package com.example.quizquadrant.service.implementation;
 
-import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.OptionDto;
-import com.example.quizquadrant.dto.QuestionDto;
-import com.example.quizquadrant.dto.SubjectDto;
+import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subject;
 import com.example.quizquadrant.model.Subtopic;
@@ -11,6 +8,7 @@ import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.model.type.QuestionType;
 import com.example.quizquadrant.repository.QuestionRepository;
 import com.example.quizquadrant.repository.SubjectRepository;
+import com.example.quizquadrant.repository.SubtopicRepository;
 import com.example.quizquadrant.service.*;
 import com.example.quizquadrant.utils.error.DuplicateDataError;
 import com.example.quizquadrant.utils.error.NotFoundError;
@@ -22,6 +20,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,6 +30,7 @@ import java.util.UUID;
 public class SubjectServiceImpl implements SubjectService {
 
     private final SubjectRepository subjectRepository;
+    private final SubtopicRepository subtopicRepository;
     private final ValidationService validationService;
 
     @Override
@@ -66,7 +67,8 @@ public class SubjectServiceImpl implements SubjectService {
 
     @Override
     public ResponseEntity<BooleanResponseDto> update(
-            SubjectDto subjectDto
+            SubjectDto subjectDto,
+            String id
     ) throws Exception {
 //        validate input data
         validationService.validateUpdateSubjectInput(subjectDto);
@@ -78,7 +80,7 @@ public class SubjectServiceImpl implements SubjectService {
         checkSubjectExists(subjectName);
 
 //        fetch subject by id
-        Subject subject = getSubjectById(subjectDto.id());
+        Subject subject = getSubjectById(UUID.fromString(id));
 
 //        update subject in database
         subject.setName(subjectName);
@@ -112,6 +114,66 @@ public class SubjectServiceImpl implements SubjectService {
                         BooleanResponseDto
                                 .builder()
                                 .success(true)
+                                .build()
+                );
+    }
+
+    @Override
+    public ResponseEntity<List<SubjectDto>> getAll() throws Exception {
+//        fetch all subjects
+        List<Subject> subjects = subjectRepository.findAll();
+
+//        create subject dto list
+        List<SubjectDto> subjectDtos = new ArrayList<>();
+        for (Subject subject : subjects) {
+//            fetch subtopics corresponding to a subject
+            List<Subtopic> subtopics = subtopicRepository.findBySubject(subject);
+
+//            create subtopic dto list
+            List<SubtopicDto> subtopicDtos = new ArrayList<>();
+            for (Subtopic subtopic : subtopics) {
+//                create subtopic dto and add it to subtopic dto list
+                subtopicDtos.add(
+                        SubtopicDto
+                                .builder()
+                                .id(subtopic.getId())
+                                .name(subtopic.getName())
+                                .build()
+                );
+            }
+
+//            create subject dto and add it to subject dto list
+            subjectDtos.add(
+                    SubjectDto
+                            .builder()
+                            .id(subject.getId())
+                            .name(subject.getName())
+                            .subtopics(subtopicDtos)
+                            .build()
+            );
+        }
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(subjectDtos);
+    }
+
+    @Override
+    public ResponseEntity<SubjectDto> getById(
+            String id
+    ) throws Exception {
+//        fetch subject by id
+        Subject subject = getSubjectById(UUID.fromString(id));
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(
+                        SubjectDto
+                                .builder()
+                                .id(subject.getId())
+                                .name(subject.getName())
                                 .build()
                 );
     }

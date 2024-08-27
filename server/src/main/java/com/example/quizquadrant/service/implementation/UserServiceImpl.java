@@ -4,6 +4,7 @@ import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.repository.UserRepository;
 import com.example.quizquadrant.service.UserService;
+import com.example.quizquadrant.utils.error.AccessDeniedError;
 import com.example.quizquadrant.utils.error.NotFoundError;
 import com.example.quizquadrant.utils.otp.OtpService;
 import com.example.quizquadrant.utils.passwordresettoken.PasswordResetTokenService;
@@ -86,6 +87,9 @@ public class UserServiceImpl implements UserService {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        authorizeUser(user);
+
 //        update user data and save
         user.setFirstName(userDto.firstName());
         user.setLastName(userDto.lastName());
@@ -102,6 +106,9 @@ public class UserServiceImpl implements UserService {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        authorizeUser(user);
+
 //        update user data and save
         user.setProfileImageUrl(userDto.profileImageUrl());
         userRepository.save(user);
@@ -115,11 +122,36 @@ public class UserServiceImpl implements UserService {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        authorizeUser(user);
+
 //        remove user from database
         userRepository.deleteById(user.getId());
 
 //        response
         return ResponseEntity.status(200).body(BooleanResponseDto.builder().success(true).build());
+    }
+
+    @Override
+    public ResponseEntity<UserDto> getProfile() throws Exception {
+//        fetch authenticated user
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(
+                        UserDto
+                                .builder()
+                                .email(user.getEmail())
+                                .firstName(user.getFirstName())
+                                .lastName(user.getLastName())
+                                .profileImageUrl(user.getProfileImageUrl())
+                                .accountCreatedOn(user.getAccountCreatedOn())
+                                .role(user.getRole().name())
+                                .isEmailVerified(user.getIsEmailVerified())
+                                .build()
+                );
     }
 
     @Override
@@ -129,5 +161,14 @@ public class UserServiceImpl implements UserService {
             throw new NotFoundError("User not found");
         }
         return userOptional.get();
+    }
+
+    @Override
+    public void authorizeUser(
+            User user
+    ) throws Exception {
+        if (!user.getIsEmailVerified()) {
+            throw new AccessDeniedError("Email not verified");
+        }
     }
 }

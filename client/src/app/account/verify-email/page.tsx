@@ -10,11 +10,13 @@ import { schema } from "@/lib/zod-schema/forgot-password/otp"
 import { useContext, useEffect, useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
 import { req } from "@/lib/type/request/auth/verify-email"
+import { req as resendOtpReq } from "@/lib/type/request/auth/forgot-password"
 import { AuthContext } from "@/context/auth/AuthContext"
 import { useRouter } from "next/navigation"
 import { verifyEmailAPI } from "@/actions/user/verify-email"
 import { SubmitButton } from "@/components/custom/SubmitButton"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { resendOtpAPI } from "@/actions/auth/resend-otp"
 
 export default function VerifyEmail() {
 
@@ -52,6 +54,25 @@ export default function VerifyEmail() {
         setIsProcessing(false);
     }
 
+    const handleResendOtp = async () => {
+        setIsProcessing(true);
+        const reqBody = {
+            email: user?.email
+        } as resendOtpReq;
+        const { success, error } = await resendOtpAPI(reqBody);
+        if (success) {
+            toast({
+                title: "OTP sent to your email"
+            });
+        } else if (error) {
+            toast({
+                title: error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
+    }
+
     return (
         <div className="h-full w-full flex justify-center items-center">
             <Card className="max-w-sm m-[1rem]">
@@ -80,7 +101,8 @@ export default function VerifyEmail() {
                                         )}
                                     />
                                 </div>
-                                <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
+                                <SubmitButton type="submit" displayName="Verify" isProcessing={isProcessing} onSubmit={() => { }} />
+                                <SubmitButton type="button" displayName="Resend OTP" isProcessing={isProcessing} onSubmit={handleResendOtp} />
                             </div>
                         </form>
                     </Form>

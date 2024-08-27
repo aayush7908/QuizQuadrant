@@ -15,10 +15,15 @@ public interface SubtopicService {
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> update(
-            SubtopicDto subtopicDto
+            SubtopicDto subtopicDto,
+            String id
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> delete(
+            String id
+    ) throws Exception;
+
+    ResponseEntity<SubtopicDto> getById(
             String id
     ) throws Exception;
 

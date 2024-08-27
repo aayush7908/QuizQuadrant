@@ -25,10 +25,16 @@ public interface UserService {
 
     ResponseEntity<BooleanResponseDto> delete() throws Exception;
 
+    ResponseEntity<UserDto> getProfile() throws Exception;
+
 
     //    helper methods
     User getUserByEmail(
             String email
+    ) throws Exception;
+
+    void authorizeUser(
+            User user
     ) throws Exception;
 
 }

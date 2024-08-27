@@ -21,7 +21,7 @@ public class OtpServiceImpl implements OtpService {
     private final EmailService emailService;
     private final OtpRepository otpRepository;
 
-    private final String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+    private final String LETTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890!@#^$%&*";
     private final int OTP_LENGTH = 8;
     private final int OTP_LIFE = 10 * 60 * 1000;  // 10 minutes
 
@@ -53,7 +53,11 @@ public class OtpServiceImpl implements OtpService {
                         .builder()
                         .recipient(email)
                         .subject("Welcome to QuizQuadrant")
-                        .msgBody("Your OTP for email verification is: " + newOtp.getOtp())
+                        .msgBody(
+                                "Your OTP for email verification is: " +
+                                        newOtp.getOtp() +
+                                        "\nNote: This OTP is valid only for 10 minutes"
+                        )
                         .build()
         );
     }

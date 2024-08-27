@@ -30,30 +30,30 @@ public class SecurityConfig {
                                 "/api/auth/register",
                                 "/api/auth/login",
                                 "/api/auth/forgot-password",
+                                "/api/auth/resend-otp",
                                 "/api/auth/verify-email",
-                                "/api/user/reset-password"
+                                "/api/user/reset-password",
+                                "/api/subject/get/**",
+                                "/api/subtopic/get/**"
                         ).permitAll()
                         .requestMatchers(
-                                "/api/auth/authenticate",
-                                "/api/user/**"
-                        ).hasAnyAuthority(Role.STUDENT.name(), Role.TEACHER.name(), Role.ADMIN.name())
+                                "/api/subject/create",
+                                "/api/subject/update/**",
+                                "/api/subject/delete/**",
+                                "/api/subtopic/create",
+                                "/api/subtopic/update/**",
+                                "/api/subtopic/delete/**",
+                                "/api/admin/**"
+                        ).hasAuthority(Role.ADMIN.name())
                         .requestMatchers(
                                 "/api/question/create",
-                                "/api/question/update",
+                                "/api/question/update/**",
                                 "/api/question/delete/**",
+                                "/api/question/get/my",
                                 "/api/exam/create",
                                 "/api/exam/update",
                                 "/api/exam/delete/**"
                         ).hasAnyAuthority(Role.TEACHER.name(), Role.ADMIN.name())
-                        .requestMatchers(
-                                "/api/subject/create",
-                                "/api/subject/update",
-                                "/api/subject/delete/**",
-                                "/api/subtopic/create",
-                                "/api/subtopic/update",
-                                "/api/subtopic/delete/**",
-                                "/api/admin/**"
-                        ).hasAuthority(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session

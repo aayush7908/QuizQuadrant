@@ -200,7 +200,7 @@ export default function Register() {
                             </div>
                         </div>
                         <div className="flex justify-center mt-4">
-                            <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
+                            <SubmitButton type="submit" displayName="Register" isProcessing={isProcessing} onSubmit={() => { }} />
                         </div>
                     </CardContent>
                 </Card>

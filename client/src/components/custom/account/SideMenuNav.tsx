@@ -7,6 +7,7 @@ import {
     CircleCheckBig,
     CircleUser,
     FileCheck,
+    Folder,
     MailQuestion,
     Radio,
     Trash2
@@ -35,45 +36,72 @@ export function SideMenuNav() {
                 {
                     user?.isEmailVerified ? (
                         <>
-                            <li>
-                                <Link
-                                    href="/account/ongoing-exams"
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/ongoing-exams" && "bg-muted text-primary"}`}
-                                >
-                                    <Radio />
-                                    <span>Ongoing Exams</span>
-                                    <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
-                                        6
-                                    </Badge>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="/account/future-exams"
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/future-exams" && "bg-muted text-primary"}`}
-                                >
-                                    <AlarmClock />
-                                    <span>Future Exams</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="/account/past-exams"
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/past-exams" && "bg-muted text-primary"}`}
-                                >
-                                    <CircleCheckBig />
-                                    <span>Past Exams</span>
-                                </Link>
-                            </li>
-                            <li>
-                                <Link
-                                    href="/account/questions-created"
-                                    className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/questions-created" && "bg-muted text-primary"}`}
-                                >
-                                    <FileCheck />
-                                    <span>Questions Created</span>
-                                </Link>
-                            </li>
+                            {
+                                user.role in ["STUDENT", "ADMIN"] && (
+                                    <>
+                                        <li>
+                                            <Link
+                                                href="/account/ongoing-exams"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/ongoing-exams" && "bg-muted text-primary"}`}
+                                            >
+                                                <Radio />
+                                                <span>Ongoing Exams</span>
+                                                <Badge className="ml-auto flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
+                                                    6
+                                                </Badge>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link
+                                                href="/account/future-exams"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/future-exams" && "bg-muted text-primary"}`}
+                                            >
+                                                <AlarmClock />
+                                                <span>Future Exams</span>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link
+                                                href="/account/past-exams"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/past-exams" && "bg-muted text-primary"}`}
+                                            >
+                                                <CircleCheckBig />
+                                                <span>Past Exams</span>
+                                            </Link>
+                                        </li>
+                                    </>
+                                )
+                            }
+                            {
+                                user.role in ["TEACHER", "ADMIN"] && (
+                                    <>
+                                        <li>
+                                            <Link
+                                                href="/account/questions-created"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/questions-created" && "bg-muted text-primary"}`}
+                                            >
+                                                <FileCheck />
+                                                <span>Questions Created</span>
+                                            </Link>
+                                        </li>
+                                    </>
+                                )
+                            }
+                            {
+                                user.role === "ADMIN" && (
+                                    <>
+                                        <li>
+                                            <Link
+                                                href="/account/subject-and-subtopic"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/subject-and-subtopic" && "bg-muted text-primary"}`}
+                                            >
+                                                <Folder />
+                                                <span>Subject & Subtopic</span>
+                                            </Link>
+                                        </li>
+                                    </>
+                                )
+                            }
                             <li>
                                 <Link
                                     href="/account/delete-account"

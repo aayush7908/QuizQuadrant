@@ -4,6 +4,7 @@ import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.Exam;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.User;
+import com.example.quizquadrant.model.type.Role;
 import com.example.quizquadrant.repository.ExamRepository;
 import com.example.quizquadrant.service.*;
 import com.example.quizquadrant.utils.error.AccessDeniedError;
@@ -39,6 +40,9 @@ public class ExamServiceImpl implements ExamService {
 
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+//        authorize user
+        userService.authorizeUser(user);
 
 //        save exam in database
         Exam exam = examRepository.save(
@@ -88,10 +92,13 @@ public class ExamServiceImpl implements ExamService {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        userService.authorizeUser(user);
+
 //        fetch exam by id
         Exam exam = getExamById(examDto.id());
 
-//        authorize if exam is created by user
+//        authorize user permissions on exam
         authorizeUserExam(user, exam);
 
 //        update exam in database
@@ -122,10 +129,13 @@ public class ExamServiceImpl implements ExamService {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        userService.authorizeUser(user);
+
 //        fetch exam by id
         Exam exam = getExamById(examDto.id());
 
-//        authorize if exam is created by user
+//        authorize user permissions on exam
         authorizeUserExam(user, exam);
 
 //        enroll candidates
@@ -155,10 +165,13 @@ public class ExamServiceImpl implements ExamService {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        userService.authorizeUser(user);
+
 //        fetch exam by id
         Exam exam = getExamById(examDto.id());
 
-//        authorize if exam is created by user
+//        authorize user permissions on exam
         authorizeUserExam(user, exam);
 
 //        remove candidates
@@ -188,10 +201,13 @@ public class ExamServiceImpl implements ExamService {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        userService.authorizeUser(user);
+
 //        fetch exam by id
         Exam exam = getExamById(examDto.id());
 
-//        authorize if exam is created by user
+//        authorize user permissions on exam
         authorizeUserExam(user, exam);
 
 //        save questions in database and mark them as exam-question
@@ -223,10 +239,13 @@ public class ExamServiceImpl implements ExamService {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        userService.authorizeUser(user);
+
 //        fetch exam by id
         Exam exam = getExamById(examDto.id());
 
-//        authorize if exam is created by user
+//        authorize user permissions on exam
         authorizeUserExam(user, exam);
 
 //        save questions in database and mark them as exam-question
@@ -264,7 +283,10 @@ public class ExamServiceImpl implements ExamService {
             User user,
             Exam exam
     ) throws Exception {
-        if (!user.getId().equals(exam.getCreatedBy().getId())) {
+        if (
+                user.getRole() != Role.ADMIN &&
+                        !user.getId().equals(exam.getCreatedBy().getId())
+        ) {
             throw new AccessDeniedError();
         }
     }
@@ -281,7 +303,7 @@ public class ExamServiceImpl implements ExamService {
             if (questionDto.id() == null) {
                 question = questionService.create(questionDto, false, user);
             } else {
-                question = questionService.getQuestionById(questionDto.id());
+                question = questionService.getById(questionDto.id());
                 questionService.authorizeUserQuestion(user, question);
             }
             examQuestionService.create(
@@ -301,7 +323,7 @@ public class ExamServiceImpl implements ExamService {
         int totalMarks = 0;
         for (QuestionDto questionDto : questionDtos) {
             totalMarks += questionDto.positiveMarks();
-            Question question = questionService.getQuestionById(questionDto.id());
+            Question question = questionService.getById(questionDto.id());
             examQuestionService.delete(
                     exam,
                     question

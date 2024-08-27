@@ -115,7 +115,7 @@ export default function Login() {
                                     Forgot your password?
                                 </Link>
                             </div>
-                            <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
+                            <SubmitButton type="submit" displayName="Login" isProcessing={isProcessing} onSubmit={() => { }} />
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}

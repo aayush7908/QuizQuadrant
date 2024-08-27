@@ -229,7 +229,7 @@ public class ValidationServiceImpl implements ValidationService {
         if (isUpdateExamQuestionsInputInvalid) {
             throw new BadRequestError("Invalid data");
         }
-        for (QuestionDto questionDto: examDto.questions()) {
+        for (QuestionDto questionDto : examDto.questions()) {
             validateExamQuestionInput(questionDto);
         }
     }
@@ -313,8 +313,7 @@ public class ValidationServiceImpl implements ValidationService {
 
     private boolean isUpdateSubtopicInputInvalid(SubtopicDto subtopicDto) {
         return (
-                subtopicDto.id() == null ||
-                        subtopicDto.name() == null ||
+                subtopicDto.name() == null ||
                         subtopicDto.subject() == null ||
                         subtopicDto.subject().id() == null
         );
@@ -328,8 +327,7 @@ public class ValidationServiceImpl implements ValidationService {
 
     private boolean isUpdateSubjectInputInvalid(SubjectDto subjectDto) {
         return (
-                subjectDto.id() == null ||
-                        subjectDto.name() == null
+                subjectDto.name() == null
         );
     }
 
@@ -348,8 +346,7 @@ public class ValidationServiceImpl implements ValidationService {
 
     private boolean isUpdateQuestionInputInvalid(QuestionDto questionDto) {
         return (
-                questionDto.id() == null ||
-                        questionDto.type() == null ||
+                questionDto.type() == null ||
                         questionDto.isPublic() == null ||
                         questionDto.statement() == null ||
                         questionDto.subtopic() == null ||

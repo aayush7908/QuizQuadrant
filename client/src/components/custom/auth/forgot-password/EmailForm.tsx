@@ -67,7 +67,7 @@ export default function EmailForm({ page, changePage, changeEmail }: { page: num
                             )}
                         />
                     </div>
-                    <SubmitButton isProcessing={isProcessing} onSubmit={() => { }} />
+                    <SubmitButton type="submit" displayName="Send OTP" isProcessing={isProcessing} onSubmit={() => { }} />
                 </div>
             </form>
         </Form>

@@ -24,11 +24,12 @@ public class SubtopicController {
         return subtopicService.create(subtopicDto);
     }
 
-    @PutMapping("/update")
+    @PutMapping("/update/{id}")
     public ResponseEntity<BooleanResponseDto> update(
-            @RequestBody SubtopicDto subtopicDto
+            @RequestBody SubtopicDto subtopicDto,
+            @PathVariable String id
     ) throws Exception {
-        return subtopicService.update(subtopicDto);
+        return subtopicService.update(subtopicDto, id);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -36,6 +37,13 @@ public class SubtopicController {
             @PathVariable String id
     ) throws Exception {
         return subtopicService.delete(id);
+    }
+
+    @GetMapping("/get/{id}")
+    public ResponseEntity<SubtopicDto> getById(
+            @PathVariable String id
+    ) throws Exception {
+        return subtopicService.getById(id);
     }
 
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { getPasswordResetToken } from "@/lib/cookie-store";
+import { getPasswordResetToken, removePasswordResetToken } from "@/lib/cookie-store";
 import { serverEnv } from "@/lib/env/server";
 import { req } from "@/lib/type/request/user/reset-password";
 import { error } from "@/lib/type/response/error/error";
@@ -28,6 +28,7 @@ const resetPasswordAPI = async (body: req) => {
 
         // if successfull
         if (res.status === 200) {
+            removePasswordResetToken();
             return {
                 success: true
             };

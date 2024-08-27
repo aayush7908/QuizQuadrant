@@ -7,6 +7,7 @@ import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subject;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface SubjectService {
@@ -17,10 +18,17 @@ public interface SubjectService {
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> update(
-            SubjectDto subjectDto
+            SubjectDto subjectDto,
+            String id
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> delete(
+            String id
+    ) throws Exception;
+
+    ResponseEntity<List<SubjectDto>> getAll() throws Exception;
+
+    ResponseEntity<SubjectDto> getById(
             String id
     ) throws Exception;
 

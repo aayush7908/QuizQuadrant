@@ -16,22 +16,74 @@ import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { schema } from "@/lib/zod-schema/question/question"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { useRouter } from "next/navigation"
+import { error } from "@/lib/type/response/error/error"
+import { useToast } from "@/components/ui/use-toast"
+import { SubmitButton } from "../SubmitButton"
+import { SubjectContext } from "@/context/subject/SubjectContext"
+import { Question } from "@/lib/type/model/question"
 
-export default function QuestionForm() {
+export default function QuestionForm({
+    successMessage,
+    onSubmit,
+    defaultFormData
+}: {
+    successMessage: string,
+    onSubmit: (formData: z.infer<typeof schema>) => Promise<{
+        success: boolean;
+        error?: error | undefined;
+    }>,
+    defaultFormData: Question | undefined
+}) {
 
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { subjects } = useContext(SubjectContext);
+    const { toast } = useToast();
     const router = useRouter();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
-        defaultValues: {
+        defaultValues: defaultFormData ? {
+            visibility: defaultFormData.isPublic ? "PUBLIC" : "PRIVATE",
+            type: defaultFormData.type,
+            subject: defaultFormData.subtopic.subject.id,
+            subtopic: defaultFormData.subtopic.id,
+            statement: defaultFormData.statement,
+            imageUrl: defaultFormData.imageUrl,
+            options: [
+                {
+                    statement: defaultFormData.options[0].statement,
+                    imageUrl: defaultFormData.options[0].imageUrl,
+                    isCorrect: defaultFormData.options[0].isCorrect
+                },
+                {
+                    statement: defaultFormData.options[1].statement,
+                    imageUrl: defaultFormData.options[1].imageUrl,
+                    isCorrect: defaultFormData.options[1].isCorrect
+                },
+                {
+                    statement: defaultFormData.options[2].statement,
+                    imageUrl: defaultFormData.options[2].imageUrl,
+                    isCorrect: defaultFormData.options[2].isCorrect
+                },
+                {
+                    statement: defaultFormData.options[3].statement,
+                    imageUrl: defaultFormData.options[3].imageUrl,
+                    isCorrect: defaultFormData.options[3].isCorrect
+                }
+            ],
+            solution: {
+                statement: defaultFormData.solution.statement,
+                imageUrl: defaultFormData.solution.imageUrl
+            }
+        } : {
             visibility: "",
             type: "",
-            subject: "",
+            subject: undefined,
             subtopic: "",
             statement: "",
             imageUrl: undefined,
@@ -68,10 +120,24 @@ export default function QuestionForm() {
         name: "options"
     });
 
-    const onSubmit = async (data: z.infer<typeof schema>) => {
-        console.log(data);
-        alert("register");
+    const handleOnSubmit = async (data: z.infer<typeof schema>) => {
+        setIsProcessing(true);
+        const { success, error } = await onSubmit(data);
+        if (success && data) {
+            toast({
+                title: successMessage
+            });
+            router.back();
+        } else if (error) {
+            toast({
+                title: error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
     }
+
+    useEffect(() => { }, [defaultFormData]);
 
     const onCancel = async () => {
         const isConfirm = window.confirm("All your data will be lost. Do you want to cancel ?");
@@ -82,7 +148,7 @@ export default function QuestionForm() {
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(handleOnSubmit)}>
                 <div className="grid gap-4">
                     <div className="grid sm:grid-cols-2 gap-4">
                         <div className="grid gap-2">
@@ -155,7 +221,17 @@ export default function QuestionForm() {
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Select a subject</SelectLabel>
-                                                    <SelectItem value="sub-1">Subject - 1</SelectItem>
+                                                    {
+                                                        subjects && (
+                                                            Array.from(subjects.values()).map((subject, index) => {
+                                                                return (
+                                                                    <SelectItem key={index} value={subject.id}>
+                                                                        {subject.name}
+                                                                    </SelectItem>
+                                                                )
+                                                            })
+                                                        )
+                                                    }
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
@@ -180,7 +256,17 @@ export default function QuestionForm() {
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Select a subtopic</SelectLabel>
-                                                    <SelectItem value="sub-1">Subtopic - 1</SelectItem>
+                                                    {
+                                                        subjects && form.getValues().subject && (
+                                                            subjects.get(form.getValues().subject)?.subtopics.map((subtopic, index) => {
+                                                                return (
+                                                                    <SelectItem key={index} value={subtopic.id}>
+                                                                        {subtopic.name}
+                                                                    </SelectItem>
+                                                                )
+                                                            })
+                                                        )
+                                                    }
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
@@ -229,13 +315,33 @@ export default function QuestionForm() {
                     <div className="grid gap-2">
                         <p className="text-sm font-medium">Select correct option(s)</p>
                         {
-                            fields.map((field, index) => {
-                                return (
-                                    <div onClick={() => { field.isCorrect = !field.isCorrect; router.refresh(); }} className={`py-2 px-4 rounded-md cursor-pointer border ${field.isCorrect && "bg-muted"}`}>
-                                        {form.getValues("options")[index].statement}
-                                    </div>
-                                )
-                            })
+                            form.getValues().type === "MCQ" && (
+                                fields.map((field, index) => {
+                                    return (
+                                        <div key={index} onClick={() => { const newOptions = form.getValues().options; newOptions.forEach((option, i) => { option.isCorrect = (index === i) }); form.setValue("options", newOptions); }} className={`py-2 px-4 rounded-md cursor-pointer border ${field.isCorrect && "bg-green-400"}`}>
+                                            {form.getValues("options")[index].statement}
+                                        </div>
+                                    )
+                                })
+                            )
+                        }
+                        {
+                            form.getValues().type === "MSQ" && (
+                                fields.map((field, index) => {
+                                    return (
+                                        <div key={index} onClick={() => { const newOptions = form.getValues().options; newOptions[index].isCorrect = !newOptions[index].isCorrect; form.setValue("options", newOptions); }} className={`py-2 px-4 rounded-md cursor-pointer border ${field.isCorrect && "bg-green-400"}`}>
+                                            {form.getValues("options")[index].statement}
+                                        </div>
+                                    )
+                                })
+                            )
+                        }
+                        {
+                            (form.getValues().type !== "MCQ" && form.getValues().type !== "MSQ") && (
+                                <div className={`py-2 px-4 rounded-md border bg-red-300`}>
+                                    Select question type first
+                                </div>
+                            )
                         }
                     </div>
                     <div className="grid gap-2">
@@ -254,12 +360,8 @@ export default function QuestionForm() {
                         />
                     </div>
                     <div className="flex justify-center gap-3">
-                        <Button type="submit">
-                            Save
-                        </Button>
-                        <Button type="button" variant="destructive" onClick={onCancel}>
-                            Cancel
-                        </Button>
+                        <SubmitButton displayName="Save" type="submit" isProcessing={isProcessing} onSubmit={() => { }} />
+                        <SubmitButton variant="destructive" displayName="Cancel" type="button" isProcessing={isProcessing} onSubmit={onCancel} />
                     </div>
                 </div>
             </form>

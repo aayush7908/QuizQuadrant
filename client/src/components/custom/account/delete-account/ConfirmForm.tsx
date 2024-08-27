@@ -7,8 +7,20 @@ import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { schema } from "@/lib/zod-schema/account/delete-account/confirm"
+import { useContext, useState } from "react"
+import { useRouter } from "next/navigation"
+import { deleteUserAPI } from "@/actions/user/delete"
+import { useToast } from "@/components/ui/use-toast"
+import { SubmitButton } from "../../SubmitButton"
+import { removeToken } from "@/lib/cookie-store"
+import { AuthContext } from "@/context/auth/AuthContext"
 
 export default function ConfirmForm() {
+
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { logout } = useContext(AuthContext);
+    const { toast } = useToast();
+    const router = useRouter();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -18,7 +30,22 @@ export default function ConfirmForm() {
     });
 
     const onSubmit = async () => {
-        alert("delete-account");
+        setIsProcessing(true);
+        const { success, error } = await deleteUserAPI();
+        if (success) {
+            toast({
+                title: "Account deleted successfully"
+            });
+            removeToken();
+            logout();
+            router.push("/");
+        } else if (error) {
+            toast({
+                title: error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
     }
 
     return (
@@ -40,9 +67,7 @@ export default function ConfirmForm() {
                             )}
                         />
                     </div>
-                    <Button type="submit" variant="destructive" className="w-full text-lg font-bold">
-                        Delete Account
-                    </Button>
+                    <SubmitButton variant="destructive" type="submit" displayName="Delete Account" isProcessing={isProcessing} onSubmit={() => { }} />
                 </div>
             </form>
         </Form>
