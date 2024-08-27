@@ -7,6 +7,7 @@ import { useToast } from "../ui/use-toast";
 import { getAllSubjectsAPI } from "@/actions/subject/get/all";
 import { SubjectContext } from "@/context/subject/SubjectContext";
 import { Loader } from "./Loader";
+import { RefreshContext } from "@/context/refresh/RefreshContext";
 
 export default function App({
     children,
@@ -15,8 +16,9 @@ export default function App({
 }>) {
 
     const [isAuthenticating, setIsAuthenticating] = useState<boolean>(true);
-    const { authenticate } = useContext(AuthContext);
+    const { user, authenticate } = useContext(AuthContext);
     const { addSubjects } = useContext(SubjectContext);
+    const { x } = useContext(RefreshContext);
     const { toast } = useToast();
 
     useEffect(() => {
@@ -24,9 +26,6 @@ export default function App({
             const { success, data, error } = await authenticateAPI();
             if (success && data) {
                 authenticate(data.user);
-                toast({
-                    title: "User authenticated successfully"
-                });
             } else if (error) {
                 toast({
                     title: error.errorMessage,
@@ -46,7 +45,7 @@ export default function App({
                 });
             }
         })();
-    }, []);
+    }, [x]);
 
     return (
         <>
@@ -55,7 +54,7 @@ export default function App({
                     <div className="h-full pt-[4rem] flex justify-center items-center text-xl">
                         <Loader />
                     </div>
-            ) : (
+                ) : (
                     <div className="h-full pt-[4rem]">
                         {children}
                     </div>

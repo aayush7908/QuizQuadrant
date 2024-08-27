@@ -37,9 +37,9 @@ export function SideMenuNav() {
                     user?.isEmailVerified ? (
                         <>
                             {
-                                user.role in ["STUDENT", "ADMIN"] && (
+                                (user.role === "STUDENT" || user.role === "ADMIN") && (
                                     <>
-                                        <li>
+                                        {/* <li>
                                             <Link
                                                 href="/account/ongoing-exams"
                                                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/ongoing-exams" && "bg-muted text-primary"}`}
@@ -68,12 +68,12 @@ export function SideMenuNav() {
                                                 <CircleCheckBig />
                                                 <span>Past Exams</span>
                                             </Link>
-                                        </li>
+                                        </li> */}
                                     </>
                                 )
                             }
                             {
-                                user.role in ["TEACHER", "ADMIN"] && (
+                                (user.role === "TEACHER" || user.role === "ADMIN") && (
                                     <>
                                         <li>
                                             <Link

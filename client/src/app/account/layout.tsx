@@ -13,7 +13,7 @@ export default function AccountLayout({
 }>) {
 
     const { user } = useContext(AuthContext);
-    const {toast} = useToast();
+    const { toast } = useToast();
     const router = useRouter();
 
     useEffect(() => {
@@ -24,14 +24,22 @@ export default function AccountLayout({
             });
             router.push("/");
         }
-    }, [user]);
+    }, []);
 
     return (
-        <div className="h-full w-full flex">
-            <SideMenu />
-            <div className="h-full w-full md:w-[calc(100%-17rem)] pb-[3rem] md:ms-[17rem] md:pb-0">
-                {children}
-            </div>
-        </div>
+        <>
+            {
+                user ? (
+                    <div className="h-full w-full flex">
+                        <SideMenu />
+                        <div className="h-full w-full md:w-[calc(100%-17rem)] pb-[3rem] md:ms-[17rem] md:pb-0">
+                            {children}
+                        </div>
+                    </div>
+                ) : (
+                    null
+                )
+            }
+        </>
     );
 }

@@ -11,11 +11,10 @@ import { schema } from "@/lib/zod-schema/subtopic/subtopic";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SubjectContext } from "@/context/subject/SubjectContext";
-import { useRouter } from "next/navigation";
-import { createSubtopicAPI } from "@/actions/subtopic/create";
 import { Subtopic } from "@/lib/type/model/Subtopic";
 import { error } from "@/lib/type/response/error/error";
 import { SubmitButton } from "../SubmitButton";
+import { RefreshContext } from "@/context/refresh/RefreshContext";
 
 export function SubtopicForm({
     successMessage,
@@ -32,8 +31,8 @@ export function SubtopicForm({
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const { subjects } = useContext(SubjectContext);
+    const { refresh } = useContext(RefreshContext);
     const { toast } = useToast();
-    const router = useRouter();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -53,7 +52,7 @@ export function SubtopicForm({
             toast({
                 title: successMessage
             });
-            router.refresh();
+            refresh();
         } else if (error) {
             toast({
                 title: error.errorMessage,

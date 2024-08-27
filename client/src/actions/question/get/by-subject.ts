@@ -5,7 +5,9 @@ import { serverEnv } from "@/lib/env/server";
 import { Question } from "@/lib/type/model/question";
 import { error } from "@/lib/type/response/error/error";
 
-const getQuestionByIdAPI = async (id: string) => {
+const pageSize: number = 5;
+
+const getQuestionsBySubjectAPI = async (id: string, pageNumber: number) => {
     try {
         // extract token from cookies
         const token: string | undefined = getToken();
@@ -16,7 +18,7 @@ const getQuestionByIdAPI = async (id: string) => {
         }
 
         // API call
-        const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/question/get/${id}`, {
+        const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/question/get/by-subject/${id}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             method: "GET",
             cache: "no-cache",
             headers: {
@@ -27,7 +29,7 @@ const getQuestionByIdAPI = async (id: string) => {
 
         // if successfull
         if (res.status === 200) {
-            const data: Question = await res.json();
+            const data: Array<Question> = await res.json();
             return {
                 success: true,
                 data: data
@@ -52,5 +54,5 @@ const getQuestionByIdAPI = async (id: string) => {
 }
 
 export {
-    getQuestionByIdAPI
+    getQuestionsBySubjectAPI
 }

@@ -23,6 +23,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -162,6 +163,13 @@ public class SubtopicServiceImpl implements SubtopicService {
             throw new NotFoundError("Subtopic not found");
         }
         return subtopicOptional.get();
+    }
+
+    @Override
+    public List<Subtopic> getSubtopicsBySubject(
+            Subject subject
+    ) throws Exception {
+        return subtopicRepository.findBySubject(subject);
     }
 
     private void checkSubtopicExists(

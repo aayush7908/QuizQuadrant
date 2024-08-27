@@ -9,6 +9,7 @@ import java.util.UUID;
 public record SubjectDto(
         UUID id,
         String name,
-        List<SubtopicDto> subtopics
+        List<SubtopicDto> subtopics,
+        Integer totalQuestions
 ) {
 }

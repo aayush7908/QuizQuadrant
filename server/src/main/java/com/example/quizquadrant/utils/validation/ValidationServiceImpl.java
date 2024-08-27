@@ -31,6 +31,14 @@ public class ValidationServiceImpl implements ValidationService {
     }
 
     @Override
+    public void validatePageSize(Integer pageSize) throws Exception {
+        boolean isPageSizeValid = isPageSizeValid(pageSize);
+        if (!isPageSizeValid) {
+            throw new BadRequestError("Invalid page size");
+        }
+    }
+
+    @Override
     public void validateUserRole(String role) throws Exception {
         boolean isRoleValid = isRoleValid(role);
         if (!isRoleValid) {
@@ -247,6 +255,13 @@ public class ValidationServiceImpl implements ValidationService {
         return passwordRegex
                 .matcher(password)
                 .matches();
+    }
+
+    private boolean isPageSizeValid(Integer pageSize) {
+        return (
+                pageSize >= 0 &&
+                        pageSize <= 20
+        );
     }
 
     private boolean isRoleValid(String role) {

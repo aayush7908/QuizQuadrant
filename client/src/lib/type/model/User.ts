@@ -6,7 +6,8 @@ type User = {
     profileImageUrl: string | undefined,
     accountCreatedOn: Date,
     role: string,
-    isEmailVerified: boolean
+    isEmailVerified: boolean,
+    totalQuestions: number
 };
 
 export type {

@@ -15,6 +15,7 @@ public record UserDto(
         String profileImageUrl,
         LocalDateTime accountCreatedOn,
         String role,
-        Boolean isEmailVerified
+        Boolean isEmailVerified,
+        Integer totalQuestions
 ) {
 }

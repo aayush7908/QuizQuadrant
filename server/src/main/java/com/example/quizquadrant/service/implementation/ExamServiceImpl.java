@@ -303,7 +303,7 @@ public class ExamServiceImpl implements ExamService {
             if (questionDto.id() == null) {
                 question = questionService.create(questionDto, false, user);
             } else {
-                question = questionService.getById(questionDto.id());
+                question = questionService.getQuestionById(questionDto.id());
                 questionService.authorizeUserQuestion(user, question);
             }
             examQuestionService.create(
@@ -323,7 +323,7 @@ public class ExamServiceImpl implements ExamService {
         int totalMarks = 0;
         for (QuestionDto questionDto : questionDtos) {
             totalMarks += questionDto.positiveMarks();
-            Question question = questionService.getById(questionDto.id());
+            Question question = questionService.getQuestionById(questionDto.id());
             examQuestionService.delete(
                     exam,
                     question

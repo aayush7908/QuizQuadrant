@@ -12,22 +12,31 @@ export default function SubjectLayout({
 }>) {
 
     const { user } = useContext(AuthContext);
-    const {toast} = useToast();
+    const { toast } = useToast();
     const router = useRouter();
 
     useEffect(() => {
-        if (!user) {
+        if (!user || user.role !== "ADMIN") {
             toast({
                 title: "Access Denied",
                 variant: "destructive"
             });
             router.push("/");
         }
-    }, [user]);
+    }, []);
+
 
     return (
         <>
-            {children}
+            {
+                user && user.role === "ADMIN" ? (
+                    <>
+                        {children}
+                    </>
+                ) : (
+                    null
+                )
+            }
         </>
     );
 }

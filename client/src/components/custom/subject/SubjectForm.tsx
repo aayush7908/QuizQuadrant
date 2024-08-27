@@ -4,15 +4,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { SubmitButton } from "../SubmitButton";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { schema } from "@/lib/zod-schema/subject/subject";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Subject } from "@/lib/type/model/Subject";
-import { useRouter } from "next/navigation";
 import { error } from "@/lib/type/response/error/error";
+import { RefreshContext } from "@/context/refresh/RefreshContext";
 
 export function SubjectForm({
     successMessage,
@@ -28,8 +28,8 @@ export function SubjectForm({
 }) {
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { refresh } = useContext(RefreshContext);
     const { toast } = useToast();
-    const router = useRouter();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -47,7 +47,7 @@ export function SubjectForm({
             toast({
                 title: successMessage
             });
-            router.refresh();
+            refresh();
         } else if (error) {
             toast({
                 title: error.errorMessage,

@@ -1,26 +1,30 @@
 "use client"
 
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import { Question } from "@/lib/type/model/question";
 import Link from "next/link";
 import { SubmitButton } from "../../SubmitButton";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { useRouter } from "next/navigation";
 import { deleteQuestionAPI } from "@/actions/question/delete";
 
 export function QuestionCard({ question, index }: { question: Question, index: number }) {
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const { toast } = useToast();
-    const router = useRouter();
 
     const handleDeleteQuestion = async () => {
         const isConfirm = window.confirm("All data related to this question will be deleted and cannot be retrieved back again. Are you sure to delete this Question ?");
         if (!isConfirm) {
+            return;
+        }
+        const str = window.prompt("Write delete below to confirm.");
+        if (str !== "delete") {
+            toast({
+                title: "Action aborted",
+                variant: "destructive"
+            });
             return;
         }
         setIsProcessing(true);
@@ -29,7 +33,6 @@ export function QuestionCard({ question, index }: { question: Question, index: n
             toast({
                 title: "Question deleted successfully"
             });
-            router.refresh();
         } else if (error) {
             toast({
                 title: error.errorMessage,

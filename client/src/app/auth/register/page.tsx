@@ -77,7 +77,7 @@ export default function Register() {
             <form onSubmit={form.handleSubmit(onSubmit)}>
                 <Card className="m-[1rem]">
                     <CardHeader>
-                        <CardTitle className="text-xl">Sign Up</CardTitle>
+                        <CardTitle className="text-xl">Register</CardTitle>
                     </CardHeader>
                     <CardContent>
                         <div className="grid gap-4 md:gap-0 md:grid-cols-2">

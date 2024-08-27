@@ -39,15 +39,36 @@ public class QuestionController {
     }
 
     @GetMapping("/get/my")
-    public ResponseEntity<List<QuestionDto>> getMyQuestions() throws Exception {
-        return questionService.getMyQuestions();
+    public ResponseEntity<List<QuestionDto>> getMyQuestions(
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws Exception {
+        return questionService.getMyQuestions(pageNumber, pageSize);
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/get/by-id/{id}")
     public ResponseEntity<QuestionDto> getById(
             @PathVariable String id
     ) throws Exception {
-        return questionService.getById(id);
+        return questionService.getQuestionById(id);
+    }
+
+    @GetMapping("/get/by-subject/{id}")
+    public ResponseEntity<List<QuestionDto>> getBySubject(
+            @PathVariable String id,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws Exception {
+        return questionService.getQuestionsBySubject(id, pageNumber, pageSize);
+    }
+
+    @GetMapping("/get/by-subtopic/{id}")
+    public ResponseEntity<List<QuestionDto>> getBySubtopic(
+            @PathVariable String id,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws Exception {
+        return questionService.getQuestionsBySubtopic(id, pageNumber, pageSize);
     }
 
 }

@@ -1,6 +1,6 @@
 "use client"
 
-import { getQuestionByIdAPI } from "@/actions/question/get/id";
+import { getQuestionByIdAPI } from "@/actions/question/get/by-id";
 import { updateQuestionAPI } from "@/actions/question/update";
 import { Loader } from "@/components/custom/Loader";
 import QuestionForm from "@/components/custom/question/QuestionForm";

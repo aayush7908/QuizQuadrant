@@ -30,7 +30,7 @@ export default function Navbar() {
                     <li className="hidden md:flex">
                         <ul className="flex gap-5 justify-end items-center">
                             {
-                                user && (
+                                user ? (
                                     <li>
                                         <DropdownMenu>
                                             <DropdownMenuTrigger asChild>
@@ -38,25 +38,24 @@ export default function Navbar() {
                                                     <CircleUser />
                                                 </Button>
                                             </DropdownMenuTrigger>
-                                            <DropdownMenuContent align="end">
+                                            <DropdownMenuContent align="end" className="font-medium text-lg">
                                                 <Link href={"/account/profile"}>
-                                                    <DropdownMenuItem className="cursor-pointer">
-                                                        Profile
+                                                    <DropdownMenuItem className="cursor-pointer flex gap-3 justify-between">
+                                                        <span>Profile</span>
+                                                        <CircleUser />
                                                     </DropdownMenuItem>
                                                 </Link>
                                                 <DropdownMenuSeparator />
                                                 <Link href={"/auth/logout"}>
-                                                    <DropdownMenuItem className="cursor-pointer">
-                                                        Logout
+                                                    <DropdownMenuItem className="cursor-pointer flex gap-3 justify-between">
+                                                        <span>Logout</span>
+                                                        <LogOut />
                                                     </DropdownMenuItem>
                                                 </Link>
                                             </DropdownMenuContent>
                                         </DropdownMenu>
                                     </li>
-                                )
-                            }
-                            {
-                                !user && (
+                                ) : (
                                     <li>
                                         <Link href={"/auth/login"}>
                                             <LogIn />
@@ -79,20 +78,43 @@ export default function Navbar() {
                             </SheetTrigger>
                             <SheetContent side="left">
                                 <nav className="grid gap-6 text-lg font-medium mt-[2rem]">
-                                    <Link
-                                        href="/u/abcd-abcd-abcd"
-                                        className="flex gap-3 items-center text-muted-foreground hover:text-foreground"
-                                    >
-                                        <CircleUser />
-                                        <span>Profile</span>
-                                    </Link>
-                                    <Link
-                                        href="/auth/logout"
-                                        className="flex gap-3 items-center text-muted-foreground hover:text-foreground"
-                                    >
-                                        <LogOut />
-                                        <span>Logout</span>
-                                    </Link>
+                                    {
+                                        user ? (
+                                            <>
+                                                <Link
+                                                    href={"/account/profile"}
+                                                    className="flex gap-3 items-center text-muted-foreground hover:text-foreground"
+                                                >
+                                                    <CircleUser />
+                                                    <span>Profile</span>
+                                                </Link>
+                                                <Link
+                                                    href={"/auth/logout"}
+                                                    className="flex gap-3 items-center text-muted-foreground hover:text-foreground"
+                                                >
+                                                    <LogOut />
+                                                    <span>Logout</span>
+                                                </Link>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Link
+                                                    href={"/auth/register"}
+                                                    className="flex gap-3 items-center text-muted-foreground hover:text-foreground"
+                                                >
+                                                    <LogIn />
+                                                    <span>Register</span>
+                                                </Link>
+                                                <Link
+                                                    href={"/auth/login"}
+                                                    className="flex gap-3 items-center text-muted-foreground hover:text-foreground"
+                                                >
+                                                    <LogIn />
+                                                    <span>Login</span>
+                                                </Link>
+                                            </>
+                                        )
+                                    }
                                 </nav>
                             </SheetContent>
                         </Sheet>

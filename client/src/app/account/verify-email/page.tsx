@@ -21,9 +21,9 @@ import { resendOtpAPI } from "@/actions/auth/resend-otp"
 export default function VerifyEmail() {
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { user, verifyEmail } = useContext(AuthContext);
     const { toast } = useToast();
     const router = useRouter();
-    const { user, verifyEmail } = useContext(AuthContext);
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -73,41 +73,59 @@ export default function VerifyEmail() {
         setIsProcessing(false);
     }
 
+    useEffect(() => {
+        if (!user || user.isEmailVerified) {
+            toast({
+                title: "Email already verified",
+                variant: "destructive"
+            });
+            router.push("/");
+        }
+    }, []);
+
     return (
-        <div className="h-full w-full flex justify-center items-center">
-            <Card className="max-w-sm m-[1rem]">
-                <CardHeader>
-                    <CardTitle className="text-2xl">Verify Email</CardTitle>
-                    <CardDescription>
-                        Enter OTP sent to your email address
-                    </CardDescription>
-                </CardHeader>
-                <CardContent>
-                    <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)}>
-                            <div className="grid gap-4">
-                                <div className="grid gap-2">
-                                    <FormField
-                                        control={form.control}
-                                        name="otp"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Otp</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} type="text" required autoFocus={true} />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
-                                <SubmitButton type="submit" displayName="Verify" isProcessing={isProcessing} onSubmit={() => { }} />
-                                <SubmitButton type="button" displayName="Resend OTP" isProcessing={isProcessing} onSubmit={handleResendOtp} />
-                            </div>
-                        </form>
-                    </Form>
-                </CardContent>
-            </Card>
-        </div>
+        <>
+            {
+                user && !user.isEmailVerified ? (
+                    <div className="h-full w-full flex justify-center items-center">
+                        <Card className="max-w-sm m-[1rem]">
+                            <CardHeader>
+                                <CardTitle className="text-2xl">Verify Email</CardTitle>
+                                <CardDescription>
+                                    Enter OTP sent to your email address
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <Form {...form}>
+                                    <form onSubmit={form.handleSubmit(onSubmit)}>
+                                        <div className="grid gap-4">
+                                            <div className="grid gap-2">
+                                                <FormField
+                                                    control={form.control}
+                                                    name="otp"
+                                                    render={({ field }) => (
+                                                        <FormItem>
+                                                            <FormLabel>Otp</FormLabel>
+                                                            <FormControl>
+                                                                <Input {...field} type="text" required autoFocus={true} />
+                                                            </FormControl>
+                                                            <FormMessage />
+                                                        </FormItem>
+                                                    )}
+                                                />
+                                            </div>
+                                            <SubmitButton type="submit" displayName="Verify" isProcessing={isProcessing} onSubmit={() => { }} />
+                                            <SubmitButton type="button" displayName="Resend OTP" isProcessing={isProcessing} onSubmit={handleResendOtp} />
+                                        </div>
+                                    </form>
+                                </Form>
+                            </CardContent>
+                        </Card>
+                    </div>
+                ) : (
+                    null
+                )
+            }
+        </>
     )
 }

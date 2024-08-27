@@ -1,10 +1,7 @@
 package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
-import com.example.quizquadrant.model.Option;
-import com.example.quizquadrant.model.Question;
-import com.example.quizquadrant.model.Subtopic;
-import com.example.quizquadrant.model.User;
+import com.example.quizquadrant.model.*;
 import com.example.quizquadrant.model.type.QuestionType;
 import com.example.quizquadrant.model.type.Role;
 import com.example.quizquadrant.repository.QuestionRepository;
@@ -13,6 +10,9 @@ import com.example.quizquadrant.utils.error.AccessDeniedError;
 import com.example.quizquadrant.utils.error.NotFoundError;
 import com.example.quizquadrant.utils.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -29,6 +29,7 @@ public class QuestionServiceImpl implements QuestionService {
 
     private final QuestionRepository questionRepository;
     private final ValidationService validationService;
+    private final SubjectService subjectService;
     private final SubtopicService subtopicService;
     private final SolutionService solutionService;
     private final OptionService optionService;
@@ -76,7 +77,7 @@ public class QuestionServiceImpl implements QuestionService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 //        fetch question by id
-        Question question = getById(UUID.fromString(id));
+        Question question = getQuestionById(UUID.fromString(id));
 
 //        authorize user
         userService.authorizeUser(user);
@@ -123,7 +124,7 @@ public class QuestionServiceImpl implements QuestionService {
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 //        fetch question by id
-        Question question = getById(UUID.fromString(id));
+        Question question = getQuestionById(UUID.fromString(id));
 
 //        authorize user
         userService.authorizeUser(user);
@@ -146,68 +147,38 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public ResponseEntity<List<QuestionDto>> getMyQuestions() throws Exception {
+    public ResponseEntity<List<QuestionDto>> getMyQuestions(
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
 //        find authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 //        fetch questions created by user
-        List<Question> questions = questionRepository.findByCreatedBy(user);
+        List<Question> questions = getQuestionsByUser(user, pageNumber, pageSize);
 
 //        create list of question dto
         List<QuestionDto> questionDtos = new ArrayList<>();
         for (Question question : questions) {
-//            create list of option dtos
-            List<OptionDto> optionDtos = new ArrayList<>();
-            for (Option option : question.getOptions()) {
-//                create option dto and add it to option dto list
-                optionDtos.add(
-                        OptionDto
-                                .builder()
-                                .id(option.getId())
-                                .statement(option.getStatement())
-                                .imageUrl(option.getImageUrl())
-                                .isCorrect(option.getIsCorrect())
-                                .build()
-                );
-            }
-
-//            create subtopic dto
-            SubtopicDto subtopicDto = SubtopicDto
-                    .builder()
-                    .id(question.getSubtopic().getId())
-                    .name(question.getSubtopic().getName())
-                    .subject(
-                            SubjectDto
-                                    .builder()
-                                    .id(question.getSubtopic().getSubject().getId())
-                                    .name(question.getSubtopic().getSubject().getName())
-                                    .build()
-                    )
-                    .build();
-
-//            create solution dto
-            SolutionDto solutionDto = SolutionDto
-                    .builder()
-                    .id(question.getSolution().getId())
-                    .statement(question.getSolution().getStatement())
-                    .imageUrl(question.getSolution().getImageUrl())
-                    .build();
-
 //            create question dto and add it to question dto list
             questionDtos.add(
-                    QuestionDto
-                            .builder()
-                            .id(question.getId())
-                            .type(question.getType().name())
-                            .isPublic(question.getIsPublic())
-                            .statement(question.getStatement())
-                            .imageUrl(question.getImageUrl())
-                            .lastModifiedOn(question.getLastModifiedOn())
-                            .subtopic(subtopicDto)
-                            .options(optionDtos)
-                            .solution(solutionDto)
-                            .build()
+                    createQuestionDtoFromQuestion(question)
             );
+        }
+
+//        if pageNumber is 0, calculate total number of questions created by user
+//        and put it into first question
+        if (pageNumber == 0) {
+            int totalQuestions = questionRepository.countByCreatedBy(user);
+            questionDtos.add(0, QuestionDto
+                    .builder()
+                    .createdBy(
+                            UserDto
+                                    .builder()
+                                    .totalQuestions(totalQuestions)
+                                    .build()
+                    )
+                    .build());
         }
 
 //        response
@@ -217,62 +188,14 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public ResponseEntity<QuestionDto> getById(
+    public ResponseEntity<QuestionDto> getQuestionById(
             String id
     ) throws Exception {
 //        fetch question by id
-        Question question = getById(UUID.fromString(id));
-
-//        create list of option dtos
-        List<OptionDto> optionDtos = new ArrayList<>();
-        for (Option option : question.getOptions()) {
-//            create option dto and add it to option dto list
-            optionDtos.add(
-                    OptionDto
-                            .builder()
-                            .id(option.getId())
-                            .statement(option.getStatement())
-                            .imageUrl(option.getImageUrl())
-                            .isCorrect(option.getIsCorrect())
-                            .build()
-            );
-        }
-
-//        create subtopic dto
-        SubtopicDto subtopicDto = SubtopicDto
-                .builder()
-                .id(question.getSubtopic().getId())
-                .name(question.getSubtopic().getName())
-                .subject(
-                        SubjectDto
-                                .builder()
-                                .id(question.getSubtopic().getSubject().getId())
-                                .name(question.getSubtopic().getSubject().getName())
-                                .build()
-                )
-                .build();
-
-//        create solution dto
-        SolutionDto solutionDto = SolutionDto
-                .builder()
-                .id(question.getSolution().getId())
-                .statement(question.getSolution().getStatement())
-                .imageUrl(question.getSolution().getImageUrl())
-                .build();
+        Question question = getQuestionById(UUID.fromString(id));
 
 //        create question dto
-        QuestionDto questionDto = QuestionDto
-                .builder()
-                .id(question.getId())
-                .type(question.getType().name())
-                .isPublic(question.getIsPublic())
-                .statement(question.getStatement())
-                .imageUrl(question.getImageUrl())
-                .lastModifiedOn(question.getLastModifiedOn())
-                .subtopic(subtopicDto)
-                .options(optionDtos)
-                .solution(solutionDto)
-                .build();
+        QuestionDto questionDto = createQuestionDtoFromQuestion(question);
 
 //        response
         return ResponseEntity
@@ -281,7 +204,105 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public Question getById(
+    public ResponseEntity<List<QuestionDto>> getQuestionsBySubject(
+            String id,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
+//        validate page size
+        validationService.validatePageSize(pageSize);
+
+//        fetch subject by id
+        Subject subject = subjectService.getSubjectById(UUID.fromString(id));
+
+//        fetch subtopics by subject
+        List<Subtopic> subtopics = subtopicService.getSubtopicsBySubject(subject);
+
+//        fetch questions by subtopics
+        List<Question> questions = getQuestionsBySubtopics(subtopics, pageNumber, pageSize);
+
+//        create list of question dto
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        for (Question question : questions) {
+//            create question dto and add it to question dto list
+            questionDtos.add(
+                    createQuestionDtoFromQuestion(question)
+            );
+        }
+
+//        if pageNumber is 0, calculate total number of questions within the subject
+//        and put it into first question
+        if (pageNumber == 0) {
+            int totalQuestions = questionRepository.countBySubtopics(subtopics);
+            questionDtos.add(0, QuestionDto
+                    .builder()
+                    .subtopic(
+                            SubtopicDto
+                                    .builder()
+                                    .subject(
+                                            SubjectDto
+                                                    .builder()
+                                                    .totalQuestions(totalQuestions)
+                                                    .build()
+                                    )
+                                    .build()
+                    )
+                    .build());
+        }
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(questionDtos);
+    }
+
+    @Override
+    public ResponseEntity<List<QuestionDto>> getQuestionsBySubtopic(
+            String id,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
+//        validate page size
+        validationService.validatePageSize(pageSize);
+
+//        fetch subtopic by id
+        Subtopic subtopic = subtopicService.getSubtopicById(UUID.fromString(id));
+
+//        fetch questions by subtopic
+        List<Question> questions = getQuestionsBySubtopic(subtopic, pageNumber, pageSize);
+
+//        create list of question dto
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        for (Question question : questions) {
+//            create question dto and add it to question dto list
+            questionDtos.add(
+                    createQuestionDtoFromQuestion(question)
+            );
+        }
+
+//        if pageNumber is 0, calculate total number of questions within the subtopic
+//        and put it into first question
+        if (pageNumber == 0) {
+            int totalQuestions = questionRepository.countBySubtopic(subtopic);
+            questionDtos.add(0, QuestionDto
+                    .builder()
+                    .subtopic(
+                            SubtopicDto
+                                    .builder()
+                                    .totalQuestions(totalQuestions)
+                                    .build()
+                    )
+                    .build());
+        }
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(questionDtos);
+    }
+
+    @Override
+    public Question getQuestionById(
             UUID id
     ) throws Exception {
         Optional<Question> questionOptional = questionRepository.findById(id);
@@ -342,4 +363,91 @@ public class QuestionServiceImpl implements QuestionService {
         }
     }
 
+
+//    private methods to reduce duplicate code
+
+    private List<Question> getQuestionsByUser(
+            User user,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Question> questionPage = questionRepository.findByCreatedBy(user, pageable);
+        return questionPage.getContent();
+    }
+
+    private List<Question> getQuestionsBySubtopics(
+            List<Subtopic> subtopics,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Question> questionPage = questionRepository.findBySubtopics(subtopics, pageable);
+        return questionPage.getContent();
+    }
+
+    private List<Question> getQuestionsBySubtopic(
+            Subtopic subtopic,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Question> questionPage = questionRepository.findBySubtopics(List.of(subtopic), pageable);
+        return questionPage.getContent();
+    }
+
+    private QuestionDto createQuestionDtoFromQuestion(
+            Question question
+    ) {
+        //        create list of option dtos
+        List<OptionDto> optionDtos = new ArrayList<>();
+        for (Option option : question.getOptions()) {
+//            create option dto and add it to option dto list
+            optionDtos.add(
+                    OptionDto
+                            .builder()
+                            .id(option.getId())
+                            .statement(option.getStatement())
+                            .imageUrl(option.getImageUrl())
+                            .isCorrect(option.getIsCorrect())
+                            .build()
+            );
+        }
+
+//        create subtopic dto
+        SubtopicDto subtopicDto = SubtopicDto
+                .builder()
+                .id(question.getSubtopic().getId())
+                .name(question.getSubtopic().getName())
+                .subject(
+                        SubjectDto
+                                .builder()
+                                .id(question.getSubtopic().getSubject().getId())
+                                .name(question.getSubtopic().getSubject().getName())
+                                .build()
+                )
+                .build();
+
+//        create solution dto
+        SolutionDto solutionDto = SolutionDto
+                .builder()
+                .id(question.getSolution().getId())
+                .statement(question.getSolution().getStatement())
+                .imageUrl(question.getSolution().getImageUrl())
+                .build();
+
+//        create question dto and return
+        return QuestionDto
+                .builder()
+                .id(question.getId())
+                .type(question.getType().name())
+                .isPublic(question.getIsPublic())
+                .statement(question.getStatement())
+                .imageUrl(question.getImageUrl())
+                .lastModifiedOn(question.getLastModifiedOn())
+                .subtopic(subtopicDto)
+                .options(optionDtos)
+                .solution(solutionDto)
+                .build();
+    }
 }

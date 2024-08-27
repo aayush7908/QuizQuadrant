@@ -28,14 +28,29 @@ public interface QuestionService {
             String id
     ) throws Exception;
 
-    ResponseEntity<List<QuestionDto>> getMyQuestions() throws Exception;
+    ResponseEntity<List<QuestionDto>> getMyQuestions(
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception;
 
-    ResponseEntity<QuestionDto> getById(
+    ResponseEntity<QuestionDto> getQuestionById(
             String id
     ) throws Exception;
 
+    ResponseEntity<List<QuestionDto>> getQuestionsBySubject(
+            String id,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception;
+
+    ResponseEntity<List<QuestionDto>> getQuestionsBySubtopic(
+            String id,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception;
+
     //    helper methods
-    Question getById(
+    Question getQuestionById(
             UUID id
     ) throws Exception;
 

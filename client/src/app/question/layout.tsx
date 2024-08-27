@@ -13,22 +13,30 @@ export default function QuestionLayout({
 }>) {
 
     const { user } = useContext(AuthContext);
-    const {toast} = useToast();
+    const { toast } = useToast();
     const router = useRouter();
 
     useEffect(() => {
-        if (!user) {
+        if (!user || (!user.isEmailVerified && user.role !== "TEACHER" && user.role !== "ADMIN")) {
             toast({
                 title: "Access Denied",
                 variant: "destructive"
             });
             router.push("/");
         }
-    }, [user]);
+    }, []);
 
     return (
         <>
-            {children}
+            {
+                user && user.isEmailVerified && (user.role === "TEACHER" || user.role === "ADMIN") ? (
+                    <>
+                        {children}
+                    </>
+                ) : (
+                    null
+                )
+            }
         </>
     );
 }

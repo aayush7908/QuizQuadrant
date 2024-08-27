@@ -7,7 +7,7 @@ import { error } from "@/lib/type/response/error/error";
 
 const pageSize: number = 5;
 
-const getMyQuestionsAPI = async (pageNumber: number) => {
+const getQuestionsBySubtopicAPI = async (id: string, pageNumber: number) => {
     try {
         // extract token from cookies
         const token: string | undefined = getToken();
@@ -18,7 +18,7 @@ const getMyQuestionsAPI = async (pageNumber: number) => {
         }
 
         // API call
-        const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/question/get/my?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+        const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/question/get/by-subtopic/${id}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             method: "GET",
             cache: "no-cache",
             headers: {
@@ -54,5 +54,5 @@ const getMyQuestionsAPI = async (pageNumber: number) => {
 }
 
 export {
-    getMyQuestionsAPI
+    getQuestionsBySubtopicAPI
 }

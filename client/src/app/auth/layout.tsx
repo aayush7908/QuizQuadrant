@@ -18,7 +18,7 @@ export default function AuthLayout({
 		if (path !== "/auth/logout" && user) {
 			router.push("/");
 		}
-	}, [user]);
+	}, []);
 
 	return (
 		<div className="min-h-full w-full flex justify-center items-center">

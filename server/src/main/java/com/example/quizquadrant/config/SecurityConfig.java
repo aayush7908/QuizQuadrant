@@ -34,7 +34,10 @@ public class SecurityConfig {
                                 "/api/auth/verify-email",
                                 "/api/user/reset-password",
                                 "/api/subject/get/**",
-                                "/api/subtopic/get/**"
+                                "/api/subtopic/get/**",
+                                "/api/question/get/by-id/**",
+                                "/api/question/get/by-subject/**",
+                                "/api/question/get/by-subtopic/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/subject/create",

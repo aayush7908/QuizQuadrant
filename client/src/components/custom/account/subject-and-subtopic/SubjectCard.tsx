@@ -2,17 +2,17 @@ import { deleteSubjectAPI } from "@/actions/subject/delete";
 import { deleteSubtopicAPI } from "@/actions/subtopic/delete";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
+import { RefreshContext } from "@/context/refresh/RefreshContext";
 import { Subject } from "@/lib/type/model/Subject";
 import { PenLineIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useContext, useState } from "react";
 
 export function SubjectCard({ subject }: { subject: Subject }) {
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const { refresh } = useContext(RefreshContext);
     const { toast } = useToast();
-    const router = useRouter();
 
     const handleDeleteSubject = async (id: string) => {
         setIsProcessing(true);
@@ -33,7 +33,7 @@ export function SubjectCard({ subject }: { subject: Subject }) {
             toast({
                 title: "Subject deleted successfully"
             });
-            router.refresh();
+            refresh();
         } else if (error) {
             toast({
                 title: error.errorMessage,
@@ -62,7 +62,7 @@ export function SubjectCard({ subject }: { subject: Subject }) {
             toast({
                 title: "Subtopic deleted successfully"
             });
-            router.refresh();
+            refresh();
         } else if (error) {
             toast({
                 title: error.errorMessage,

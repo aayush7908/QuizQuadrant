@@ -6,6 +6,7 @@ import AuthState from "@/context/auth/AuthState";
 import { Toaster } from "@/components/ui/toaster";
 import SubjectState from "@/context/subject/SubjectState";
 import App from "@/components/custom/App";
+import RefreshState from "@/context/refresh/RefreshState";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,9 +24,11 @@ export default async function RootLayout({
 			<body className={`${inter.className} h-screen`}>
 				<AuthState>
 					<SubjectState>
-						<Navbar />
-						<App children={children} />
-						<Toaster />
+						<RefreshState>
+							<Navbar />
+							<App children={children} />
+							<Toaster />
+						</RefreshState>
 					</SubjectState>
 				</AuthState>
 			</body>

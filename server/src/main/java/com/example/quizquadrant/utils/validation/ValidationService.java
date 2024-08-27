@@ -9,6 +9,8 @@ public interface ValidationService {
 
     void validatePassword(String password) throws Exception;
 
+    void validatePageSize(Integer pageSize) throws Exception;
+
     void validateUserRole(String role) throws Exception;
 
     void validateQuestionType(String type) throws Exception;
@@ -48,6 +50,8 @@ public interface ValidationService {
     void validateExamQuestionInput(QuestionDto questionDto) throws Exception;
 
     void validateUpdateExamDetailsInput(ExamDto examDto) throws Exception;
+
     void validateUpdateExamCandidatesInput(ExamDto examDto) throws Exception;
+
     void validateUpdateExamQuestionsInput(ExamDto examDto) throws Exception;
 }
