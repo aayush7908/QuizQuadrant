@@ -3,7 +3,7 @@
 import { createQuestionAPI } from "@/actions/question/create";
 import QuestionForm from "@/components/custom/question/QuestionForm";
 import { Option } from "@/lib/type/model/Option";
-import { Question } from "@/lib/type/model/question";
+import { Question } from "@/lib/type/model/Question";
 import { Solution } from "@/lib/type/model/Solution";
 import { Subtopic } from "@/lib/type/model/Subtopic";
 import { schema } from "@/lib/zod-schema/question/question";

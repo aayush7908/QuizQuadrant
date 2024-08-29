@@ -6,7 +6,7 @@ import { Loader } from "@/components/custom/Loader";
 import QuestionForm from "@/components/custom/question/QuestionForm";
 import { useToast } from "@/components/ui/use-toast";
 import { Option } from "@/lib/type/model/Option";
-import { Question } from "@/lib/type/model/question";
+import { Question } from "@/lib/type/model/Question";
 import { Solution } from "@/lib/type/model/Solution";
 import { Subtopic } from "@/lib/type/model/Subtopic";
 import { schema } from "@/lib/zod-schema/question/question";
@@ -30,32 +30,36 @@ export default function EditQuestion({ params }: { params: { id: string } }) {
             } as Subtopic,
             options: [
                 {
+                    id: question?.options[0].id,
                     statement: formData.options[0].statement,
                     imageUrl: formData.options[0].imageUrl,
                     isCorrect: formData.options[0].isCorrect
                 } as Option,
                 {
+                    id: question?.options[1].id,
                     statement: formData.options[1].statement,
                     imageUrl: formData.options[1].imageUrl,
                     isCorrect: formData.options[1].isCorrect
                 } as Option,
                 {
+                    id: question?.options[2].id,
                     statement: formData.options[2].statement,
                     imageUrl: formData.options[2].imageUrl,
                     isCorrect: formData.options[2].isCorrect
                 } as Option,
                 {
+                    id: question?.options[3].id,
                     statement: formData.options[3].statement,
                     imageUrl: formData.options[3].imageUrl,
                     isCorrect: formData.options[3].isCorrect
                 } as Option
             ],
             solution: {
+                id: question?.solution.id,
                 statement: formData.solution.statement,
                 imageUrl: formData.solution.imageUrl
             } as Solution
         } as Question;
-        console.log(reqBody);
         const res = await updateQuestionAPI(reqBody, params.id);
         return res;
     }

@@ -16,6 +16,7 @@ public record UserDto(
         LocalDateTime accountCreatedOn,
         String role,
         Boolean isEmailVerified,
-        Integer totalQuestions
+        Integer totalQuestions,
+        Integer totalDraftExams
 ) {
 }

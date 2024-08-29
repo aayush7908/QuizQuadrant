@@ -1,17 +1,14 @@
 "use client"
 
 import { getQuestionsBySubtopicAPI } from "@/actions/question/get/by-subtopic";
+import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
 import { Loader } from "@/components/custom/Loader";
 import { QuestionCard } from "@/components/custom/practice/QuestionCard";
-import { QuestionInfiniteScroll } from "@/components/custom/QuestionInfiniteScroll";
 import { useToast } from "@/components/ui/use-toast";
-import { SubjectContext } from "@/context/subject/SubjectContext";
-import { Question } from "@/lib/type/model/question";
-import { Subject } from "@/lib/type/model/Subject";
-import { Subtopic } from "@/lib/type/model/Subtopic";
-import { useContext, useEffect, useState } from "react";
+import { Question } from "@/lib/type/model/Question";
+import { useEffect, useState } from "react";
 
-export default function PracticeSubtopic({ params, searchParams }: { params: { id: string }, searchParams: { subject: string } }) {
+export default function PracticeSubtopic({ params }: { params: { id: string } }) {
 
     const [totalLength, setTotalLength] = useState<number>(0);
     const [initialData, setInitialData] = useState<Array<Question>>([]);
@@ -53,11 +50,11 @@ export default function PracticeSubtopic({ params, searchParams }: { params: { i
                 isProcessing ? (
                     <Loader />
                 ) : (
-                    <QuestionInfiniteScroll
+                    <InfiniteScroll
                         fetchFunction={fetchFunction}
                         totalLength={totalLength}
                         initialData={initialData}
-                        QuestionCard={QuestionCard}
+                        Component={QuestionCard}
                     />
                 )
             }

@@ -7,21 +7,12 @@ import { error } from "@/lib/type/response/error/error";
 
 const getSubtopicByIdAPI = async (id: string) => {
     try {
-        // extract token from cookies
-        const token: string | undefined = getToken();
-        if (!token) {
-            return {
-                success: true
-            };
-        }
-
         // API call
         const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/subtopic/get/${id}`, {
             method: "GET",
             cache: "no-cache",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "Content-Type": "application/json"
             }
         });
 

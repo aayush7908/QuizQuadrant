@@ -2,11 +2,11 @@
 
 import { getMyQuestionsAPI } from "@/actions/question/get/my";
 import { QuestionCard } from "@/components/custom/account/questions-created/QuestionCard";
+import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
 import { Loader } from "@/components/custom/Loader";
-import { QuestionInfiniteScroll } from "@/components/custom/QuestionInfiniteScroll";
 import { useToast } from "@/components/ui/use-toast";
 import { AuthContext } from "@/context/auth/AuthContext";
-import { Question } from "@/lib/type/model/question";
+import { Question } from "@/lib/type/model/Question";
 import { PlusSquare } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -72,11 +72,11 @@ export default function QuestionsCreated() {
                             isProcessing ? (
                                 <Loader />
                             ) : (
-                                <QuestionInfiniteScroll
+                                <InfiniteScroll
                                     fetchFunction={fetchFunction}
                                     totalLength={totalLength}
                                     initialData={initialData}
-                                    QuestionCard={QuestionCard}
+                                    Component={QuestionCard}
                                 />
                             )
                         }

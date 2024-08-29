@@ -138,7 +138,7 @@ export default function Profile() {
                                         </CardHeader>
                                         <CardContent>
                                             <div className="w-full pt-[1rem] grid lg:grid-cols-2">
-                                                <span>{`${user.accountCreatedOn.getDate()}-${user.accountCreatedOn.getMonth()}-${user.accountCreatedOn.getFullYear()} @ ${user.accountCreatedOn.getHours()}:${user.accountCreatedOn.getMinutes()}`}</span>
+                                                <span>{user.accountCreatedOn.toLocaleString()}</span>
                                             </div>
                                         </CardContent>
                                     </Card>

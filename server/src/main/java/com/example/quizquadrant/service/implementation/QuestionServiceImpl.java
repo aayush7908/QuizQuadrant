@@ -85,9 +85,6 @@ public class QuestionServiceImpl implements QuestionService {
 //        authorize user permissions on question
         authorizeUserQuestion(user, question);
 
-//        validate question type
-        validationService.validateQuestionType(questionDto.type());
-
 //        update question in database
         question.setType(QuestionType.valueOf(questionDto.type()));
         question.setIsPublic(questionDto.isPublic());
@@ -151,6 +148,9 @@ public class QuestionServiceImpl implements QuestionService {
             Integer pageNumber,
             Integer pageSize
     ) throws Exception {
+//        validate pageSize
+        validationService.validatePageSize(pageSize);
+
 //        find authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 

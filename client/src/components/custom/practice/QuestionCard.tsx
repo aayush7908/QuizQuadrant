@@ -3,10 +3,10 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Question } from "@/lib/type/model/question";
+import { Question } from "@/lib/type/model/Question";
 import { useEffect, useState } from "react";
 
-export function QuestionCard({ question, index }: { question: Question, index: number }) {
+export function QuestionCard({ data, index }: { data: Question, index: number }) {
 
     const [choice, setChoice] = useState<Map<string, boolean>>(new Map());
     const [isSolutionVisible, setIsSolutionVisible] = useState<boolean>(false);
@@ -14,7 +14,7 @@ export function QuestionCard({ question, index }: { question: Question, index: n
 
     const handleCheckAnswer = () => {
         let flag: boolean = true;
-        question.options.forEach((option) => {
+        data.options.forEach((option) => {
             flag = flag && (choice.get(option.id) === option.isCorrect);
         });
         setIsAnswerCorrect(flag);
@@ -26,10 +26,10 @@ export function QuestionCard({ question, index }: { question: Question, index: n
             return;
         }
         const newChoice = new Map(choice);
-        if (question.type === "MSQ") {
+        if (data.type === "MSQ") {
             newChoice.set(id, !choice.get(id));
         } else {
-            question.options.forEach((option) => {
+            data.options.forEach((option) => {
                 newChoice.set(option.id, option.id === id);
             });
         }
@@ -38,7 +38,7 @@ export function QuestionCard({ question, index }: { question: Question, index: n
 
     useEffect(() => {
         const newChoice = new Map<string, boolean>();
-        question.options.forEach((option) => {
+        data.options.forEach((option) => {
             newChoice.set(option.id, false);
         });
         setChoice(newChoice);
@@ -49,19 +49,19 @@ export function QuestionCard({ question, index }: { question: Question, index: n
             <CardHeader className="border-b p-[1rem] bg-muted">
                 <CardTitle className="flex justify-between items-center">
                     <span className="text-lg">Question - {index + 1}</span>
-                    <Badge className="text-sm">{question.type}</Badge>
+                    <Badge className="text-sm">{data.type}</Badge>
                 </CardTitle>
             </CardHeader>
             <CardContent>
                 <div className="mt-[1rem] grid gap-3">
                     <div className="flex flex-wrap gap-3">
-                        <Badge variant="secondary" className="text-base border-gray-400">{question.subtopic.subject.name}</Badge>
-                        <Badge variant="secondary" className="text-base border-gray-400">{question.subtopic.name}</Badge>
+                        <Badge variant="secondary" className="text-base border-gray-400">{data.subtopic.subject.name}</Badge>
+                        <Badge variant="secondary" className="text-base border-gray-400">{data.subtopic.name}</Badge>
                     </div>
-                    <span>{question.statement}</span>
+                    <span>{data.statement}</span>
                     <div className="w-full grid gap-2">
                         {
-                            question.options.map((option, index) => {
+                            data.options.map((option, index) => {
                                 return (
                                     <div
                                         key={index}
@@ -80,12 +80,12 @@ export function QuestionCard({ question, index }: { question: Question, index: n
                                 isAnswerCorrect ? "CORRECT ANSWER" : "WRONG ANSWER"
                             }
                         </h3>
-                        <span>{question.solution.statement}</span>
+                        <span>{data.solution.statement}</span>
                         <div className={`gap-3 ${isAnswerCorrect ? "hidden" : "grid"}`}>
                             <span className="font-semibold">Correct Option(s):</span>
                             <div className="w-full grid gap-2">
                                 {
-                                    question.options.map((option, index) => {
+                                    data.options.map((option, index) => {
                                         return (
                                             <div key={index} className={`py-2 px-4 rounded-md border border-gray-500 ${option.isCorrect && "bg-green-400 border-green-700"}`}>
                                                 {option.statement}

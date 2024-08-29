@@ -2,28 +2,19 @@
 
 import { getToken } from "@/lib/cookie-store";
 import { serverEnv } from "@/lib/env/server";
-import { Question } from "@/lib/type/model/question";
+import { Question } from "@/lib/type/model/Question";
 import { error } from "@/lib/type/response/error/error";
 
 const pageSize: number = 5;
 
 const getQuestionsBySubjectAPI = async (id: string, pageNumber: number) => {
     try {
-        // extract token from cookies
-        const token: string | undefined = getToken();
-        if (!token) {
-            return {
-                success: true
-            };
-        }
-
         // API call
         const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/question/get/by-subject/${id}?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             method: "GET",
             cache: "no-cache",
             headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
+                "Content-Type": "application/json"
             }
         });
 

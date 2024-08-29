@@ -75,15 +75,15 @@ public class User implements UserDetails {
     private LocalDateTime accountCreatedOn;
 
     @Column(
-            name = "is_email_verified",
-            nullable = false,
-            columnDefinition = "BOOLEAN"
+            name = "email_verified_on",
+            columnDefinition = "DATETIME"
     )
-    private Boolean isEmailVerified;
+    private LocalDateTime emailVerifiedOn;
 
     @Enumerated(EnumType.STRING)
     @Column(
             name = "role",
+            nullable = false,
             columnDefinition = "VARCHAR(10)"
     )
     private Role role;

@@ -55,7 +55,11 @@ public class SecurityConfig {
                                 "/api/question/get/my",
                                 "/api/exam/create",
                                 "/api/exam/update",
-                                "/api/exam/delete/**"
+                                "/api/exam/delete/**",
+                                "/api/draft/exam/create",
+                                "/api/draft/exam/update",
+                                "/api/draft/exam/delete/**",
+                                "/api/draft/exam/get/**"
                         ).hasAnyAuthority(Role.TEACHER.name(), Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )

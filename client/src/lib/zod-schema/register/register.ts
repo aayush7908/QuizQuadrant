@@ -10,7 +10,7 @@ const schema = z.object({
     confirmPassword: z.string().regex(passwordRegex, { message: "Enter a valid password" })
 }).refine(obj => {
     return obj.password === obj.confirmPassword
-}, { message: "Passwords donot match" });
+}, { message: "Passwords donot match", path: ["confirmPassword"] });
 
 export {
     schema

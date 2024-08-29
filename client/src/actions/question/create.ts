@@ -2,8 +2,9 @@
 
 import { getToken } from "@/lib/cookie-store";
 import { serverEnv } from "@/lib/env/server";
-import { Question } from "@/lib/type/model/question";
+import { Question } from "@/lib/type/model/Question";
 import { error } from "@/lib/type/response/error/error";
+import { Id } from "@/lib/type/response/id/id";
 
 const createQuestionAPI = async (body: Question) => {
     try {
@@ -28,8 +29,10 @@ const createQuestionAPI = async (body: Question) => {
 
         // if successfull
         if (res.status === 200) {
+            const data: Id = await res.json();
             return {
-                success: true
+                success: true,
+                data: data
             };
         }
 

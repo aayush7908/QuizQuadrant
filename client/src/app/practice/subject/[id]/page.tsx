@@ -1,13 +1,12 @@
 "use client"
 
 import { getQuestionsBySubjectAPI } from "@/actions/question/get/by-subject";
+import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
 import { Loader } from "@/components/custom/Loader";
 import { QuestionCard } from "@/components/custom/practice/QuestionCard";
-import { QuestionInfiniteScroll } from "@/components/custom/QuestionInfiniteScroll";
 import { useToast } from "@/components/ui/use-toast";
-import { SubjectContext } from "@/context/subject/SubjectContext";
-import { Question } from "@/lib/type/model/question";
-import { useContext, useEffect, useState } from "react";
+import { Question } from "@/lib/type/model/Question";
+import { useEffect, useState } from "react";
 
 export default function PracticeSubject({ params }: { params: { id: string } }) {
 
@@ -50,11 +49,11 @@ export default function PracticeSubject({ params }: { params: { id: string } }) 
                 isProcessing ? (
                     <Loader />
                 ) : (
-                    <QuestionInfiniteScroll
+                    <InfiniteScroll
                         fetchFunction={fetchFunction}
                         totalLength={totalLength}
                         initialData={initialData}
-                        QuestionCard={QuestionCard}
+                        Component={QuestionCard}
                     />
                 )
             }

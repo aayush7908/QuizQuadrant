@@ -26,7 +26,7 @@ public class OtpServiceImpl implements OtpService {
     private final int OTP_LIFE = 10 * 60 * 1000;  // 10 minutes
 
     @Override
-    public void sendOtpMail(String email) {
+    public void sendOtp(String email) {
 //        generate otp
         Otp newOtp = Otp
                 .builder()
@@ -48,18 +48,7 @@ public class OtpServiceImpl implements OtpService {
         }
 
 //        send email containing otp
-        emailService.sendSimpleMail(
-                EmailDetails
-                        .builder()
-                        .recipient(email)
-                        .subject("Welcome to QuizQuadrant")
-                        .msgBody(
-                                "Your OTP for email verification is: " +
-                                        newOtp.getOtp() +
-                                        "\nNote: This OTP is valid only for 10 minutes"
-                        )
-                        .build()
-        );
+        emailService.sendOtpMail(newOtp.getOtp());
     }
 
     @Override

@@ -57,13 +57,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .firstName(registerRequestDto.firstName())
                         .lastName(registerRequestDto.lastName())
                         .accountCreatedOn(LocalDateTime.now())
-                        .isEmailVerified(false)
                         .role(Role.valueOf(registerRequestDto.role()))
                         .build()
         );
 
 //        send otp for email verification
-        otpService.sendOtpMail(registerRequestDto.email());
+        otpService.sendOtp(registerRequestDto.email());
 
 //        generate jwt token
         String token = jwtService.generateToken(user);
@@ -80,7 +79,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                                 .builder()
                                                 .id(user.getId())
                                                 .email(user.getEmail())
-                                                .isEmailVerified(user.getIsEmailVerified())
+                                                .isEmailVerified(user.getEmailVerifiedOn() != null)
                                                 .role(user.getRole().name())
                                                 .build()
                                 )
@@ -125,7 +124,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                                 .builder()
                                                 .id(user.getId())
                                                 .email(user.getEmail())
-                                                .isEmailVerified(user.getIsEmailVerified())
+                                                .isEmailVerified(user.getEmailVerifiedOn() != null)
                                                 .role(user.getRole().name())
                                                 .build()
                                 )
@@ -141,7 +140,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         validationService.validateEmail(loginRequestDto.email());
 
 //        send email containing otp
-        otpService.sendOtpMail(loginRequestDto.email());
+        otpService.sendOtp(loginRequestDto.email());
 
 //        response
         return ResponseEntity
@@ -201,7 +200,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                                                 .builder()
                                                 .id(user.getId())
                                                 .email(user.getEmail())
-                                                .isEmailVerified(user.getIsEmailVerified())
+                                                .isEmailVerified(user.getEmailVerifiedOn() != null)
                                                 .role(user.getRole().name())
                                                 .build()
                                 )

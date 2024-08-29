@@ -1,17 +1,5 @@
 "use client"
 
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import {
-    Card,
-    CardContent,
-    CardDescription,
-    CardHeader,
-    CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -25,7 +13,7 @@ import { error } from "@/lib/type/response/error/error"
 import { useToast } from "@/components/ui/use-toast"
 import { SubmitButton } from "../SubmitButton"
 import { SubjectContext } from "@/context/subject/SubjectContext"
-import { Question } from "@/lib/type/model/question"
+import { Question } from "@/lib/type/model/Question"
 
 export default function QuestionForm({
     successMessage,
@@ -212,7 +200,7 @@ export default function QuestionForm({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Subject</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select onValueChange={field.onChange} defaultValue={field.value} onOpenChange={router.refresh}>
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a subject" />

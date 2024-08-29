@@ -1,6 +1,5 @@
 "use client"
 
-import { SideMenu } from "@/components/custom/account/SideMenu";
 import { useToast } from "@/components/ui/use-toast";
 import { AuthContext } from "@/context/auth/AuthContext";
 import { useRouter } from "next/navigation";

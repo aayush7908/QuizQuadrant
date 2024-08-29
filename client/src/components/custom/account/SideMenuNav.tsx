@@ -7,6 +7,7 @@ import {
     CircleCheckBig,
     CircleUser,
     FileCheck,
+    FileText,
     Folder,
     MailQuestion,
     Radio,
@@ -82,6 +83,15 @@ export function SideMenuNav() {
                                             >
                                                 <FileCheck />
                                                 <span>Questions Created</span>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link
+                                                href="/account/draft-exams"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/draft-exams" && "bg-muted text-primary"}`}
+                                            >
+                                                <FileText />
+                                                <span>Draft Exams</span>
                                             </Link>
                                         </li>
                                     </>

@@ -15,6 +15,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Service
@@ -41,7 +42,7 @@ public class UserServiceImpl implements UserService {
         otpService.validateOtp(verifyEmailRequestDto.email(), verifyEmailRequestDto.otp());
 
 //        update user data
-        user.setIsEmailVerified(true);
+        user.setEmailVerifiedOn(LocalDateTime.now());
         userRepository.save(user);
 
 //        response
@@ -149,7 +150,7 @@ public class UserServiceImpl implements UserService {
                                 .profileImageUrl(user.getProfileImageUrl())
                                 .accountCreatedOn(user.getAccountCreatedOn())
                                 .role(user.getRole().name())
-                                .isEmailVerified(user.getIsEmailVerified())
+                                .isEmailVerified(user.getEmailVerifiedOn() != null)
                                 .build()
                 );
     }
@@ -167,7 +168,7 @@ public class UserServiceImpl implements UserService {
     public void authorizeUser(
             User user
     ) throws Exception {
-        if (!user.getIsEmailVerified()) {
+        if (user.getEmailVerifiedOn() == null) {
             throw new AccessDeniedError("Email not verified");
         }
     }

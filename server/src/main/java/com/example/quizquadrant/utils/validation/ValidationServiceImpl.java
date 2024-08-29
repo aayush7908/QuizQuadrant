@@ -134,10 +134,11 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public void validateCreateQuestionInput(QuestionDto questionDto) throws Exception {
-        boolean isCreateQuestionInputInvalid = isCreateQuestionInputInvalid(questionDto);
-        if (isCreateQuestionInputInvalid) {
+        boolean isQuestionInputInvalid = isQuestionInputInvalid(questionDto);
+        if (isQuestionInputInvalid) {
             throw new BadRequestError("Invalid data");
         }
+        validateQuestionType(questionDto.type());
         for (OptionDto optionDto : questionDto.options()) {
             validateCreateOptionInput(optionDto);
         }
@@ -146,10 +147,11 @@ public class ValidationServiceImpl implements ValidationService {
 
     @Override
     public void validateUpdateQuestionInput(QuestionDto questionDto) throws Exception {
-        boolean isUpdateQuestionInputInvalid = isUpdateQuestionInputInvalid(questionDto);
-        if (isUpdateQuestionInputInvalid) {
+        boolean isQuestionInputInvalid = isQuestionInputInvalid(questionDto);
+        if (isQuestionInputInvalid) {
             throw new BadRequestError("Invalid data");
         }
+        validateQuestionType(questionDto.type());
         for (OptionDto optionDto : questionDto.options()) {
             validateUpdateOptionInput(optionDto);
         }
@@ -346,20 +348,7 @@ public class ValidationServiceImpl implements ValidationService {
         );
     }
 
-    private boolean isCreateQuestionInputInvalid(QuestionDto questionDto) {
-        return (
-                questionDto.type() == null ||
-                        questionDto.isPublic() == null ||
-                        questionDto.statement() == null ||
-                        questionDto.subtopic() == null ||
-                        questionDto.subtopic().id() == null ||
-                        questionDto.options() == null ||
-                        questionDto.options().size() != 4 ||
-                        questionDto.solution() == null
-        );
-    }
-
-    private boolean isUpdateQuestionInputInvalid(QuestionDto questionDto) {
+    private boolean isQuestionInputInvalid(QuestionDto questionDto) {
         return (
                 questionDto.type() == null ||
                         questionDto.isPublic() == null ||
@@ -418,7 +407,7 @@ public class ValidationServiceImpl implements ValidationService {
                         questionDto.negativeMarks() == null ||
                         (
                                 questionDto.id() == null &&
-                                        isCreateQuestionInputInvalid(questionDto)
+                                        isQuestionInputInvalid(questionDto)
                         )
         );
     }

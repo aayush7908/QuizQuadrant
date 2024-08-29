@@ -7,7 +7,8 @@ type User = {
     accountCreatedOn: Date,
     role: string,
     isEmailVerified: boolean,
-    totalQuestions: number
+    totalQuestions: number,
+    totalDraftExams: number
 };
 
 export type {

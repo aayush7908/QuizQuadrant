@@ -2,7 +2,7 @@
 
 import { getToken } from "@/lib/cookie-store";
 import { serverEnv } from "@/lib/env/server";
-import { Question } from "@/lib/type/model/question";
+import { Question } from "@/lib/type/model/Question";
 import { error } from "@/lib/type/response/error/error";
 
 const pageSize: number = 5;

@@ -5,6 +5,8 @@ import { User } from "./User";
 
 type Question = {
     id: string, 
+    positiveMarks: number,
+    negativeMarks: number,
     type: string,
     isPublic: boolean,
     statement: string, 
@@ -12,7 +14,8 @@ type Question = {
     subtopic: Subtopic, 
     options: Array<Option>, 
     solution: Solution,
-    createdBy: User
+    createdBy: User,
+    lastModifiedOn: Date
 };
 
 export type {
