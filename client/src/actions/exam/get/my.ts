@@ -7,7 +7,7 @@ import { error } from "@/lib/type/response/error/error";
 
 const pageSize: number = 5;
 
-const getMyDraftExamsAPI = async (pageNumber: number) => {
+const getMyExamsAPI = async (pageNumber: number) => {
     try {
         // extract token from cookies
         const token: string | undefined = getToken();
@@ -54,5 +54,5 @@ const getMyDraftExamsAPI = async (pageNumber: number) => {
 }
 
 export {
-    getMyDraftExamsAPI
+    getMyExamsAPI
 }

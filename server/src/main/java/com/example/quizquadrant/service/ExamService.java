@@ -9,6 +9,7 @@ import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface ExamService {
@@ -19,28 +20,23 @@ public interface ExamService {
             ExamDto examDto
     ) throws Exception;
 
-    ResponseEntity<BooleanResponseDto> updateDetails(
-            ExamDto examDto
+    @Transactional(rollbackFor = Exception.class)
+    ResponseEntity<BooleanResponseDto> update(
+            ExamDto examDto,
+            String id
     ) throws Exception;
 
-    @Transactional(rollbackFor = Exception.class)
-    ResponseEntity<BooleanResponseDto> addCandidates(
-            ExamDto examDto
+    ResponseEntity<BooleanResponseDto> delete(
+            String id
     ) throws Exception;
 
-    @Transactional(rollbackFor = Exception.class)
-    ResponseEntity<BooleanResponseDto> removeCandidates(
-            ExamDto examDto
+    ResponseEntity<List<ExamDto>> getMyExams(
+            Integer pageNumber,
+            Integer pageSize
     ) throws Exception;
 
-    @Transactional(rollbackFor = Exception.class)
-    ResponseEntity<BooleanResponseDto> addQuestions(
-            ExamDto examDto
-    ) throws Exception;
-
-    @Transactional(rollbackFor = Exception.class)
-    ResponseEntity<BooleanResponseDto> removeQuestions(
-            ExamDto examDto
+    ResponseEntity<ExamDto> getExamById(
+            String id
     ) throws Exception;
 
     //    helper methods

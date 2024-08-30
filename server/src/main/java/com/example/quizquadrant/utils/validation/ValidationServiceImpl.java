@@ -394,6 +394,7 @@ public class ValidationServiceImpl implements ValidationService {
                 examDto.title() == null ||
                         examDto.startDateTime() == null ||
                         examDto.durationInMinutes() == null ||
+                        examDto.durationInMinutes() < 10 ||
                         examDto.questions() == null ||
                         examDto.questions().isEmpty() ||
                         examDto.candidates() == null ||

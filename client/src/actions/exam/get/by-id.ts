@@ -5,7 +5,7 @@ import { serverEnv } from "@/lib/env/server";
 import { Exam } from "@/lib/type/model/Exam";
 import { error } from "@/lib/type/response/error/error";
 
-const getDraftExamByIdAPI = async (id: string) => {
+const getExamByIdAPI = async (id: string) => {
     try {
         // extract token from cookies
         const token: string | undefined = getToken();
@@ -52,5 +52,5 @@ const getDraftExamByIdAPI = async (id: string) => {
 }
 
 export {
-    getDraftExamByIdAPI
+    getExamByIdAPI
 }

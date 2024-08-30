@@ -17,6 +17,7 @@ public record UserDto(
         String role,
         Boolean isEmailVerified,
         Integer totalQuestions,
+        Integer totalExams,
         Integer totalDraftExams
 ) {
 }

@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { Page1 } from "./page1/Page1";
 import { Loader } from "../Loader";
 import { Button } from "@/components/ui/button";
-import { FileText, Loader2, SquareChevronLeft, SquareChevronRight } from "lucide-react";
+import { FileText, Loader2, Save, SquareChevronLeft, SquareChevronRight } from "lucide-react";
 import { Page2 } from "./page2/Page2";
 import { Question } from "@/lib/type/model/Question";
 import { Solution } from "@/lib/type/model/Solution";
@@ -17,8 +17,21 @@ import { Subject } from "@/lib/type/model/Subject";
 import { createExamDraftAPI } from "@/actions/draft/exam/create";
 import { updateExamDraftAPI } from "@/actions/draft/exam/update";
 import { useToast } from "@/components/ui/use-toast";
+import { error } from "@/lib/type/response/error/error";
+import { usePathname, useRouter } from "next/navigation";
 
-export function ExamForm({ defaultFormData }: { defaultFormData: Exam | undefined }) {
+export function ExamForm({
+    defaultFormData,
+    successMessage,
+    onSubmit
+}: {
+    defaultFormData: Exam | undefined,
+    successMessage: string,
+    onSubmit: (data: Exam) => Promise<{
+        success: boolean;
+        error?: error | undefined;
+    }>,
+}) {
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [isDraftSaved, setIsDraftSaved] = useState<boolean>(false);
@@ -26,6 +39,8 @@ export function ExamForm({ defaultFormData }: { defaultFormData: Exam | undefine
     const [questionIndex, setQuestionIndex] = useState<number>(0);
     const [exam, setExam] = useState<Exam | undefined>(undefined);
     const { toast } = useToast();
+    const router = useRouter();
+    const path = usePathname();
 
     const changeExam = (newExam: Exam) => {
         setExam(newExam);
@@ -65,6 +80,25 @@ export function ExamForm({ defaultFormData }: { defaultFormData: Exam | undefine
         }
     }
 
+    const handleSubmit = async () => {
+        if (exam) {
+            setIsProcessing(true);
+            const { success, error } = await onSubmit(exam);
+            if (success) {
+                toast({
+                    title: successMessage
+                });
+                router.back();
+            } else if (error) {
+                toast({
+                    title: error.errorMessage,
+                    variant: "destructive"
+                });
+            }
+            setIsProcessing(false);
+        }
+    }
+
     useEffect(() => {
         const newExam = defaultFormData ? {
             id: defaultFormData.id,
@@ -79,7 +113,7 @@ export function ExamForm({ defaultFormData }: { defaultFormData: Exam | undefine
             durationInMinutes: 0,
             questions: [
                 {
-                    id: undefined,
+                    id: "",
                     type: "",
                     positiveMarks: 0,
                     negativeMarks: 0,
@@ -164,23 +198,46 @@ export function ExamForm({ defaultFormData }: { defaultFormData: Exam | undefine
                             }
                         </div>
                         <div className="fixed h-[4rem] w-full px-5 flex gap-3 justify-end md:justify-between items-center bg-muted border-t-2">
-                            <div>
-                                <Button
-                                    className="px-2 sm:px-3"
-                                    disabled={isDraftSaved}
-                                    onClick={handleSaveDraft}
-                                >
-                                    {
-                                        isProcessing ? (
-                                            <Loader2 className="animate-spin" />
-                                        ) : (
-                                            <>
-                                                <FileText className="sm:hidden" />
-                                                <span className="hidden sm:block">Save as Draft</span>
-                                            </>
-                                        )
-                                    }
-                                </Button>
+                            <div className="flex gap-3">
+                                {
+                                    !path.startsWith("/exam/edit") && (
+                                        <Button
+                                            className="px-2 sm:px-3"
+                                            disabled={isDraftSaved}
+                                            onClick={handleSaveDraft}
+                                        >
+                                            {
+                                                isProcessing ? (
+                                                    <Loader2 className="animate-spin" />
+                                                ) : (
+                                                    <>
+                                                        <FileText className="sm:hidden" />
+                                                        <span className="hidden sm:block">Save as Draft</span>
+                                                    </>
+                                                )
+                                            }
+                                        </Button>
+                                    )
+                                }
+                                {
+                                    page === 3 && (
+                                        <Button
+                                            className="px-2 sm:px-3 bg-blue-700"
+                                            onClick={handleSubmit}
+                                        >
+                                            {
+                                                isProcessing ? (
+                                                    <Loader2 className="animate-spin" />
+                                                ) : (
+                                                    <>
+                                                        <Save className="sm:hidden" />
+                                                        <span className="hidden sm:block">Save Exam</span>
+                                                    </>
+                                                )
+                                            }
+                                        </Button>
+                                    )
+                                }
                             </div>
                             <div className="flex gap-3">
                                 <Button

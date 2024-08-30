@@ -8,6 +8,7 @@ type User = {
     role: string,
     isEmailVerified: boolean,
     totalQuestions: number,
+    totalExams: number,
     totalDraftExams: number
 };
 

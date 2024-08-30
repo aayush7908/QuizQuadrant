@@ -158,14 +158,23 @@ public class DraftExamServiceImpl implements DraftExamService {
 //        find authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+//        authorize user
+        userService.authorizeUser(user);
+
 //        fetch draft-exams created by user
         List<DraftExam> draftExams = getDraftExamsByUser(user, pageNumber, pageSize);
 
 //        create list of exam dto
         List<ExamDto> examDtos = new ArrayList<>();
         for (DraftExam draftExam : draftExams) {
+            ExamDto examDto = objectMapper.readValue(draftExam.getData(), ExamDto.class);
             examDtos.add(
-                    createExamDtoFromDraftExamData(draftExam)
+                    ExamDto
+                            .builder()
+                            .id(draftExam.getId())
+                            .title(examDto.title())
+                            .lastModifiedOn(draftExam.getLastModifiedOn())
+                            .build()
             );
         }
 
@@ -228,6 +237,13 @@ public class DraftExamServiceImpl implements DraftExamService {
     }
 
     @Override
+    public void deleteDraftById(
+            UUID id
+    ) throws Exception {
+        draftExamRepository.deleteById(id);
+    }
+
+    @Override
     public void authorizeUserDraftExam(
             User user,
             DraftExam draftExam
@@ -243,7 +259,7 @@ public class DraftExamServiceImpl implements DraftExamService {
         ExamDto examDto = objectMapper.readValue(draftExam.getData(), ExamDto.class);
         return ExamDto
                 .builder()
-                .id(examDto.id())
+                .id(draftExam.getId())
                 .title(examDto.title())
                 .startDateTime(examDto.startDateTime())
                 .durationInMinutes(examDto.durationInMinutes())

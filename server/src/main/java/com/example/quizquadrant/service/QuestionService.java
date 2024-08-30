@@ -64,4 +64,8 @@ public interface QuestionService {
             User user,
             Question question
     ) throws Exception;
+
+    QuestionDto createQuestionDtoFromQuestion(
+            Question question
+    );
 }

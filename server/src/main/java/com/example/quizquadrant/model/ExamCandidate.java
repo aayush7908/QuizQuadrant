@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "result")
+@Table(name = "exam_candidate")
 @IdClass(ExamCandidateKey.class)
 public class ExamCandidate {
 

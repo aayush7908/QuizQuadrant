@@ -15,7 +15,7 @@ public interface DraftExamRepository extends JpaRepository<DraftExam, UUID> {
     @Query("SELECT d FROM DraftExam d WHERE d.createdBy = :user")
     Page<DraftExam> findByCreatedBy(User user, Pageable pageable);
 
-    @Query("SELECT COUNT(*) FROM DraftExam e WHERE e.createdBy = :user")
+    @Query("SELECT COUNT(*) FROM DraftExam d WHERE d.createdBy = :user")
     Integer countByCreatedBy(User user);
 
 }

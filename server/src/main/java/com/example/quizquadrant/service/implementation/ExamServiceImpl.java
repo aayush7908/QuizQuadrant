@@ -1,9 +1,7 @@
 package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
-import com.example.quizquadrant.model.Exam;
-import com.example.quizquadrant.model.Question;
-import com.example.quizquadrant.model.User;
+import com.example.quizquadrant.model.*;
 import com.example.quizquadrant.model.type.Role;
 import com.example.quizquadrant.repository.ExamRepository;
 import com.example.quizquadrant.service.*;
@@ -11,11 +9,15 @@ import com.example.quizquadrant.utils.error.AccessDeniedError;
 import com.example.quizquadrant.utils.error.NotFoundError;
 import com.example.quizquadrant.utils.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,6 +32,7 @@ public class ExamServiceImpl implements ExamService {
     private final ExamQuestionService examQuestionService;
     private final ExamCandidateService examCandidateService;
     private final ValidationService validationService;
+    private final DraftExamService draftExamService;
 
     @Override
     public ResponseEntity<BooleanResponseDto> create(
@@ -67,8 +70,19 @@ public class ExamServiceImpl implements ExamService {
 
 //        enroll candidates in exam
         for (UserDto userDto : examDto.candidates()) {
-            User candidate = userService.getUserByEmail(userDto.email());
-            examCandidateService.create(exam, candidate);
+            try {
+                User candidate = userService.getUserByEmail(userDto.email());
+                examCandidateService.create(exam, candidate);
+            } catch (Exception ignored) {
+            }
+        }
+
+//        delete draft exam if present
+        if (
+                examDto.id() != null &&
+                        !examDto.id().toString().isEmpty()
+        ) {
+            draftExamService.deleteDraftById(examDto.id());
         }
 
 //        response
@@ -83,138 +97,42 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public ResponseEntity<BooleanResponseDto> updateDetails(
-            ExamDto examDto
+    public ResponseEntity<BooleanResponseDto> update(
+            ExamDto examDto,
+            String id
     ) throws Exception {
 //        validate input data
-        validationService.validateUpdateExamDetailsInput(examDto);
+        validationService.validateCreateExamInput(examDto);
 
-//        fetch authenticated user
+//        find authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 //        authorize user
         userService.authorizeUser(user);
 
 //        fetch exam by id
-        Exam exam = getExamById(examDto.id());
+        Exam exam = getExamById(UUID.fromString(id));
 
-//        authorize user permissions on exam
+//        check user permissions on exam
         authorizeUserExam(user, exam);
 
-//        update exam in database
+//        save questions in database and mark them as exam-question
+        int totalMarks = saveExamQuestionsAndReturnTotalMarks(examDto.questions(), exam, user);
+
+//        enroll candidates in exam
+        for (UserDto userDto : examDto.candidates()) {
+            try {
+                User candidate = userService.getUserByEmail(userDto.email());
+                examCandidateService.create(exam, candidate);
+            } catch (Exception ignored) {
+            }
+        }
+
+//        update exam data and save in database
         exam.setTitle(examDto.title());
         exam.setStartDateTime(examDto.startDateTime());
         exam.setDurationInMinutes(examDto.durationInMinutes());
         exam.setLastModifiedOn(LocalDateTime.now());
-        examRepository.save(exam);
-
-//        response
-        return ResponseEntity
-                .status(200)
-                .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
-                );
-    }
-
-    @Override
-    public ResponseEntity<BooleanResponseDto> addCandidates(
-            ExamDto examDto
-    ) throws Exception {
-//        validate input data
-        validationService.validateUpdateExamCandidatesInput(examDto);
-
-//        fetch authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-//        authorize user
-        userService.authorizeUser(user);
-
-//        fetch exam by id
-        Exam exam = getExamById(examDto.id());
-
-//        authorize user permissions on exam
-        authorizeUserExam(user, exam);
-
-//        enroll candidates
-        for (UserDto userDto : examDto.candidates()) {
-            User candidate = userService.getUserByEmail(userDto.email());
-            examCandidateService.create(exam, candidate);
-        }
-
-//        response
-        return ResponseEntity
-                .status(200)
-                .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
-                );
-    }
-
-    @Override
-    public ResponseEntity<BooleanResponseDto> removeCandidates(
-            ExamDto examDto
-    ) throws Exception {
-//        validate input data
-        validationService.validateUpdateExamCandidatesInput(examDto);
-
-//        fetch authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-//        authorize user
-        userService.authorizeUser(user);
-
-//        fetch exam by id
-        Exam exam = getExamById(examDto.id());
-
-//        authorize user permissions on exam
-        authorizeUserExam(user, exam);
-
-//        remove candidates
-        for (UserDto userDto : examDto.candidates()) {
-            User candidate = userService.getUserByEmail(userDto.email());
-            examCandidateService.delete(exam, candidate);
-        }
-
-//        response
-        return ResponseEntity
-                .status(200)
-                .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
-                );
-    }
-
-    @Override
-    public ResponseEntity<BooleanResponseDto> addQuestions(
-            ExamDto examDto
-    ) throws Exception {
-//        validate input data
-        validationService.validateUpdateExamQuestionsInput(examDto);
-
-//        fetch authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-//        authorize user
-        userService.authorizeUser(user);
-
-//        fetch exam by id
-        Exam exam = getExamById(examDto.id());
-
-//        authorize user permissions on exam
-        authorizeUserExam(user, exam);
-
-//        save questions in database and mark them as exam-question
-        int totalMarks = exam.getTotalMarks();
-        totalMarks += saveExamQuestionsAndReturnTotalMarks(examDto.questions(), exam, user);
-
-//        update totalMarks in exam
         exam.setTotalMarks(totalMarks);
         examRepository.save(exam);
 
@@ -230,31 +148,23 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public ResponseEntity<BooleanResponseDto> removeQuestions(
-            ExamDto examDto
+    public ResponseEntity<BooleanResponseDto> delete(
+            String id
     ) throws Exception {
-//        validate input data
-        validationService.validateUpdateExamQuestionsInput(examDto);
-
-//        fetch authenticated user
+//        find authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
 //        authorize user
         userService.authorizeUser(user);
 
 //        fetch exam by id
-        Exam exam = getExamById(examDto.id());
+        Exam exam = getExamById(UUID.fromString(id));
 
-//        authorize user permissions on exam
+//        check user permissions on exam
         authorizeUserExam(user, exam);
 
-//        save questions in database and mark them as exam-question
-        int totalMarks = exam.getTotalMarks();
-        totalMarks -= deleteExamQuestionsAndReturnTotalMarks(examDto.questions(), exam);
-
-//        update totalMarks in exam
-        exam.setTotalMarks(totalMarks);
-        examRepository.save(exam);
+//        delete exam from database
+        examRepository.delete(exam);
 
 //        response
         return ResponseEntity
@@ -265,6 +175,137 @@ public class ExamServiceImpl implements ExamService {
                                 .success(true)
                                 .build()
                 );
+    }
+
+    @Override
+    public ResponseEntity<List<ExamDto>> getMyExams(
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
+//        validate pageSize
+        validationService.validatePageSize(pageSize);
+
+//        find authenticated user
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+//        authorize user
+        userService.authorizeUser(user);
+
+//        fetch exams created by user
+        List<Exam> exams = getExamsByUser(user, pageNumber, pageSize);
+
+//        create list of exam dto
+        List<ExamDto> examDtos = new ArrayList<>();
+        for (Exam exam : exams) {
+//            create list of questions
+            List<QuestionDto> questionDtos = new ArrayList<>();
+            for (ExamQuestion examQuestion : exam.getQuestions()) {
+                questionDtos.add(
+                        QuestionDto.builder().build()
+                );
+            }
+
+//            create list of candidates
+            List<UserDto> userDtos = new ArrayList<>();
+            for (ExamCandidate examCandidate : exam.getCandidates()) {
+                userDtos.add(
+                        UserDto.builder().build()
+                );
+            }
+
+            examDtos.add(
+                    ExamDto
+                            .builder()
+                            .id(exam.getId())
+                            .title(exam.getTitle())
+                            .startDateTime(exam.getStartDateTime())
+                            .durationInMinutes(exam.getDurationInMinutes())
+                            .isResultGenerated(exam.getIsResultGenerated())
+                            .totalMarks(exam.getTotalMarks())
+                            .lastModifiedOn(exam.getLastModifiedOn())
+                            .questions(questionDtos)
+                            .candidates(userDtos)
+                            .build()
+            );
+        }
+
+//        if pageNumber is 0, calculate total number of exams created by user
+//        and put it into first exam
+        if (pageNumber == 0) {
+            int totalExams = examRepository.countByCreatedBy(user);
+            examDtos.add(0, ExamDto
+                    .builder()
+                    .createdBy(
+                            UserDto
+                                    .builder()
+                                    .totalExams(totalExams)
+                                    .build()
+                    )
+                    .build()
+            );
+        }
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(examDtos);
+    }
+
+    @Override
+    public ResponseEntity<ExamDto> getExamById(
+            String id
+    ) throws Exception {
+//        find authenticated user
+        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+//        authorize user
+        userService.authorizeUser(user);
+
+//        fetch exam by id
+        Exam exam = getExamById(UUID.fromString(id));
+
+//        check user permissions on exam
+        authorizeUserExam(user, exam);
+
+//        create question dtos
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        for (ExamQuestion examQuestion : exam.getQuestions()) {
+            Question question = questionService.getQuestionById(examQuestion.getQuestion().getId());
+            questionDtos.add(
+                    questionService.createQuestionDtoFromQuestion(question)
+            );
+        }
+
+//        create candidate dtos
+        List<UserDto> userDtos = new ArrayList<>();
+        for (ExamCandidate examCandidate : exam.getCandidates()) {
+            User candidate = userService.getUserById(examCandidate.getUser().getId());
+            userDtos.add(
+                    UserDto
+                            .builder()
+                            .id(candidate.getId())
+                            .email(candidate.getEmail())
+                            .build()
+            );
+        }
+
+//        create exam dto
+        ExamDto examDto = ExamDto
+                .builder()
+                .id(exam.getId())
+                .title(exam.getTitle())
+                .startDateTime(exam.getStartDateTime())
+                .durationInMinutes(exam.getDurationInMinutes())
+                .isResultGenerated(exam.getIsResultGenerated())
+                .lastModifiedOn(exam.getLastModifiedOn())
+                .questions(questionDtos)
+                .candidates(userDtos)
+                .build();
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(examDto);
     }
 
     @Override
@@ -300,7 +341,10 @@ public class ExamServiceImpl implements ExamService {
         for (QuestionDto questionDto : questionDtos) {
             totalMarks += questionDto.positiveMarks();
             Question question = null;
-            if (questionDto.id() == null) {
+            if (
+                    questionDto.id() == null ||
+                            questionDto.id().toString().isEmpty()
+            ) {
                 question = questionService.create(questionDto, false, user);
             } else {
                 question = questionService.getQuestionById(questionDto.id());
@@ -330,6 +374,16 @@ public class ExamServiceImpl implements ExamService {
             );
         }
         return totalMarks;
+    }
+
+    private List<Exam> getExamsByUser(
+            User user,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Exam> examPage = examRepository.findByCreatedBy(user, pageable);
+        return examPage.getContent();
     }
 
 }

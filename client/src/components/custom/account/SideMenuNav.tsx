@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { AuthContext } from "@/context/auth/AuthContext";
 import {
     AlarmClock,
+    BookCheck,
     CircleCheckBig,
     CircleUser,
     FileCheck,
@@ -83,6 +84,15 @@ export function SideMenuNav() {
                                             >
                                                 <FileCheck />
                                                 <span>Questions Created</span>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link
+                                                href="/account/exams-created"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/exams-created" && "bg-muted text-primary"}`}
+                                            >
+                                                <BookCheck />
+                                                <span>Exams Created</span>
                                             </Link>
                                         </li>
                                         <li>

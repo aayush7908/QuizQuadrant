@@ -18,18 +18,19 @@ public class ExamCandidateServiceImpl implements ExamCandidateService {
             Exam exam,
             User user
     ) throws Exception {
+        ExamCandidate examCandidate = null;
 //        check if candidate is already enrolled in exam
-        checkExamCandidateExists(exam, user);
-
+        if (!examCandidateRepository.existsByExamAndUser(exam, user)) {
 //        save data
-        ExamCandidate examCandidate = examCandidateRepository.save(
-                ExamCandidate
-                        .builder()
-                        .exam(exam)
-                        .user(user)
-                        .isPresent(false)
-                        .build()
-        );
+            examCandidate = examCandidateRepository.save(
+                    ExamCandidate
+                            .builder()
+                            .exam(exam)
+                            .user(user)
+                            .isPresent(false)
+                            .build()
+            );
+        }
 
         return examCandidate;
     }
@@ -47,6 +48,14 @@ public class ExamCandidateServiceImpl implements ExamCandidateService {
         if (isExamCandidatePresent) {
             throw new DuplicateDataError("Candidate already enrolled in exam");
         }
+    }
+
+    @Override
+    public Boolean isCandidateEnrolled(
+            Exam exam,
+            User user
+    ) throws Exception {
+        return examCandidateRepository.existsByExamAndUser(exam, user);
     }
 
 }

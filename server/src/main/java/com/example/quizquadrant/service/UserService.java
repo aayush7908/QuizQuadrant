@@ -4,6 +4,8 @@ import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 
+import java.util.UUID;
+
 public interface UserService {
 
     //    controller service methods
@@ -31,6 +33,10 @@ public interface UserService {
     //    helper methods
     User getUserByEmail(
             String email
+    ) throws Exception;
+
+    User getUserById(
+            UUID id
     ) throws Exception;
 
     void authorizeUser(

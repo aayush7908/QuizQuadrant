@@ -2,12 +2,15 @@ package com.example.quizquadrant.controller;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
 import com.example.quizquadrant.dto.ExamDto;
+import com.example.quizquadrant.dto.QuestionDto;
 import com.example.quizquadrant.dto.SubjectDto;
 import com.example.quizquadrant.service.ExamService;
 import com.example.quizquadrant.service.SubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @CrossOrigin
@@ -24,39 +27,34 @@ public class ExamController {
         return examService.create(examDto);
     }
 
-    @PatchMapping("/update/details")
-    public ResponseEntity<BooleanResponseDto> updateDetails(
+    @PutMapping("/update/{id}")
+    public ResponseEntity<BooleanResponseDto> update(
+            @PathVariable String id,
             @RequestBody ExamDto examDto
     ) throws Exception {
-        return examService.updateDetails(examDto);
+        return examService.update(examDto, id);
     }
 
-    @PatchMapping("/update/add-candidates")
-    public ResponseEntity<BooleanResponseDto> addCandidates(
-            @RequestBody ExamDto examDto
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<BooleanResponseDto> delete(
+            @PathVariable String id
     ) throws Exception {
-        return examService.addCandidates(examDto);
+        return examService.delete(id);
     }
 
-    @PatchMapping("/update/remove-candidates")
-    public ResponseEntity<BooleanResponseDto> removeCandidates(
-            @RequestBody ExamDto examDto
+    @GetMapping("/get/my")
+    public ResponseEntity<List<ExamDto>> getMyExams(
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
     ) throws Exception {
-        return examService.removeCandidates(examDto);
+        return examService.getMyExams(pageNumber, pageSize);
     }
 
-    @PatchMapping("/update/add-questions")
-    public ResponseEntity<BooleanResponseDto> addQuestions(
-            @RequestBody ExamDto examDto
+    @GetMapping("/get/by-id/{id}")
+    public ResponseEntity<ExamDto> getById(
+            @PathVariable String id
     ) throws Exception {
-        return examService.addQuestions(examDto);
-    }
-
-    @PatchMapping("/update/remove-questions")
-    public ResponseEntity<BooleanResponseDto> removeQuestions(
-            @RequestBody ExamDto examDto
-    ) throws Exception {
-        return examService.removeQuestions(examDto);
+        return examService.getExamById(id);
     }
 
 }

@@ -17,4 +17,9 @@ public interface ExamCandidateService {
             User user
     ) throws Exception;
 
+    Boolean isCandidateEnrolled(
+            Exam exam,
+            User user
+    ) throws Exception;
+
 }

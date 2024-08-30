@@ -9,7 +9,7 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { deleteQuestionAPI } from "@/actions/question/delete";
 
-export function QuestionCard({ data, index }: { data: Question, index: number }) {
+export function QuestionCard({ data, index, removeFunction }: { data: Question, index: number, removeFunction(index: number): void }) {
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const { toast } = useToast();
@@ -33,6 +33,7 @@ export function QuestionCard({ data, index }: { data: Question, index: number })
             toast({
                 title: "Question deleted successfully"
             });
+            removeFunction(index);
         } else if (error) {
             toast({
                 title: error.errorMessage,

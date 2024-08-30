@@ -396,7 +396,8 @@ public class QuestionServiceImpl implements QuestionService {
         return questionPage.getContent();
     }
 
-    private QuestionDto createQuestionDtoFromQuestion(
+    @Override
+    public QuestionDto createQuestionDtoFromQuestion(
             Question question
     ) {
         //        create list of option dtos

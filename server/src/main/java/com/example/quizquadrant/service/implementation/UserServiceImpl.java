@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -158,6 +159,17 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByEmail(String email) throws Exception {
         Optional<User> userOptional = userRepository.findByEmail(email);
+        if (userOptional.isEmpty()) {
+            throw new NotFoundError("User not found");
+        }
+        return userOptional.get();
+    }
+
+    @Override
+    public User getUserById(
+            UUID id
+    ) throws Exception {
+        Optional<User> userOptional = userRepository.findById(id);
         if (userOptional.isEmpty()) {
             throw new NotFoundError("User not found");
         }

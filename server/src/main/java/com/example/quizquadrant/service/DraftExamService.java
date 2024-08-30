@@ -42,6 +42,10 @@ public interface DraftExamService {
             UUID id
     ) throws Exception;
 
+    void deleteDraftById(
+            UUID id
+    ) throws Exception;
+
     void authorizeUserDraftExam(
             User user,
             DraftExam draftExam

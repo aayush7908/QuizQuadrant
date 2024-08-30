@@ -39,7 +39,7 @@ public class ExamQuestion {
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_examquestion_question")
     )
-    @JsonManagedReference
+    @JsonBackReference
     private Question question;
 
     @Column(

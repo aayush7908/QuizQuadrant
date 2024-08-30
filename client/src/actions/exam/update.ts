@@ -6,7 +6,7 @@ import { Exam } from "@/lib/type/model/Exam";
 import { error } from "@/lib/type/response/error/error";
 import { Id } from "@/lib/type/response/id/id";
 
-const updateExamDraftAPI = async (body: Exam, id: string) => {
+const updateExamAPI = async (body: Exam, id: string) => {
     try {
         // extract token from cookies
         const token: string | undefined = getToken();
@@ -54,5 +54,5 @@ const updateExamDraftAPI = async (body: Exam, id: string) => {
 }
 
 export {
-    updateExamDraftAPI
+    updateExamAPI
 }
