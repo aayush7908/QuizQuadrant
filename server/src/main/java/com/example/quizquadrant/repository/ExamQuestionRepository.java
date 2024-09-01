@@ -14,6 +14,9 @@ import java.util.Optional;
 
 public interface ExamQuestionRepository extends JpaRepository<ExamQuestion, ExamQuestionKey> {
 
+    @Query("SELECT e FROM ExamQuestion e WHERE e.exam = :exam AND e.question = :question")
+    Optional<ExamQuestion> findByExamAndQuestion(Exam exam, Question question);
+
     @Query("SELECT CASE WHEN COUNT(e) > 0 THEN TRUE ELSE FALSE END FROM ExamQuestion e WHERE e.exam = :exam AND e.question = :question")
     Boolean existsByExamAndQuestion(Exam exam, Question question);
 

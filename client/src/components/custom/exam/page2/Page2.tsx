@@ -53,7 +53,9 @@ export function Page2({
             return (index !== questionIndex);
         });
         changeExam(newExam);
-        changeQuestionIndex(questionIndex - 1);
+        if (questionIndex > 0) {
+            changeQuestionIndex(questionIndex - 1);
+        }
         toast({
             title: "Question deleted successfully"
         });

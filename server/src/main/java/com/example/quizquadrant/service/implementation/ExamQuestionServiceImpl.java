@@ -35,10 +35,36 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
             Integer positiveMarks,
             Integer negativeMarks
     ) throws Exception {
-        ExamQuestion examQuestion = null;
 //        check if question already exists in given exam
-        if (!examQuestionRepository.existsByExamAndQuestion(exam, question)) {
+        checkExamQuestionExists(exam, question);
+
 //        save exam question in database
+        ExamQuestion examQuestion = examQuestionRepository.save(
+                ExamQuestion
+                        .builder()
+                        .exam(exam)
+                        .question(question)
+                        .positiveMarks(positiveMarks)
+                        .negativeMarks(negativeMarks)
+                        .build()
+        );
+
+//        response
+        return examQuestion;
+    }
+
+    @Override
+    public ExamQuestion createOrUpdate(
+            Exam exam,
+            Question question,
+            Integer positiveMarks,
+            Integer negativeMarks
+    ) throws Exception {
+        ExamQuestion examQuestion = null;
+//        fetch exam-question
+        Optional<ExamQuestion> examQuestionOptional = examQuestionRepository.findByExamAndQuestion(exam, question);
+
+        if (examQuestionOptional.isEmpty()) {
             examQuestion = examQuestionRepository.save(
                     ExamQuestion
                             .builder()
@@ -48,6 +74,11 @@ public class ExamQuestionServiceImpl implements ExamQuestionService {
                             .negativeMarks(negativeMarks)
                             .build()
             );
+        } else {
+            examQuestion = examQuestionOptional.get();
+            examQuestion.setPositiveMarks(positiveMarks);
+            examQuestion.setNegativeMarks(negativeMarks);
+            examQuestionRepository.save(examQuestion);
         }
 
 //        response

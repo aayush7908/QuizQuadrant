@@ -5,6 +5,7 @@ import { AuthContext } from "@/context/auth/AuthContext";
 import {
     AlarmClock,
     BookCheck,
+    BookText,
     CircleCheckBig,
     CircleUser,
     FileCheck,
@@ -97,10 +98,19 @@ export function SideMenuNav() {
                                         </li>
                                         <li>
                                             <Link
+                                                href="/account/draft-questions"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/draft-questions" && "bg-muted text-primary"}`}
+                                            >
+                                                <FileText />
+                                                <span>Draft Questions</span>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link
                                                 href="/account/draft-exams"
                                                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/draft-exams" && "bg-muted text-primary"}`}
                                             >
-                                                <FileText />
+                                                <BookText />
                                                 <span>Draft Exams</span>
                                             </Link>
                                         </li>

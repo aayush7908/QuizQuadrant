@@ -2,13 +2,11 @@ package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.DraftExam;
-import com.example.quizquadrant.model.Exam;
-import com.example.quizquadrant.model.Question;
+import com.example.quizquadrant.model.DraftQuestion;
 import com.example.quizquadrant.model.User;
-import com.example.quizquadrant.model.type.Role;
-import com.example.quizquadrant.repository.DraftExamRepository;
-import com.example.quizquadrant.repository.ExamRepository;
-import com.example.quizquadrant.service.*;
+import com.example.quizquadrant.repository.DraftQuestionRepository;
+import com.example.quizquadrant.service.DraftQuestionService;
+import com.example.quizquadrant.service.UserService;
 import com.example.quizquadrant.utils.error.AccessDeniedError;
 import com.example.quizquadrant.utils.error.BadRequestError;
 import com.example.quizquadrant.utils.error.NotFoundError;
@@ -30,16 +28,16 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-public class DraftExamServiceImpl implements DraftExamService {
+public class DraftQuestionServiceImpl implements DraftQuestionService {
 
-    private final DraftExamRepository draftExamRepository;
+    private final DraftQuestionRepository draftQuestionRepository;
     private final ValidationService validationService;
     private final UserService userService;
     private final ObjectMapper objectMapper;
 
     @Override
     public ResponseEntity<IdResponseDto> create(
-            ExamDto examDto
+            QuestionDto questionDto
     ) throws Exception {
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -50,14 +48,14 @@ public class DraftExamServiceImpl implements DraftExamService {
 //        convert dto to json
         String data = "";
         try {
-            data = objectMapper.writeValueAsString(examDto);
+            data = objectMapper.writeValueAsString(questionDto);
         } catch (Exception e) {
             throw new BadRequestError("Invalid data");
         }
 
 //        save draft in database
-        DraftExam draftExam = draftExamRepository.save(
-                DraftExam
+        DraftQuestion draftQuestion = draftQuestionRepository.save(
+                DraftQuestion
                         .builder()
                         .data(data)
                         .lastModifiedOn(LocalDateTime.now())
@@ -71,18 +69,18 @@ public class DraftExamServiceImpl implements DraftExamService {
                 .body(
                         IdResponseDto
                                 .builder()
-                                .id(draftExam.getId())
+                                .id(draftQuestion.getId())
                                 .build()
                 );
     }
 
     @Override
     public ResponseEntity<BooleanResponseDto> update(
-            ExamDto examDto,
+            QuestionDto questionDto,
             String id
     ) throws Exception {
-//        fetch draft-exam by id
-        DraftExam draftExam = getDraftExamById(UUID.fromString(id));
+//        fetch draft-question by id
+        DraftQuestion draftQuestion = getDraftQuestionById(UUID.fromString(id));
 
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -91,20 +89,20 @@ public class DraftExamServiceImpl implements DraftExamService {
         userService.authorizeUser(user);
 
 //        authorize user permission on draft
-        authorizeUserDraftExam(user, draftExam);
+        authorizeUserDraftQuestion(user, draftQuestion);
 
 //        convert dto to json
         String data = "";
         try {
-            data = objectMapper.writeValueAsString(examDto);
+            data = objectMapper.writeValueAsString(questionDto);
         } catch (Exception e) {
             throw new BadRequestError("Invalid data");
         }
 
 //        update and save draft-exam in database
-        draftExam.setData(data);
-        draftExam.setLastModifiedOn(LocalDateTime.now());
-        draftExamRepository.save(draftExam);
+        draftQuestion.setData(data);
+        draftQuestion.setLastModifiedOn(LocalDateTime.now());
+        draftQuestionRepository.save(draftQuestion);
 
 //        response
         return ResponseEntity
@@ -121,8 +119,8 @@ public class DraftExamServiceImpl implements DraftExamService {
     public ResponseEntity<BooleanResponseDto> delete(
             String id
     ) throws Exception {
-//        fetch draft-exam by id
-        DraftExam draftExam = getDraftExamById(UUID.fromString(id));
+//        fetch draft-question by id
+        DraftQuestion draftQuestion = getDraftQuestionById(UUID.fromString(id));
 
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -131,10 +129,10 @@ public class DraftExamServiceImpl implements DraftExamService {
         userService.authorizeUser(user);
 
 //        authorize user permission on draft
-        authorizeUserDraftExam(user, draftExam);
+        authorizeUserDraftQuestion(user, draftQuestion);
 
 //        delete draft
-        draftExamRepository.delete(draftExam);
+        draftQuestionRepository.delete(draftQuestion);
 
 //        response
         return ResponseEntity
@@ -148,7 +146,7 @@ public class DraftExamServiceImpl implements DraftExamService {
     }
 
     @Override
-    public ResponseEntity<List<ExamDto>> getMyDraftExams(
+    public ResponseEntity<List<QuestionDto>> getMyDraftQuestions(
             Integer pageNumber,
             Integer pageSize
     ) throws Exception {
@@ -161,33 +159,33 @@ public class DraftExamServiceImpl implements DraftExamService {
 //        authorize user
         userService.authorizeUser(user);
 
-//        fetch draft-exams created by user
-        List<DraftExam> draftExams = getDraftExamsByUser(user, pageNumber, pageSize);
+//        fetch draft-questions created by user
+        List<DraftQuestion> draftQuestions = getDraftQuestionsByUser(user, pageNumber, pageSize);
 
 //        create list of exam dto
-        List<ExamDto> examDtos = new ArrayList<>();
-        for (DraftExam draftExam : draftExams) {
-            ExamDto examDto = objectMapper.readValue(draftExam.getData(), ExamDto.class);
-            examDtos.add(
-                    ExamDto
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        for (DraftQuestion draftQuestion : draftQuestions) {
+            QuestionDto questionDto = objectMapper.readValue(draftQuestion.getData(), QuestionDto.class);
+            questionDtos.add(
+                    QuestionDto
                             .builder()
-                            .id(draftExam.getId())
-                            .title(examDto.title())
-                            .lastModifiedOn(draftExam.getLastModifiedOn())
+                            .id(draftQuestion.getId())
+                            .statement(questionDto.statement())
+                            .lastModifiedOn(draftQuestion.getLastModifiedOn())
                             .build()
             );
         }
 
-//        if pageNumber is 0, calculate total number of questions created by user
-//        and put it into first question
+//        if pageNumber is 0, calculate total number of drafts created by user
+//        and put it into first draft
         if (pageNumber == 0) {
-            int totalDrafts = draftExamRepository.countByCreatedBy(user);
-            examDtos.add(0, ExamDto
+            int totalDrafts = draftQuestionRepository.countByCreatedBy(user);
+            questionDtos.add(0, QuestionDto
                     .builder()
                     .createdBy(
                             UserDto
                                     .builder()
-                                    .totalDraftExams(totalDrafts)
+                                    .totalDraftQuestions(totalDrafts)
                                     .build()
                     )
                     .build()
@@ -197,15 +195,15 @@ public class DraftExamServiceImpl implements DraftExamService {
 //        response
         return ResponseEntity
                 .status(200)
-                .body(examDtos);
+                .body(questionDtos);
     }
 
     @Override
-    public ResponseEntity<ExamDto> getDraftExamById(
+    public ResponseEntity<QuestionDto> getDraftQuestionById(
             String id
     ) throws Exception {
-//        fetch draft-exam by id
-        DraftExam draftExam = getDraftExamById(UUID.fromString(id));
+//        fetch draft-question by id
+        DraftQuestion draftQuestion = getDraftQuestionById(UUID.fromString(id));
 
 //        fetch authenticated user
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -214,72 +212,81 @@ public class DraftExamServiceImpl implements DraftExamService {
         userService.authorizeUser(user);
 
 //        authorize user permission on draft
-        authorizeUserDraftExam(user, draftExam);
+        authorizeUserDraftQuestion(user, draftQuestion);
 
 //        create dto
-        ExamDto examDto = createExamDtoFromDraftExamData(draftExam);
+        QuestionDto questionDto = createQuestionDtoFromDraftQuestionData(draftQuestion);
 
 //        response
         return ResponseEntity
                 .status(200)
-                .body(examDto);
+                .body(questionDto);
     }
 
     @Override
-    public DraftExam getDraftExamById(
+    public DraftQuestion getDraftQuestionById(
             UUID id
     ) throws Exception {
-        Optional<DraftExam> draftExamOptional = draftExamRepository.findById(id);
-        if (draftExamOptional.isEmpty()) {
+        Optional<DraftQuestion> draftQuestionOptional = draftQuestionRepository.findById(id);
+        if (draftQuestionOptional.isEmpty()) {
             throw new NotFoundError("Draft not found");
         }
-        return draftExamOptional.get();
+        return draftQuestionOptional.get();
     }
 
     @Override
-    public void deleteDraftExamById(
+    public void deleteDraftQuestionById(
             UUID id
     ) throws Exception {
-        draftExamRepository.deleteById(id);
+        draftQuestionRepository.deleteById(id);
     }
 
-    @Override
-    public void authorizeUserDraftExam(
+    public void authorizeUserDraftQuestion(
             User user,
-            DraftExam draftExam
+            DraftQuestion draftQuestion
     ) throws Exception {
-        if (!user.getId().equals(draftExam.getCreatedBy().getId())) {
+        if (!user.getId().equals(draftQuestion.getCreatedBy().getId())) {
             throw new AccessDeniedError();
         }
     }
 
-    private ExamDto createExamDtoFromDraftExamData(
-            DraftExam draftExam
+    private QuestionDto createQuestionDtoFromDraftQuestionData(
+            DraftQuestion draftQuestion
     ) throws Exception {
-        ExamDto examDto = objectMapper.readValue(draftExam.getData(), ExamDto.class);
-        return ExamDto
+        QuestionDto questionDto = objectMapper.readValue(draftQuestion.getData(), QuestionDto.class);
+        return QuestionDto
                 .builder()
-                .id(draftExam.getId())
-                .title(examDto.title())
-                .startDateTime(examDto.startDateTime())
-                .durationInMinutes(examDto.durationInMinutes())
-                .isResultGenerated(examDto.isResultGenerated())
-                .totalMarks(examDto.totalMarks())
-                .lastModifiedOn(draftExam.getLastModifiedOn())
-                .createdBy(examDto.createdBy())
-                .questions(examDto.questions())
-                .candidates(examDto.candidates())
+                .id(draftQuestion.getId())
+                .type(questionDto.type())
+                .isPublic(questionDto.isPublic())
+                .statement(questionDto.statement())
+                .imageUrl(questionDto.imageUrl())
+                .lastModifiedOn(questionDto.lastModifiedOn())
+                .subtopic(
+                        SubtopicDto
+                                .builder()
+                                .id(questionDto.subtopic().id())
+                                .subject(
+                                        SubjectDto
+                                                .builder()
+                                                .id(questionDto.subtopic().subject().id())
+                                                .build()
+                                )
+                                .build()
+                )
+                .options(questionDto.options())
+                .solution(questionDto.solution())
                 .build();
     }
 
-    private List<DraftExam> getDraftExamsByUser(
+    private List<DraftQuestion> getDraftQuestionsByUser(
             User user,
             Integer pageNumber,
             Integer pageSize
     ) throws Exception {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<DraftExam> draftExamPage = draftExamRepository.findByCreatedBy(user, pageable);
-        return draftExamPage.getContent();
+        Page<DraftQuestion> draftQuestionPage = draftQuestionRepository.findByCreatedBy(user, pageable);
+        return draftQuestionPage.getContent();
     }
 
 }

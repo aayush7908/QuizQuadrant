@@ -103,6 +103,20 @@ public class User implements UserDetails {
     private List<Exam> createdExams;
 
     @OneToMany(
+            mappedBy = "createdBy",
+            cascade = CascadeType.REMOVE
+    )
+    @JsonBackReference
+    private List<DraftQuestion> draftQuestions;
+
+    @OneToMany(
+            mappedBy = "createdBy",
+            cascade = CascadeType.REMOVE
+    )
+    @JsonBackReference
+    private List<DraftExam> draftExams;
+
+    @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.REMOVE
     )

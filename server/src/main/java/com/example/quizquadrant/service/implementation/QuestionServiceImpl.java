@@ -34,6 +34,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final SolutionService solutionService;
     private final OptionService optionService;
     private final UserService userService;
+    private final DraftQuestionService draftQuestionService;
 
     @Override
     public ResponseEntity<BooleanResponseDto> create(
@@ -50,6 +51,14 @@ public class QuestionServiceImpl implements QuestionService {
 
 //        save question, solution and options in database
         Question question = create(questionDto, questionDto.isPublic(), user);
+
+//        delete draft question if exists
+        if (
+                questionDto.id() != null &&
+                        !questionDto.id().toString().isEmpty()
+        ) {
+            draftQuestionService.deleteDraftQuestionById(questionDto.id());
+        }
 
 //        response
         return ResponseEntity
@@ -400,7 +409,7 @@ public class QuestionServiceImpl implements QuestionService {
     public QuestionDto createQuestionDtoFromQuestion(
             Question question
     ) {
-        //        create list of option dtos
+//        create list of option dtos
         List<OptionDto> optionDtos = new ArrayList<>();
         for (Option option : question.getOptions()) {
 //            create option dto and add it to option dto list

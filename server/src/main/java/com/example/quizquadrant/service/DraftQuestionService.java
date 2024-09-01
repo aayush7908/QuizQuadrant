@@ -3,22 +3,24 @@ package com.example.quizquadrant.service;
 import com.example.quizquadrant.dto.BooleanResponseDto;
 import com.example.quizquadrant.dto.ExamDto;
 import com.example.quizquadrant.dto.IdResponseDto;
+import com.example.quizquadrant.dto.QuestionDto;
 import com.example.quizquadrant.model.DraftExam;
+import com.example.quizquadrant.model.DraftQuestion;
 import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 import java.util.UUID;
 
-public interface DraftExamService {
+public interface DraftQuestionService {
 
     //    controller service methods
     ResponseEntity<IdResponseDto> create(
-            ExamDto examDto
+            QuestionDto questionDto
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> update(
-            ExamDto examDto,
+            QuestionDto questionDto,
             String id
     ) throws Exception;
 
@@ -26,27 +28,27 @@ public interface DraftExamService {
             String id
     ) throws Exception;
 
-    ResponseEntity<List<ExamDto>> getMyDraftExams(
+    ResponseEntity<List<QuestionDto>> getMyDraftQuestions(
             Integer pageNumber,
             Integer pageSize
     ) throws Exception;
 
-    ResponseEntity<ExamDto> getDraftExamById(
+    ResponseEntity<QuestionDto> getDraftQuestionById(
             String id
     ) throws Exception;
 
     //    helper methods
-    DraftExam getDraftExamById(
+    DraftQuestion getDraftQuestionById(
             UUID id
     ) throws Exception;
 
-    void deleteDraftExamById(
+    void deleteDraftQuestionById(
             UUID id
     ) throws Exception;
 
-    void authorizeUserDraftExam(
+    void authorizeUserDraftQuestion(
             User user,
-            DraftExam draftExam
+            DraftQuestion draftQuestion
     ) throws Exception;
 
 }

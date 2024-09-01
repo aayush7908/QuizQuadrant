@@ -97,9 +97,9 @@ export function Page3({
                 {
                     exam.candidates.map((candidate: User, index: number) => {
                         return (
-                            <div key={index} className="px-3 flex gap-3 items-center border border-gray-400 rounded-md bg-muted text-lg">
+                            <div key={index} className="max-w-[17rem] xs:max-w-screen-xs overflow-x-auto px-3 flex gap-3 items-center border border-gray-400 rounded-md bg-muted text-lg">
                                 <span>{candidate.email}</span>
-                                <Trash2 className="size-5 cursor-pointer" onClick={() => { handleDeleteCandidate(index) }} />
+                                <Trash2 className="size-5 cursor-pointer shrink-0" onClick={() => { handleDeleteCandidate(index) }} />
                             </div>
                         )
                     })

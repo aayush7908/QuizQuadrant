@@ -24,6 +24,7 @@ export function SideMenuNav({
         const newQuestion = {
             id: "",
             type: "",
+            isPublic: false,
             positiveMarks: 0,
             negativeMarks: 0,
             statement: "",

@@ -115,6 +115,7 @@ export function ExamForm({
                 {
                     id: "",
                     type: "",
+                    isPublic: false,
                     positiveMarks: 0,
                     negativeMarks: 0,
                     statement: "",

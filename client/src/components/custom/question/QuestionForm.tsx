@@ -8,12 +8,17 @@ import { useContext, useEffect, useState } from "react"
 import { schema } from "@/lib/zod-schema/question/question"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
-import { useRouter } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { error } from "@/lib/type/response/error/error"
 import { useToast } from "@/components/ui/use-toast"
 import { SubmitButton } from "../SubmitButton"
 import { SubjectContext } from "@/context/subject/SubjectContext"
 import { Question } from "@/lib/type/model/Question"
+import { updateDraftQuestionAPI } from "@/actions/draft/question/update"
+import { createDraftQuestionAPI } from "@/actions/draft/question/create"
+import { Subtopic } from "@/lib/type/model/Subtopic"
+import { Option } from "@/lib/type/model/Option"
+import { Solution } from "@/lib/type/model/Solution"
 
 export default function QuestionForm({
     successMessage,
@@ -21,7 +26,7 @@ export default function QuestionForm({
     defaultFormData
 }: {
     successMessage: string,
-    onSubmit: (formData: z.infer<typeof schema>) => Promise<{
+    onSubmit: (formData: Question) => Promise<{
         success: boolean;
         error?: error | undefined;
     }>,
@@ -32,14 +37,63 @@ export default function QuestionForm({
     const { subjects } = useContext(SubjectContext);
     const { toast } = useToast();
     const router = useRouter();
+    const path = usePathname();
+
+    const createQuestionFromSchema = (formData: z.infer<typeof schema>) => {
+        return {
+            id: formData.id,
+            type: formData.type,
+            isPublic: formData.visibility === "PUBLIC",
+            statement: formData.statement,
+            imageUrl: formData.imageUrl,
+            subtopic: {
+                id: formData.subtopic,
+                subject: {
+                    id: formData.subject
+                }
+            } as Subtopic,
+            options: [
+                {
+                    id: defaultFormData?.options[0].id,
+                    statement: formData.options[0].statement,
+                    imageUrl: formData.options[0].imageUrl,
+                    isCorrect: formData.options[0].isCorrect
+                } as Option,
+                {
+                    id: defaultFormData?.options[1].id,
+                    statement: formData.options[1].statement,
+                    imageUrl: formData.options[1].imageUrl,
+                    isCorrect: formData.options[1].isCorrect
+                } as Option,
+                {
+                    id: defaultFormData?.options[2].id,
+                    statement: formData.options[2].statement,
+                    imageUrl: formData.options[2].imageUrl,
+                    isCorrect: formData.options[2].isCorrect
+                } as Option,
+                {
+                    id: defaultFormData?.options[3].id,
+                    statement: formData.options[3].statement,
+                    imageUrl: formData.options[3].imageUrl,
+                    isCorrect: formData.options[3].isCorrect
+                } as Option
+            ],
+            solution: {
+                id: defaultFormData?.solution.id,
+                statement: formData.solution.statement,
+                imageUrl: formData.solution.imageUrl
+            } as Solution
+        } as Question;
+    }
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: defaultFormData ? {
+            id: defaultFormData.id,
             visibility: defaultFormData.isPublic ? "PUBLIC" : "PRIVATE",
             type: defaultFormData.type,
-            subject: defaultFormData.subtopic.subject.id,
-            subtopic: defaultFormData.subtopic.id,
+            subject: defaultFormData.subtopic?.subject?.id || undefined,
+            subtopic: defaultFormData.subtopic?.id,
             statement: defaultFormData.statement,
             imageUrl: defaultFormData.imageUrl,
             options: [
@@ -110,7 +164,7 @@ export default function QuestionForm({
 
     const handleOnSubmit = async (data: z.infer<typeof schema>) => {
         setIsProcessing(true);
-        const { success, error } = await onSubmit(data);
+        const { success, error } = await onSubmit(createQuestionFromSchema(form.getValues()));
         if (success && data) {
             toast({
                 title: successMessage
@@ -125,14 +179,39 @@ export default function QuestionForm({
         setIsProcessing(false);
     }
 
-    useEffect(() => { }, [defaultFormData]);
-
     const onCancel = async () => {
         const isConfirm = window.confirm("All your data will be lost. Do you want to cancel ?");
         if (isConfirm) {
             router.back();
         }
     }
+
+    const handleSaveDraft = async () => {
+        const question = createQuestionFromSchema(form.getValues());
+        setIsProcessing(true);
+        let res;
+        if (question.id && question.id !== "") {
+            res = await updateDraftQuestionAPI(question, question.id);
+        } else {
+            res = await createDraftQuestionAPI(question);
+            if (res.data) {
+                form.setValue("id", res.data.id);
+            }
+        }
+        if (res.success && res.data) {
+            toast({
+                title: "Draft saved successfully"
+            });
+        } else if (res.error) {
+            toast({
+                title: res.error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
+    }
+
+    useEffect(() => { }, [defaultFormData]);
 
     return (
         <Form {...form}>
@@ -347,9 +426,30 @@ export default function QuestionForm({
                             )}
                         />
                     </div>
-                    <div className="flex justify-center gap-3">
-                        <SubmitButton displayName="Save" type="submit" isProcessing={isProcessing} onSubmit={() => { }} />
-                        <SubmitButton variant="destructive" displayName="Cancel" type="button" isProcessing={isProcessing} onSubmit={onCancel} />
+                    <div className="flex flex-wrap justify-center gap-3">
+                        {
+                            !path.startsWith("/question/edit") && (
+                                <SubmitButton
+                                    displayName="Save as draft"
+                                    type="button"
+                                    isProcessing={isProcessing}
+                                    onSubmit={handleSaveDraft}
+                                />
+                            )
+                        }
+                        <SubmitButton
+                            displayName="Save"
+                            type="submit"
+                            isProcessing={isProcessing}
+                            onSubmit={() => { }}
+                        />
+                        <SubmitButton
+                            variant="destructive"
+                            displayName="Cancel"
+                            type="button"
+                            isProcessing={isProcessing}
+                            onSubmit={onCancel}
+                        />
                     </div>
                 </div>
             </form>

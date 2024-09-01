@@ -17,6 +17,13 @@ public interface ExamQuestionService {
             Integer negativeMarks
     ) throws Exception;
 
+    ExamQuestion createOrUpdate(
+            Exam exam,
+            Question question,
+            Integer positiveMarks,
+            Integer negativeMarks
+    ) throws Exception;
+
     void delete(
             Exam exam,
             Question question

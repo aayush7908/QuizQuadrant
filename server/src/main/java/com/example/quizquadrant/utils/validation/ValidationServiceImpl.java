@@ -198,6 +198,7 @@ public class ValidationServiceImpl implements ValidationService {
         }
         validateExamStartDateTime(examDto.startDateTime());
         for (QuestionDto questionDto : examDto.questions()) {
+            System.out.println("svdlknsfv");
             validateExamQuestionInput(questionDto);
         }
         for (UserDto userDto : examDto.candidates()) {

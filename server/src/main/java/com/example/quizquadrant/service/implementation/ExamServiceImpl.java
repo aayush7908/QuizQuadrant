@@ -38,6 +38,7 @@ public class ExamServiceImpl implements ExamService {
     public ResponseEntity<BooleanResponseDto> create(
             ExamDto examDto
     ) throws Exception {
+        System.out.println(examDto);
 //        validate input data
         validationService.validateCreateExamInput(examDto);
 
@@ -78,11 +79,8 @@ public class ExamServiceImpl implements ExamService {
         }
 
 //        delete draft exam if present
-        if (
-                examDto.id() != null &&
-                        !examDto.id().toString().isEmpty()
-        ) {
-            draftExamService.deleteDraftById(examDto.id());
+        if (examDto.id() != null) {
+            draftExamService.deleteDraftExamById(examDto.id());
         }
 
 //        response
@@ -271,9 +269,62 @@ public class ExamServiceImpl implements ExamService {
         List<QuestionDto> questionDtos = new ArrayList<>();
         for (ExamQuestion examQuestion : exam.getQuestions()) {
             Question question = questionService.getQuestionById(examQuestion.getQuestion().getId());
-            questionDtos.add(
-                    questionService.createQuestionDtoFromQuestion(question)
-            );
+
+//        create list of option dtos
+            List<OptionDto> optionDtos = new ArrayList<>();
+            for (Option option : question.getOptions()) {
+//            create option dto and add it to option dto list
+                optionDtos.add(
+                        OptionDto
+                                .builder()
+                                .id(option.getId())
+                                .statement(option.getStatement())
+                                .imageUrl(option.getImageUrl())
+                                .isCorrect(option.getIsCorrect())
+                                .build()
+                );
+            }
+
+//        create subtopic dto
+            SubtopicDto subtopicDto = SubtopicDto
+                    .builder()
+                    .id(question.getSubtopic().getId())
+                    .name(question.getSubtopic().getName())
+                    .subject(
+                            SubjectDto
+                                    .builder()
+                                    .id(question.getSubtopic().getSubject().getId())
+                                    .name(question.getSubtopic().getSubject().getName())
+                                    .build()
+                    )
+                    .build();
+
+//        create solution dto
+            SolutionDto solutionDto = SolutionDto
+                    .builder()
+                    .id(question.getSolution().getId())
+                    .statement(question.getSolution().getStatement())
+                    .imageUrl(question.getSolution().getImageUrl())
+                    .build();
+
+//        create question dto
+            QuestionDto questionDto = QuestionDto
+                    .builder()
+                    .id(question.getId())
+                    .positiveMarks(examQuestion.getPositiveMarks())
+                    .negativeMarks(examQuestion.getNegativeMarks())
+                    .type(question.getType().name())
+                    .isPublic(question.getIsPublic())
+                    .statement(question.getStatement())
+                    .imageUrl(question.getImageUrl())
+                    .lastModifiedOn(question.getLastModifiedOn())
+                    .subtopic(subtopicDto)
+                    .options(optionDtos)
+                    .solution(solutionDto)
+                    .build();
+
+//            add question dto to list
+            questionDtos.add(questionDto);
         }
 
 //        create candidate dtos
@@ -350,7 +401,7 @@ public class ExamServiceImpl implements ExamService {
                 question = questionService.getQuestionById(questionDto.id());
                 questionService.authorizeUserQuestion(user, question);
             }
-            examQuestionService.create(
+            examQuestionService.createOrUpdate(
                     exam,
                     question,
                     questionDto.positiveMarks(),

@@ -9,6 +9,7 @@ type User = {
     isEmailVerified: boolean,
     totalQuestions: number,
     totalExams: number,
+    totalDraftQuestions: number,
     totalDraftExams: number
 };
 

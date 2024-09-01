@@ -100,7 +100,11 @@ export function QuestionCard({ data, index }: { data: Question, index: number })
             </CardContent>
             <CardFooter>
                 <div className={`w-full flex justify-center ${isSolutionVisible ? "hidden" : "flex"}`}>
-                    <Button onClick={handleCheckAnswer}>Check Answer</Button>
+                    <Button
+                        onClick={handleCheckAnswer}
+                    >
+                        Check Answer
+                    </Button>
                 </div>
             </CardFooter>
         </Card>

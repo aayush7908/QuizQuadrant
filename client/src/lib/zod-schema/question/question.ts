@@ -2,6 +2,7 @@ import { questionTypeRegex, questionVisibilityRegex } from "@/lib/regex";
 import { z } from "zod";
 
 const schema = z.object({
+    id: z.string().length(36).optional(),
     visibility: z.string().regex(questionVisibilityRegex, { message: "Select question visibility" }),
     type: z.string().regex(questionTypeRegex, { message: "Select question type" }),
     subject: z.string().length(36, { message: "Select a subject" }),

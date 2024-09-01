@@ -18,6 +18,7 @@ public record UserDto(
         Boolean isEmailVerified,
         Integer totalQuestions,
         Integer totalExams,
-        Integer totalDraftExams
+        Integer totalDraftExams,
+        Integer totalDraftQuestions
 ) {
 }
