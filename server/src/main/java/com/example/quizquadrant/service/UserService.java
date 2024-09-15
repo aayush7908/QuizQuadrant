@@ -9,28 +9,36 @@ import java.util.UUID;
 public interface UserService {
 
     //    controller service methods
-    ResponseEntity<BooleanResponseDto> verifyEmail(
-            VerifyEmailRequestDto verifyEmailRequestDto
-    ) throws Exception;
-
     ResponseEntity<BooleanResponseDto> resetPassword(
             ResetPasswordDto resetPasswordDto
     ) throws Exception;
 
+    ResponseEntity<AuthenticationResponseDto> authenticate();
+
+    ResponseEntity<BooleanResponseDto> verifyEmail(
+            VerifyEmailRequestDto verifyEmailRequestDto
+    ) throws Exception;
+
     ResponseEntity<BooleanResponseDto> updateName(
-            UserDto userDto
+            UpdateUserNameRequestDto updateUserNameRequestDto
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> updateProfileImage(
-            UserDto userDto
+            UpdateUserProfileImageRequestDto updateUserProfileImageRequestDto
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> delete() throws Exception;
 
-    ResponseEntity<UserDto> getProfile() throws Exception;
+    ResponseEntity<UserProfileResponseDto> getProfile() throws Exception;
 
 
-    //    helper methods
+    //    repository access methods
+    User createUser(User user);
+
+    User updateUser(User user);
+
+    void deleteUser(UUID id);
+
     User getUserByEmail(
             String email
     ) throws Exception;
@@ -39,8 +47,16 @@ public interface UserService {
             UUID id
     ) throws Exception;
 
+    boolean checkUserExistsByEmail(
+            String email
+    );
+
+
+    //    helper methods
     void authorizeUser(
             User user
     ) throws Exception;
+
+    User getAuthenticatedUser();
 
 }

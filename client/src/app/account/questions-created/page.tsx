@@ -1,12 +1,13 @@
 "use client"
 
-import { getMyQuestionsAPI } from "@/actions/question/get/my";
+import { getMyQuestionsAction } from "@/actions/account/questions-created/get-my-questions-action";
 import { QuestionCard } from "@/components/custom/account/questions-created/QuestionCard";
 import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
 import { Loader } from "@/components/custom/Loader";
 import { useToast } from "@/components/ui/use-toast";
 import { AuthContext } from "@/context/auth/AuthContext";
 import { Question } from "@/lib/type/model/Question";
+import { validateTeacherAccess } from "@/lib/validation/validate-access";
 import { PlusSquare } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -22,7 +23,7 @@ export default function QuestionsCreated() {
     const router = useRouter();
 
     const fetchFunction = async (pageNumber: number) => {
-        const { success, data, error } = await getMyQuestionsAPI(pageNumber);
+        const { success, data, error } = await getMyQuestionsAction(pageNumber);
         if (success && data) {
             return data;
         } else if (error) {
@@ -34,7 +35,7 @@ export default function QuestionsCreated() {
     }
 
     useEffect(() => {
-        if (!user || (!user.isEmailVerified && user.role !== "TEACHER" && user.role !== "ADMIN")) {
+        if (!validateTeacherAccess(user)) {
             toast({
                 title: "Access Denied",
                 variant: "destructive"
@@ -60,7 +61,7 @@ export default function QuestionsCreated() {
     return (
         <>
             {
-                user && user.isEmailVerified && (user.role === "TEACHER" || user.role === "ADMIN") ? (
+                validateTeacherAccess(user) ? (
                     <div className="p-[1rem] md:p-[2rem] lg:p-[3rem] pb-[3rem] grid gap-5">
                         <div className="flex justify-end">
                             <Link href={"/question/create"} className="h-[2.5rem] flex items-center gap-2 text-base bg-black text-white py-2 px-3 rounded-md cursor-pointer">

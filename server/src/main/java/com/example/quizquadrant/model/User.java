@@ -63,7 +63,7 @@ public class User implements UserDetails {
 
     @Column(
             name = "profile_image_url",
-            columnDefinition = "TINYTEXT"
+            columnDefinition = "TEXT"
     )
     private String profileImageUrl;
 

@@ -47,7 +47,7 @@ public class Question {
 
     @Column(
             name = "image_url",
-            columnDefinition = "TINYTEXT"
+            columnDefinition = "TEXT"
     )
     private String imageUrl;
 
@@ -61,6 +61,7 @@ public class Question {
     @ManyToOne
     @JoinColumn(
             name = "subtopic_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_question_subtopic")
     )
@@ -70,6 +71,7 @@ public class Question {
     @ManyToOne
     @JoinColumn(
             name = "created_by",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_question_user")
     )

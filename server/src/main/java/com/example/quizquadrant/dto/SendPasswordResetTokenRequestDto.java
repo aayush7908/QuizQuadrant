@@ -3,7 +3,7 @@ package com.example.quizquadrant.dto;
 import lombok.Builder;
 
 @Builder
-public record VerifyEmailRequestDto(
+public record SendPasswordResetTokenRequestDto(
         String email,
         String otp
 ) {

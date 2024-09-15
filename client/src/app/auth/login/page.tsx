@@ -1,7 +1,6 @@
 "use client"
 
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
@@ -10,19 +9,17 @@ import {
     CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useContext, useState } from "react"
-import { schema } from "@/lib/zod-schema/login/login"
+import { schema } from "@/lib/zod-schema/auth/login/login-form-schema"
 import { AuthContext } from "@/context/auth/AuthContext"
 import { useToast } from "@/components/ui/use-toast"
-import { req } from "@/lib/type/request/auth/login"
-import { loginAPI } from "@/actions/auth/login"
-import { Loader2 } from "lucide-react"
+import { req } from "@/lib/type/request/auth/login/login-form-request"
+import { loginAction } from "@/actions/auth/login/login-form-action"
 import { useRouter } from "next/navigation"
 import { SubmitButton } from "@/components/custom/SubmitButton"
 
@@ -48,7 +45,7 @@ export default function Login() {
             email: formData.email,
             password: formData.password
         } as req;
-        const { success, data, error } = await loginAPI(reqBody);
+        const { success, data, error } = await loginAction(reqBody);
         if (success && data) {
             authenticate(data.user);
             toast({
@@ -84,7 +81,12 @@ export default function Login() {
                                         <FormItem>
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="me@gmail.com" {...field} type="email" required />
+                                                <Input
+                                                    placeholder="me@gmail.com"
+                                                    {...field}
+                                                    type="email"
+                                                    required
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -99,7 +101,11 @@ export default function Login() {
                                         <FormItem>
                                             <FormLabel>Password</FormLabel>
                                             <FormControl>
-                                                <Input {...field} type={isPasswordVisible ? "text" : "password"} required />
+                                                <Input
+                                                    {...field}
+                                                    type={isPasswordVisible ? "text" : "password"}
+                                                    required
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -108,14 +114,27 @@ export default function Login() {
                             </div>
                             <div className="grid gap-2">
                                 <div className="flex items-center gap-2 text-sm">
-                                    <Checkbox id="showPassword" onClick={() => setIsPasswordVisible(isPasswordVisible => !isPasswordVisible)} />
+                                    <Checkbox
+                                        id="showPassword"
+                                        onClick={() => {
+                                            setIsPasswordVisible(isPasswordVisible => !isPasswordVisible)
+                                        }}
+                                    />
                                     <label htmlFor="showPassword">Show Password</label>
                                 </div>
-                                <Link href="/auth/forgot-password" className="ml-auto inline-block text-sm underline">
+                                <Link
+                                    href="/auth/forgot-password"
+                                    className="ml-auto inline-block text-sm underline"
+                                >
                                     Forgot your password?
                                 </Link>
                             </div>
-                            <SubmitButton type="submit" displayName="Login" isProcessing={isProcessing} onSubmit={() => { }} />
+                            <SubmitButton
+                                type="submit"
+                                displayName="Login"
+                                isProcessing={isProcessing}
+                                onSubmit={() => { }}
+                            />
                         </div>
                         <div className="mt-4 text-center text-sm">
                             Don&apos;t have an account?{" "}

@@ -1,9 +1,8 @@
 package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.QuestionDto;
+import com.example.quizquadrant.dto.SubjectRequestDto;
 import com.example.quizquadrant.dto.SubjectDto;
-import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subject;
 import org.springframework.http.ResponseEntity;
 
@@ -14,11 +13,11 @@ public interface SubjectService {
 
     //    controller service methods
     ResponseEntity<BooleanResponseDto> create(
-            SubjectDto subjectDto
+            SubjectRequestDto subjectRequestDto
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> update(
-            SubjectDto subjectDto,
+            SubjectRequestDto subjectRequestDto,
             String id
     ) throws Exception;
 
@@ -28,12 +27,21 @@ public interface SubjectService {
 
     ResponseEntity<List<SubjectDto>> getAll() throws Exception;
 
-    ResponseEntity<SubjectDto> getById(
+    ResponseEntity<SubjectDto> getSubjectById(
             String id
     ) throws Exception;
 
-    //    helper methods
+    //    repository access methods
+    Subject createSubject(Subject subject);
+
+    Subject updateSubject(Subject subject);
+
+    void deleteSubject(UUID id);
+
+    List<Subject> getAllSubjects();
+
     Subject getSubjectById(
             UUID id
     ) throws Exception;
+
 }

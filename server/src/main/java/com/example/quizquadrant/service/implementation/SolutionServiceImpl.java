@@ -1,26 +1,14 @@
 package com.example.quizquadrant.service.implementation;
 
-import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.QuestionDto;
-import com.example.quizquadrant.dto.SolutionDto;
+import com.example.quizquadrant.dto.SolutionRequestDto;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Solution;
-import com.example.quizquadrant.model.Subtopic;
-import com.example.quizquadrant.model.User;
-import com.example.quizquadrant.model.type.QuestionType;
-import com.example.quizquadrant.repository.QuestionRepository;
 import com.example.quizquadrant.repository.SolutionRepository;
-import com.example.quizquadrant.service.QuestionService;
 import com.example.quizquadrant.service.SolutionService;
-import com.example.quizquadrant.service.SubtopicService;
 import com.example.quizquadrant.utils.error.NotFoundError;
-import com.example.quizquadrant.utils.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,32 +18,62 @@ public class SolutionServiceImpl implements SolutionService {
 
     private final SolutionRepository solutionRepository;
 
+    //    controller service methods
     @Override
-    public void create(
-            SolutionDto solutionDto,
+    public Solution create(
+            SolutionRequestDto solutionRequestDto,
             Question question
-    ) throws Exception {
-        solutionRepository.save(
-                Solution
-                        .builder()
-                        .statement(solutionDto.statement())
-                        .imageUrl(solutionDto.imageUrl())
-                        .question(question)
-                        .build()
-        );
+    ) {
+//        create solution
+        Solution solution = Solution
+                .builder()
+                .statement(solutionRequestDto.statement())
+                .imageUrl(solutionRequestDto.imageUrl())
+                .question(question)
+                .build();
+
+//        save in database
+        return createSolution(solution);
     }
 
     @Override
-    public void update(
-            SolutionDto solutionDto
+    public Solution update(
+            SolutionRequestDto solutionRequestDto,
+            Question question
     ) throws Exception {
-//        fetch solution by id
-        Solution solution = getSolutionById(solutionDto.id());
+//        fetch solution by question
+        Solution solution = getSolutionByQuestion(question);
 
-//        update solution in database
-        solution.setStatement(solutionDto.statement());
-        solution.setImageUrl(solutionDto.imageUrl());
-        solutionRepository.save(solution);
+//        update solution
+        solution.setStatement(solutionRequestDto.statement());
+        solution.setImageUrl(solutionRequestDto.imageUrl());
+
+//        save in database
+        return updateSolution(solution);
+    }
+
+    //    repository access methods
+    @Override
+    public Solution createSolution(
+            Solution solution
+    ) {
+        return solutionRepository.save(solution);
+    }
+
+    @Override
+    public Solution updateSolution(
+            Solution solution
+    ) {
+        return solutionRepository.save(solution);
+    }
+
+    @Override
+    public Solution getSolutionByQuestion(Question question) throws Exception {
+        Optional<Solution> solutionOptional = solutionRepository.findByQuestion(question);
+        if (solutionOptional.isEmpty()) {
+            throw new NotFoundError("Solution not found");
+        }
+        return solutionOptional.get();
     }
 
     @Override

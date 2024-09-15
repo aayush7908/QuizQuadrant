@@ -1,29 +1,25 @@
 "use client"
 
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
 import {
     Card,
     CardContent,
-    CardDescription,
     CardHeader,
     CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { useContext, useState } from "react"
-import { schema } from "@/lib/zod-schema/register/register"
+import { schema } from "@/lib/zod-schema/auth/register/register-form-schema"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { registerAPI } from "@/actions/auth/register"
-import { req } from "@/lib/type/request/auth/register"
+import { registerAction } from "@/actions/auth/register/register-form-action"
+import { req } from "@/lib/type/request/auth/register/register-form-request"
 import { AuthContext } from "@/context/auth/AuthContext"
 import { useToast } from "@/components/ui/use-toast"
-import { Loader, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
 import { SubmitButton } from "@/components/custom/SubmitButton"
 
@@ -56,7 +52,7 @@ export default function Register() {
             lastName: formData.lastName,
             role: formData.role
         } as req;
-        const { success, data, error } = await registerAPI(reqBody);
+        const { success, data, error } = await registerAction(reqBody);
         if (success && data) {
             authenticate(data.user);
             toast({
@@ -91,7 +87,12 @@ export default function Register() {
                                                 <FormItem>
                                                     <FormLabel>First Name</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="John" {...field} type="text" required />
+                                                        <Input
+                                                            placeholder="John"
+                                                            {...field}
+                                                            type="text"
+                                                            required
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -106,7 +107,12 @@ export default function Register() {
                                                 <FormItem>
                                                     <FormLabel>Last Name</FormLabel>
                                                     <FormControl>
-                                                        <Input placeholder="Doe" {...field} type="text" required />
+                                                        <Input
+                                                            placeholder="Doe"
+                                                            {...field}
+                                                            type="text"
+                                                            required
+                                                        />
                                                     </FormControl>
                                                     <FormMessage />
                                                 </FormItem>
@@ -121,10 +127,15 @@ export default function Register() {
                                         render={({ field }) => (
                                             <FormItem>
                                                 <FormLabel>Role</FormLabel>
-                                                <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                                <Select
+                                                    onValueChange={field.onChange}
+                                                    defaultValue={field.value}
+                                                >
                                                     <FormControl>
                                                         <SelectTrigger>
-                                                            <SelectValue placeholder="Select a Role" />
+                                                            <SelectValue
+                                                                placeholder="Select a Role"
+                                                            />
                                                         </SelectTrigger>
                                                     </FormControl>
                                                     <SelectContent>
@@ -148,7 +159,12 @@ export default function Register() {
                                             <FormItem>
                                                 <FormLabel>Email</FormLabel>
                                                 <FormControl>
-                                                    <Input placeholder="me@gmail.com" {...field} type="email" required />
+                                                    <Input
+                                                        placeholder="me@gmail.com"
+                                                        {...field}
+                                                        type="email"
+                                                        required
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -165,7 +181,11 @@ export default function Register() {
                                             <FormItem>
                                                 <FormLabel>Password</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} type={isPasswordVisible ? "text" : "password"} required />
+                                                    <Input
+                                                        {...field}
+                                                        type={isPasswordVisible ? "text" : "password"}
+                                                        required
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -180,7 +200,11 @@ export default function Register() {
                                             <FormItem>
                                                 <FormLabel>Confirm Password</FormLabel>
                                                 <FormControl>
-                                                    <Input {...field} type={isPasswordVisible ? "text" : "password"} required />
+                                                    <Input
+                                                        {...field}
+                                                        type={isPasswordVisible ? "text" : "password"}
+                                                        required
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -188,7 +212,12 @@ export default function Register() {
                                     />
                                 </div>
                                 <div className="flex items-center gap-2 text-sm">
-                                    <Checkbox id="showPassword" onClick={() => setIsPasswordVisible(isPasswordVisible => !isPasswordVisible)} />
+                                    <Checkbox
+                                        id="showPassword"
+                                        onClick={() => {
+                                            setIsPasswordVisible(isPasswordVisible => !isPasswordVisible);
+                                        }}
+                                    />
                                     <label htmlFor="showPassword">Show Password</label>
                                 </div>
                                 <div className="mt-4 text-center text-sm">
@@ -200,7 +229,12 @@ export default function Register() {
                             </div>
                         </div>
                         <div className="flex justify-center mt-4">
-                            <SubmitButton type="submit" displayName="Register" isProcessing={isProcessing} onSubmit={() => { }} />
+                            <SubmitButton
+                                type="submit"
+                                displayName="Register"
+                                isProcessing={isProcessing}
+                                onSubmit={() => { }}
+                            />
                         </div>
                     </CardContent>
                 </Card>

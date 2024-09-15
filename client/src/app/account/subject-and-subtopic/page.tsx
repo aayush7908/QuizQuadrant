@@ -4,6 +4,7 @@ import { SubjectCard } from "@/components/custom/account/subject-and-subtopic/Su
 import { useToast } from "@/components/ui/use-toast";
 import { AuthContext } from "@/context/auth/AuthContext";
 import { SubjectContext } from "@/context/subject/SubjectContext"
+import { validateAdminAccess } from "@/lib/validation/validate-access";
 import { PlusSquare } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,7 +18,7 @@ export default function SubjectAndSubtopic() {
     const router = useRouter();
 
     useEffect(() => {
-        if (!user || user.role !== "ADMIN") {
+        if (!validateAdminAccess(user)) {
             toast({
                 title: "Access Denied",
                 variant: "destructive"
@@ -30,14 +31,20 @@ export default function SubjectAndSubtopic() {
     return (
         <>
             {
-                user && user.role === "ADMIN" ? (
+                validateAdminAccess(user) ? (
                     <div className="p-[1rem] md:p-[2rem] lg:p-[3rem] pb-[3rem] grid gap-5">
                         <div className="flex flex-wrap gap-3 justify-end">
-                            <Link href={"/subject/create"} className="h-[2.5rem] flex items-center gap-2 text-base bg-black text-white py-2 px-3 rounded-md cursor-pointer">
+                            <Link
+                                href={"/subject/create"}
+                                className="h-[2.5rem] flex items-center gap-2 text-base bg-black text-white py-2 px-3 rounded-md cursor-pointer"
+                            >
                                 <PlusSquare />
                                 <span>Create Subject</span>
                             </Link>
-                            <Link href={"/subtopic/create"} className="h-[2.5rem] flex items-center gap-2 text-base bg-black text-white py-2 px-3 rounded-md cursor-pointer">
+                            <Link
+                                href={"/subtopic/create"}
+                                className="h-[2.5rem] flex items-center gap-2 text-base bg-black text-white py-2 px-3 rounded-md cursor-pointer"
+                            >
                                 <PlusSquare />
                                 <span>Create Subtopic</span>
                             </Link>
@@ -50,7 +57,9 @@ export default function SubjectAndSubtopic() {
                                     )
                                 })
                             ) : (
-                                <div className="h-full flex justify-center text-xl">No subjects created</div>
+                                <div className="h-full flex justify-center text-xl">
+                                    No subjects created
+                                </div>
                             )
                         }
                     </div>

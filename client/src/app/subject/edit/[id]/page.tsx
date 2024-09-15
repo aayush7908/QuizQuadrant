@@ -1,14 +1,15 @@
 "use client"
 
-import { getSubjectByIdAPI } from "@/actions/subject/get/id";
-import { updateSubjectAPI } from "@/actions/subject/update";
+import { getSubjectByIdAction } from "@/actions/subject/get/get-subject-action";
+import { updateSubjectAction } from "@/actions/subject/edit/update-subject-action";
 import { Loader } from "@/components/custom/Loader";
 import { SubjectForm } from "@/components/custom/subject/SubjectForm";
 import { useToast } from "@/components/ui/use-toast";
 import { Subject } from "@/lib/type/model/Subject";
-import { schema } from "@/lib/zod-schema/subject/subject";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { schema } from "@/lib/zod-schema/subject/subject-form-schema";
+import { req } from "@/lib/type/request/subject/subject-form-request";
 
 export default function EditSubject({ params }: { params: { id: string } }) {
 
@@ -19,14 +20,14 @@ export default function EditSubject({ params }: { params: { id: string } }) {
     const onSubmit = async (data: z.infer<typeof schema>) => {
         const reqBody = {
             name: data.name
-        } as Subject;
-        return await updateSubjectAPI(reqBody, params.id);
+        } as req;
+        return await updateSubjectAction(reqBody, params.id);
     }
 
     useEffect(() => {
         (async () => {
             setIsProcessing(true);
-            const { success, data, error } = await getSubjectByIdAPI(params.id);
+            const { success, data, error } = await getSubjectByIdAction(params.id);
             if (success && data) {
                 setSubject(data);
             } else if (error) {
@@ -49,7 +50,11 @@ export default function EditSubject({ params }: { params: { id: string } }) {
             {
                 subject && (
                     <div className="h-full flex justify-center items-center">
-                        <SubjectForm successMessage="Subject updated successully" onSubmit={onSubmit} defaultFormData={subject} />
+                        <SubjectForm
+                            successMessage="Subject Updated Successully"
+                            onSubmit={onSubmit}
+                            defaultFormData={subject}
+                        />
                     </div>
                 )
             }

@@ -29,7 +29,10 @@ export default function QuestionLayout({
     return (
         <>
             {
-                user && user.isEmailVerified && (user.role === "TEACHER" || user.role === "ADMIN") ? (
+                user && (
+                    (user.role === "TEACHER" && user.isEmailVerified) ||
+                    user.role === "ADMIN"
+                ) ? (
                     <>
                         {children}
                     </>

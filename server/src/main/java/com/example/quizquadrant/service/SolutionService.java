@@ -1,24 +1,35 @@
 package com.example.quizquadrant.service;
 
-import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.QuestionDto;
-import com.example.quizquadrant.dto.SolutionDto;
+import com.example.quizquadrant.dto.SolutionRequestDto;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Solution;
-import org.springframework.http.ResponseEntity;
 
 import java.util.UUID;
 
 public interface SolutionService {
 
-    //    helper methods
-    void create(
-            SolutionDto solutionDto,
+    //    controller service methods
+    Solution create(
+            SolutionRequestDto solutionRequestDto,
+            Question question
+    );
+
+    Solution update(
+            SolutionRequestDto solutionRequestDto,
             Question question
     ) throws Exception;
 
-    void update(
-            SolutionDto solutionDto
+    //    repository access methods
+    Solution createSolution(
+            Solution solution
+    );
+
+    Solution updateSolution(
+            Solution solution
+    ) throws Exception;
+
+    Solution getSolutionByQuestion(
+            Question question
     ) throws Exception;
 
     Solution getSolutionById(

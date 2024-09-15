@@ -1,6 +1,8 @@
 package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
+import com.example.quizquadrant.dto.mapper.QuestionDtoMapper;
 import com.example.quizquadrant.model.*;
 import com.example.quizquadrant.model.type.QuestionType;
 import com.example.quizquadrant.model.type.Role;
@@ -14,7 +16,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -35,90 +36,76 @@ public class QuestionServiceImpl implements QuestionService {
     private final OptionService optionService;
     private final UserService userService;
     private final DraftQuestionService draftQuestionService;
+    private final BooleanResponseDtoMapper booleanResponseDtoMapper;
+    private final QuestionDtoMapper questionDtoMapper;
 
+    //    controller service methods
     @Override
     public ResponseEntity<BooleanResponseDto> create(
-            QuestionDto questionDto
+            QuestionRequestDto questionRequestDto,
+            String draftId
     ) throws Exception {
 //        validate input data
-        validationService.validateCreateQuestionInput(questionDto);
+        validationService.validateQuestionRequestInput(questionRequestDto);
 
 //        find authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getAuthenticatedUser();
 
 //        authorize user
         userService.authorizeUser(user);
 
-//        save question, solution and options in database
-        Question question = create(questionDto, questionDto.isPublic(), user);
+//        save question in database
+        Question question = create(questionRequestDto, user);
 
 //        delete draft question if exists
-        if (
-                questionDto.id() != null &&
-                        !questionDto.id().toString().isEmpty()
-        ) {
-            draftQuestionService.deleteDraftQuestionById(questionDto.id());
+        if (draftId != null && !draftId.isEmpty()) {
+            draftQuestionService
+                    .deleteDraftQuestion(
+                            validationService.validateAndGetUUID(draftId)
+                    );
         }
 
 //        response
         return ResponseEntity
                 .status(200)
                 .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
+                        booleanResponseDtoMapper
+                                .toDto(true)
                 );
     }
 
     @Override
     public ResponseEntity<BooleanResponseDto> update(
-            QuestionDto questionDto,
+            QuestionRequestDto questionRequestDto,
             String id
     ) throws Exception {
-//        validate input data
-        validationService.validateUpdateQuestionInput(questionDto);
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
 
-//        find subtopic by id
-        Subtopic subtopic = subtopicService.getSubtopicById(questionDto.subtopic().id());
+//        validate input data
+        validationService.validateQuestionRequestInput(questionRequestDto);
 
 //        find authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-//        fetch question by id
-        Question question = getQuestionById(UUID.fromString(id));
+        User user = userService.getAuthenticatedUser();
 
 //        authorize user
         userService.authorizeUser(user);
+
+//        fetch question by id
+        Question question = getQuestionById(uuid);
 
 //        authorize user permissions on question
         authorizeUserQuestion(user, question);
 
 //        update question in database
-        question.setType(QuestionType.valueOf(questionDto.type()));
-        question.setIsPublic(questionDto.isPublic());
-        question.setStatement(questionDto.statement());
-        question.setImageUrl(questionDto.imageUrl());
-        question.setLastModifiedOn(LocalDateTime.now());
-        question.setSubtopic(subtopic);
-        questionRepository.save(question);
-
-//        update solution in database
-        solutionService.update(questionDto.solution());
-
-//        update options in database
-        for (OptionDto optionDto : questionDto.options()) {
-            optionService.update(optionDto);
-        }
+        question = update(questionRequestDto, question);
 
 //        response
         return ResponseEntity
                 .status(200)
                 .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
+                        booleanResponseDtoMapper
+                                .toDto(true)
                 );
     }
 
@@ -126,29 +113,30 @@ public class QuestionServiceImpl implements QuestionService {
     public ResponseEntity<BooleanResponseDto> delete(
             String id
     ) throws Exception {
-//        find authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
 
-//        fetch question by id
-        Question question = getQuestionById(UUID.fromString(id));
+//        find authenticated user
+        User user = userService.getAuthenticatedUser();
 
 //        authorize user
         userService.authorizeUser(user);
+
+//        fetch question by id
+        Question question = getQuestionById(uuid);
 
 //        authorize user permissions on question
         authorizeUserQuestion(user, question);
 
 //        delete question from database
-        questionRepository.delete(question);
+        deleteQuestion(uuid);
 
 //        response
         return ResponseEntity
                 .status(200)
                 .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
+                        booleanResponseDtoMapper
+                                .toDto(true)
                 );
     }
 
@@ -157,11 +145,12 @@ public class QuestionServiceImpl implements QuestionService {
             Integer pageNumber,
             Integer pageSize
     ) throws Exception {
-//        validate pageSize
+//        validate pageNumber and pageSize
+        validationService.validatePageNumber(pageNumber);
         validationService.validatePageSize(pageSize);
 
 //        find authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getAuthenticatedUser();
 
 //        fetch questions created by user
         List<Question> questions = getQuestionsByUser(user, pageNumber, pageSize);
@@ -171,14 +160,14 @@ public class QuestionServiceImpl implements QuestionService {
         for (Question question : questions) {
 //            create question dto and add it to question dto list
             questionDtos.add(
-                    createQuestionDtoFromQuestion(question)
+                    questionDtoMapper.toDto(question)
             );
         }
 
 //        if pageNumber is 0, calculate total number of questions created by user
 //        and put it into first question
         if (pageNumber == 0) {
-            int totalQuestions = questionRepository.countByCreatedBy(user);
+            int totalQuestions = countQuestionsCreatedByUser(user);
             questionDtos.add(0, QuestionDto
                     .builder()
                     .createdBy(
@@ -200,11 +189,14 @@ public class QuestionServiceImpl implements QuestionService {
     public ResponseEntity<QuestionDto> getQuestionById(
             String id
     ) throws Exception {
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
 //        fetch question by id
-        Question question = getQuestionById(UUID.fromString(id));
+        Question question = getQuestionById(uuid);
 
 //        create question dto
-        QuestionDto questionDto = createQuestionDtoFromQuestion(question);
+        QuestionDto questionDto = questionDtoMapper.toDto(question);
 
 //        response
         return ResponseEntity
@@ -218,42 +210,38 @@ public class QuestionServiceImpl implements QuestionService {
             Integer pageNumber,
             Integer pageSize
     ) throws Exception {
-//        validate page size
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
+//        validate pageNumber and pageSize
+        validationService.validatePageNumber(pageNumber);
         validationService.validatePageSize(pageSize);
 
 //        fetch subject by id
-        Subject subject = subjectService.getSubjectById(UUID.fromString(id));
-
-//        fetch subtopics by subject
-        List<Subtopic> subtopics = subtopicService.getSubtopicsBySubject(subject);
+        Subject subject = subjectService.getSubjectById(uuid);
 
 //        fetch questions by subtopics
-        List<Question> questions = getQuestionsBySubtopics(subtopics, pageNumber, pageSize);
+        List<Question> questions = getQuestionsBySubject(subject, pageNumber, pageSize);
 
 //        create list of question dto
         List<QuestionDto> questionDtos = new ArrayList<>();
         for (Question question : questions) {
 //            create question dto and add it to question dto list
             questionDtos.add(
-                    createQuestionDtoFromQuestion(question)
+                    questionDtoMapper.toDto(question, subject)
             );
         }
 
 //        if pageNumber is 0, calculate total number of questions within the subject
 //        and put it into first question
         if (pageNumber == 0) {
-            int totalQuestions = questionRepository.countBySubtopics(subtopics);
+            int totalQuestions = countQuestionsBySubject(subject);
             questionDtos.add(0, QuestionDto
                     .builder()
-                    .subtopic(
-                            SubtopicDto
+                    .createdBy(
+                            UserDto
                                     .builder()
-                                    .subject(
-                                            SubjectDto
-                                                    .builder()
-                                                    .totalQuestions(totalQuestions)
-                                                    .build()
-                                    )
+                                    .totalQuestions(totalQuestions)
                                     .build()
                     )
                     .build());
@@ -271,11 +259,15 @@ public class QuestionServiceImpl implements QuestionService {
             Integer pageNumber,
             Integer pageSize
     ) throws Exception {
-//        validate page size
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
+//        validate pageNumber and pageSize
+        validationService.validatePageNumber(pageNumber);
         validationService.validatePageSize(pageSize);
 
 //        fetch subtopic by id
-        Subtopic subtopic = subtopicService.getSubtopicById(UUID.fromString(id));
+        Subtopic subtopic = subtopicService.getSubtopicById(uuid);
 
 //        fetch questions by subtopic
         List<Question> questions = getQuestionsBySubtopic(subtopic, pageNumber, pageSize);
@@ -285,18 +277,18 @@ public class QuestionServiceImpl implements QuestionService {
         for (Question question : questions) {
 //            create question dto and add it to question dto list
             questionDtos.add(
-                    createQuestionDtoFromQuestion(question)
+                    questionDtoMapper.toDto(question)
             );
         }
 
 //        if pageNumber is 0, calculate total number of questions within the subtopic
 //        and put it into first question
         if (pageNumber == 0) {
-            int totalQuestions = questionRepository.countBySubtopic(subtopic);
+            int totalQuestions = countQuestionsBySubtopic(subtopic);
             questionDtos.add(0, QuestionDto
                     .builder()
-                    .subtopic(
-                            SubtopicDto
+                    .createdBy(
+                            UserDto
                                     .builder()
                                     .totalQuestions(totalQuestions)
                                     .build()
@@ -310,37 +302,102 @@ public class QuestionServiceImpl implements QuestionService {
                 .body(questionDtos);
     }
 
+
+    //    repository access methods
+    @Override
+    public Question createQuestion(Question question) {
+        return questionRepository.save(question);
+    }
+
+    @Override
+    public Question updateQuestion(Question question) {
+        return questionRepository.save(question);
+    }
+
+    @Override
+    public void deleteQuestion(UUID id) {
+        questionRepository.deleteById(id);
+    }
+
+    @Override
+    public int countQuestionsCreatedByUser(User user) {
+        return questionRepository.countByCreatedBy(user);
+    }
+
+    @Override
+    public int countQuestionsBySubject(Subject subject) {
+        return questionRepository.countBySubtopics(subject.getSubtopics());
+    }
+
+    @Override
+    public int countQuestionsBySubtopic(Subtopic subtopic) {
+        return questionRepository.countBySubtopic(subtopic);
+    }
+
     @Override
     public Question getQuestionById(
             UUID id
     ) throws Exception {
         Optional<Question> questionOptional = questionRepository.findById(id);
         if (questionOptional.isEmpty()) {
-            throw new NotFoundError("Question not found");
+            throw new NotFoundError("Question Not Found");
         }
         return questionOptional.get();
     }
 
     @Override
+    public List<Question> getQuestionsByUser(
+            User user,
+            Integer pageNumber,
+            Integer pageSize
+    ) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Question> questionPage = questionRepository.findByCreatedBy(user, pageable);
+        return questionPage.getContent();
+    }
+
+    private List<Question> getQuestionsBySubject(
+            Subject subject,
+            Integer pageNumber,
+            Integer pageSize
+    ) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Question> questionPage = questionRepository.findBySubtopics(subject.getSubtopics(), pageable);
+        return questionPage.getContent();
+    }
+
+    private List<Question> getQuestionsBySubtopic(
+            Subtopic subtopic,
+            Integer pageNumber,
+            Integer pageSize
+    ) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Question> questionPage = questionRepository.findBySubtopics(List.of(subtopic), pageable);
+        return questionPage.getContent();
+    }
+
+    //    helper methods
+    @Override
     public Question create(
-            QuestionDto questionDto,
-            Boolean isPublic,
+            QuestionRequestDto questionRequestDto,
             User user
     ) throws Exception {
-//        validate question type
-        validationService.validateQuestionType(questionDto.type());
-
 //        find subtopic by id
-        Subtopic subtopic = subtopicService.getSubtopicById(questionDto.subtopic().id());
+        Subtopic subtopic = subtopicService.getSubtopicById(
+                questionRequestDto.subtopic().id()
+        );
 
 //        save question in database
-        Question question = questionRepository.save(
+        Question question = createQuestion(
                 Question
                         .builder()
-                        .type(QuestionType.valueOf(questionDto.type()))
-                        .isPublic(isPublic)
-                        .statement(questionDto.statement())
-                        .imageUrl(questionDto.imageUrl())
+                        .type(QuestionType.valueOf(questionRequestDto.type()))
+                        .isPublic(
+                                questionRequestDto.isPublic() != null &&
+                                        questionRequestDto.isPublic()
+                        )
+                        .statement(questionRequestDto.statement())
+                        .imageUrl(questionRequestDto.imageUrl())
                         .lastModifiedOn(LocalDateTime.now())
                         .subtopic(subtopic)
                         .createdBy(user)
@@ -348,12 +405,51 @@ public class QuestionServiceImpl implements QuestionService {
         );
 
 //        save solution in database
-        solutionService.create(questionDto.solution(), question);
+        solutionService.create(
+                questionRequestDto.solution(),
+                question
+        );
 
 //        save options in database
-        for (OptionDto optionDto : questionDto.options()) {
-            optionService.create(optionDto, question);
-        }
+        optionService.create(
+                questionRequestDto.options(),
+                question
+        );
+
+//        response
+        return question;
+    }
+
+    @Override
+    public Question update(
+            QuestionRequestDto questionRequestDto,
+            Question question
+    ) throws Exception {
+//        find subtopic by id
+        Subtopic subtopic = subtopicService.getSubtopicById(
+                questionRequestDto.subtopic().id()
+        );
+
+//        update question
+        question.setType(QuestionType.valueOf(questionRequestDto.type()));
+        question.setIsPublic(questionRequestDto.isPublic());
+        question.setStatement(questionRequestDto.statement());
+        question.setImageUrl(questionRequestDto.imageUrl());
+        question.setLastModifiedOn(LocalDateTime.now());
+        question.setSubtopic(subtopic);
+        question = updateQuestion(question);
+
+//        save solution in database
+        solutionService.update(
+                questionRequestDto.solution(),
+                question
+        );
+
+//        save options in database
+        optionService.update(
+                questionRequestDto.options(),
+                question
+        );
 
 //        response
         return question;
@@ -370,94 +466,5 @@ public class QuestionServiceImpl implements QuestionService {
         ) {
             throw new AccessDeniedError();
         }
-    }
-
-
-//    private methods to reduce duplicate code
-
-    private List<Question> getQuestionsByUser(
-            User user,
-            Integer pageNumber,
-            Integer pageSize
-    ) throws Exception {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Question> questionPage = questionRepository.findByCreatedBy(user, pageable);
-        return questionPage.getContent();
-    }
-
-    private List<Question> getQuestionsBySubtopics(
-            List<Subtopic> subtopics,
-            Integer pageNumber,
-            Integer pageSize
-    ) throws Exception {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Question> questionPage = questionRepository.findBySubtopics(subtopics, pageable);
-        return questionPage.getContent();
-    }
-
-    private List<Question> getQuestionsBySubtopic(
-            Subtopic subtopic,
-            Integer pageNumber,
-            Integer pageSize
-    ) throws Exception {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<Question> questionPage = questionRepository.findBySubtopics(List.of(subtopic), pageable);
-        return questionPage.getContent();
-    }
-
-    @Override
-    public QuestionDto createQuestionDtoFromQuestion(
-            Question question
-    ) {
-//        create list of option dtos
-        List<OptionDto> optionDtos = new ArrayList<>();
-        for (Option option : question.getOptions()) {
-//            create option dto and add it to option dto list
-            optionDtos.add(
-                    OptionDto
-                            .builder()
-                            .id(option.getId())
-                            .statement(option.getStatement())
-                            .imageUrl(option.getImageUrl())
-                            .isCorrect(option.getIsCorrect())
-                            .build()
-            );
-        }
-
-//        create subtopic dto
-        SubtopicDto subtopicDto = SubtopicDto
-                .builder()
-                .id(question.getSubtopic().getId())
-                .name(question.getSubtopic().getName())
-                .subject(
-                        SubjectDto
-                                .builder()
-                                .id(question.getSubtopic().getSubject().getId())
-                                .name(question.getSubtopic().getSubject().getName())
-                                .build()
-                )
-                .build();
-
-//        create solution dto
-        SolutionDto solutionDto = SolutionDto
-                .builder()
-                .id(question.getSolution().getId())
-                .statement(question.getSolution().getStatement())
-                .imageUrl(question.getSolution().getImageUrl())
-                .build();
-
-//        create question dto and return
-        return QuestionDto
-                .builder()
-                .id(question.getId())
-                .type(question.getType().name())
-                .isPublic(question.getIsPublic())
-                .statement(question.getStatement())
-                .imageUrl(question.getImageUrl())
-                .lastModifiedOn(question.getLastModifiedOn())
-                .subtopic(subtopicDto)
-                .options(optionDtos)
-                .solution(solutionDto)
-                .build();
     }
 }

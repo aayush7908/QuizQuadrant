@@ -1,9 +1,11 @@
 package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
 import com.example.quizquadrant.model.DraftExam;
 import com.example.quizquadrant.model.DraftQuestion;
 import com.example.quizquadrant.model.User;
+import com.example.quizquadrant.model.type.Role;
 import com.example.quizquadrant.repository.DraftQuestionRepository;
 import com.example.quizquadrant.service.DraftQuestionService;
 import com.example.quizquadrant.service.UserService;
@@ -34,13 +36,14 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
     private final ValidationService validationService;
     private final UserService userService;
     private final ObjectMapper objectMapper;
+    private final BooleanResponseDtoMapper booleanResponseDtoMapper;
 
     @Override
     public ResponseEntity<IdResponseDto> create(
             QuestionDto questionDto
     ) throws Exception {
 //        fetch authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getAuthenticatedUser();
 
 //        authorize user
         userService.authorizeUser(user);
@@ -50,11 +53,11 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
         try {
             data = objectMapper.writeValueAsString(questionDto);
         } catch (Exception e) {
-            throw new BadRequestError("Invalid data");
+            throw new BadRequestError("Invalid Data");
         }
 
 //        save draft in database
-        DraftQuestion draftQuestion = draftQuestionRepository.save(
+        DraftQuestion draftQuestion = createDraftQuestion(
                 DraftQuestion
                         .builder()
                         .data(data)
@@ -75,7 +78,7 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
     }
 
     @Override
-    public ResponseEntity<BooleanResponseDto> update(
+    public ResponseEntity<IdResponseDto> update(
             QuestionDto questionDto,
             String id
     ) throws Exception {
@@ -83,7 +86,7 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
         DraftQuestion draftQuestion = getDraftQuestionById(UUID.fromString(id));
 
 //        fetch authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getAuthenticatedUser();
 
 //        authorize user
         userService.authorizeUser(user);
@@ -96,21 +99,21 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
         try {
             data = objectMapper.writeValueAsString(questionDto);
         } catch (Exception e) {
-            throw new BadRequestError("Invalid data");
+            throw new BadRequestError("Invalid Data");
         }
 
 //        update and save draft-exam in database
         draftQuestion.setData(data);
         draftQuestion.setLastModifiedOn(LocalDateTime.now());
-        draftQuestionRepository.save(draftQuestion);
+        updateDraftQuestion(draftQuestion);
 
 //        response
         return ResponseEntity
                 .status(200)
                 .body(
-                        BooleanResponseDto
+                        IdResponseDto
                                 .builder()
-                                .success(true)
+                                .id(draftQuestion.getId())
                                 .build()
                 );
     }
@@ -119,11 +122,14 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
     public ResponseEntity<BooleanResponseDto> delete(
             String id
     ) throws Exception {
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
 //        fetch draft-question by id
-        DraftQuestion draftQuestion = getDraftQuestionById(UUID.fromString(id));
+        DraftQuestion draftQuestion = getDraftQuestionById(uuid);
 
 //        fetch authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        User user = userService.getAuthenticatedUser();
 
 //        authorize user
         userService.authorizeUser(user);
@@ -132,16 +138,14 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
         authorizeUserDraftQuestion(user, draftQuestion);
 
 //        delete draft
-        draftQuestionRepository.delete(draftQuestion);
+        deleteDraftQuestion(uuid);
 
 //        response
         return ResponseEntity
                 .status(200)
                 .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
+                        booleanResponseDtoMapper
+                                .toDto(true)
                 );
     }
 
@@ -151,13 +155,11 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
             Integer pageSize
     ) throws Exception {
 //        validate pageSize
+        validationService.validatePageNumber(pageNumber);
         validationService.validatePageSize(pageSize);
 
 //        find authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-//        authorize user
-        userService.authorizeUser(user);
+        User user = userService.getAuthenticatedUser();
 
 //        fetch draft-questions created by user
         List<DraftQuestion> draftQuestions = getDraftQuestionsByUser(user, pageNumber, pageSize);
@@ -202,14 +204,14 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
     public ResponseEntity<QuestionDto> getDraftQuestionById(
             String id
     ) throws Exception {
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
 //        fetch draft-question by id
-        DraftQuestion draftQuestion = getDraftQuestionById(UUID.fromString(id));
+        DraftQuestion draftQuestion = getDraftQuestionById(uuid);
 
 //        fetch authenticated user
-        User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-//        authorize user
-        userService.authorizeUser(user);
+        User user = userService.getAuthenticatedUser();
 
 //        authorize user permission on draft
         authorizeUserDraftQuestion(user, draftQuestion);
@@ -223,6 +225,23 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
                 .body(questionDto);
     }
 
+
+    //    repository access methods
+    @Override
+    public DraftQuestion createDraftQuestion(DraftQuestion draftQuestion) {
+        return draftQuestionRepository.save(draftQuestion);
+    }
+
+    @Override
+    public DraftQuestion updateDraftQuestion(DraftQuestion draftQuestion) {
+        return draftQuestionRepository.save(draftQuestion);
+    }
+
+    @Override
+    public void deleteDraftQuestion(UUID id) {
+        draftQuestionRepository.deleteById(id);
+    }
+
     @Override
     public DraftQuestion getDraftQuestionById(
             UUID id
@@ -234,18 +253,27 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
         return draftQuestionOptional.get();
     }
 
-    @Override
-    public void deleteDraftQuestionById(
-            UUID id
+    private List<DraftQuestion> getDraftQuestionsByUser(
+            User user,
+            Integer pageNumber,
+            Integer pageSize
     ) throws Exception {
-        draftQuestionRepository.deleteById(id);
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<DraftQuestion> draftQuestionPage = draftQuestionRepository.findByCreatedBy(user, pageable);
+        return draftQuestionPage.getContent();
     }
 
+
+    //    helper methods
+    @Override
     public void authorizeUserDraftQuestion(
             User user,
             DraftQuestion draftQuestion
     ) throws Exception {
-        if (!user.getId().equals(draftQuestion.getCreatedBy().getId())) {
+        if (
+                user.getRole() != Role.ADMIN &&
+                        !user.getId().equals(draftQuestion.getCreatedBy().getId())
+        ) {
             throw new AccessDeniedError();
         }
     }
@@ -277,16 +305,6 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
                 .options(questionDto.options())
                 .solution(questionDto.solution())
                 .build();
-    }
-
-    private List<DraftQuestion> getDraftQuestionsByUser(
-            User user,
-            Integer pageNumber,
-            Integer pageSize
-    ) throws Exception {
-        Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Page<DraftQuestion> draftQuestionPage = draftQuestionRepository.findByCreatedBy(user, pageable);
-        return draftQuestionPage.getContent();
     }
 
 }

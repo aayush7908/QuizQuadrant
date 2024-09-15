@@ -9,8 +9,6 @@ import java.util.UUID;
 @Builder
 public record QuestionDto(
         UUID id,
-        Integer positiveMarks,
-        Integer negativeMarks,
         String type,
         Boolean isPublic,
         String statement,

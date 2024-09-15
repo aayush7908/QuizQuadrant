@@ -1,6 +1,6 @@
 "use client"
 
-import { getProfileAPI } from "@/actions/user/get/profile";
+import { getUserProfileAction } from "@/actions/account/profile/get-user-profile-action";
 import NameForm from "@/components/custom/account/profile/NameForm";
 import { Loader } from "@/components/custom/Loader";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,7 +24,7 @@ export default function Profile() {
 
     useEffect(() => {
         (async () => {
-            const { success, data, error } = await getProfileAPI();
+            const { success, data, error } = await getUserProfileAction();
             if (success && data) {
                 const newUser = {
                     email: data.email,

@@ -1,22 +1,45 @@
 package com.example.quizquadrant.service;
 
-import com.example.quizquadrant.dto.OptionDto;
-import com.example.quizquadrant.dto.SolutionDto;
+import com.example.quizquadrant.dto.OptionRequestDto;
 import com.example.quizquadrant.model.Option;
 import com.example.quizquadrant.model.Question;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface OptionService {
 
-    //    helper methods
-    void create(
-            OptionDto optionDto,
+    //    controller service methods
+    Option create(
+            OptionRequestDto optionRequestDto,
             Question question
     ) throws Exception;
 
-    void update(
-            OptionDto optionDto
+    List<Option> create(
+            List<OptionRequestDto> optionRequestDtos,
+            Question question
+    ) throws Exception;
+
+    Option update(
+            OptionRequestDto optionRequestDto,
+            Option option
+    ) throws Exception;
+
+    List<Option> update(
+            List<OptionRequestDto> optionRequestDtos,
+            Question question
+    ) throws Exception;
+
+    //    repository access methods
+    Option createOption(
+            Option option
+    );
+    Option updateOption(
+            Option option
+    ) throws Exception;
+
+    List<Option> getOptionsByQuestion(
+            Question question
     ) throws Exception;
 
     Option getOptionById(

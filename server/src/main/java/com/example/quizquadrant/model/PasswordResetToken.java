@@ -17,12 +17,17 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "otp")
+@Table(name = "password_reset_token")
 public class PasswordResetToken {
 
     @Id
     private String email;
 
+    @Column(
+            name = "token",
+            nullable = false,
+            columnDefinition = "VARCHAR(36)"
+    )
     private String token;
 
     @Column(

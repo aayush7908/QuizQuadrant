@@ -9,12 +9,7 @@ export default function AuthState({ children }: { children: ReactNode }) {
     const [user, setUser] = useState<User | undefined>(undefined);
 
     const authenticate = (data: User) => {
-        const newUser = {
-            id: data.id,
-            email: data.email,
-            isEmailVerified: data.isEmailVerified,
-            role: data.role
-        } as User;
+        const newUser = { ...data } as User;
         setUser(newUser);
     };
 

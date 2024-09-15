@@ -25,6 +25,10 @@ public class Otp {
     @Id
     private String email;
 
+    @Column(
+            name = "otp",
+            nullable = false
+    )
     private String otp;
 
     @Column(

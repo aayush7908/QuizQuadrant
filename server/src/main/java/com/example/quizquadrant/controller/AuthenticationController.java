@@ -1,6 +1,9 @@
 package com.example.quizquadrant.controller;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.LoginRequestDto;
+import com.example.quizquadrant.dto.RegisterRequestDto;
+import com.example.quizquadrant.dto.AuthenticationResponseDto;
 import com.example.quizquadrant.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,30 +31,18 @@ public class AuthenticationController {
         return authenticationService.login(loginRequestDto);
     }
 
-    @PostMapping("/forgot-password")
-    public ResponseEntity<BooleanResponseDto> forgotPassword(
-            @RequestBody LoginRequestDto loginRequestDto
+    @PostMapping("/send/otp")
+    public ResponseEntity<BooleanResponseDto> sendOtp(
+            @RequestBody OtpRequestDto otpRequestDto
     ) throws Exception {
-        return authenticationService.forgotPassword(loginRequestDto);
+        return authenticationService.sendOtp(otpRequestDto);
     }
 
-    @PostMapping("/resend-otp")
-    public ResponseEntity<BooleanResponseDto> resendOtp(
-            @RequestBody LoginRequestDto loginRequestDto
+    @PostMapping("/send/password-reset-token")
+    public ResponseEntity<SendPasswordResetTokenResponseDto> sendPasswordResetToken(
+            @RequestBody SendPasswordResetTokenRequestDto sendPasswordResetTokenRequestDto
     ) throws Exception {
-        return authenticationService.forgotPassword(loginRequestDto);
-    }
-
-    @PostMapping("/verify-email")
-    public ResponseEntity<AuthenticationResponseDto> verifyEmail(
-            @RequestBody VerifyEmailRequestDto verifyEmailRequestDto
-    ) throws Exception {
-        return authenticationService.verifyEmail(verifyEmailRequestDto);
-    }
-
-    @GetMapping("/authenticate")
-    public ResponseEntity<AuthenticationResponseDto> authenticate() throws Exception {
-        return authenticationService.authenticate();
+        return authenticationService.sendPasswordResetToken(sendPasswordResetTokenRequestDto);
     }
 
 }

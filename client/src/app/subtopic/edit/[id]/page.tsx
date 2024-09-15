@@ -1,14 +1,15 @@
 "use client"
 
-import { getSubtopicByIdAPI } from "@/actions/subtopic/get/id";
-import { updateSubtopicAPI } from "@/actions/subtopic/update";
+import { getSubtopicByIdAction } from "@/actions/subtopic/get/get-subtopic-action";
+import { updateSubtopicAction } from "@/actions/subtopic/edit/update-subtopic-action";
 import { Loader } from "@/components/custom/Loader";
 import { SubtopicForm } from "@/components/custom/subtopic/SubtopicForm";
 import { useToast } from "@/components/ui/use-toast";
 import { Subtopic } from "@/lib/type/model/Subtopic";
-import { schema } from "@/lib/zod-schema/subtopic/subtopic";
 import { useEffect, useState } from "react";
 import { z } from "zod";
+import { schema } from "@/lib/zod-schema/subtopic/subtopic-form-schema";
+import { req } from "@/lib/type/request/subtopic/subtopic-form-request";
 
 export default function EditSubtopic({ params }: { params: { id: string } }) {
 
@@ -19,17 +20,15 @@ export default function EditSubtopic({ params }: { params: { id: string } }) {
     const onSubmit = async (data: z.infer<typeof schema>) => {
         const reqBody = {
             name: data.name,
-            subject: {
-                id: data.subject
-            }
-        } as Subtopic;
-        return await updateSubtopicAPI(reqBody, params.id);
+            subjectId: data.subject
+        } as req;
+        return await updateSubtopicAction(reqBody, params.id);
     }
 
     useEffect(() => {
         (async () => {
             setIsProcessing(true);
-            const { success, data, error } = await getSubtopicByIdAPI(params.id);
+            const { success, data, error } = await getSubtopicByIdAction(params.id);
             if (success && data) {
                 setSubtopic(data);
             } else if (error) {
@@ -52,7 +51,11 @@ export default function EditSubtopic({ params }: { params: { id: string } }) {
             {
                 subtopic && (
                     <div className="h-full flex justify-center items-center">
-                        <SubtopicForm successMessage="Subtopic updated successully" onSubmit={onSubmit} defaultFormData={subtopic} />
+                        <SubtopicForm
+                            successMessage="Subtopic Updated Successully"
+                            onSubmit={onSubmit}
+                            defaultFormData={subtopic}
+                        />
                     </div>
                 )
             }

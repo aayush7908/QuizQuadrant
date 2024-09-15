@@ -1,7 +1,6 @@
 package com.example.quizquadrant.controller;
 
 import com.example.quizquadrant.dto.*;
-import com.example.quizquadrant.service.AuthenticationService;
 import com.example.quizquadrant.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,13 +14,6 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/verify-email")
-    public ResponseEntity<BooleanResponseDto> verifyEmail(
-            @RequestBody VerifyEmailRequestDto verifyEmailRequestDto
-    ) throws Exception {
-        return userService.verifyEmail(verifyEmailRequestDto);
-    }
-
     @PostMapping("/reset-password")
     public ResponseEntity<BooleanResponseDto> resetPassword(
             @RequestBody ResetPasswordDto resetPasswordDto
@@ -29,18 +21,30 @@ public class UserController {
         return userService.resetPassword(resetPasswordDto);
     }
 
+    @GetMapping("/authenticate")
+    public ResponseEntity<AuthenticationResponseDto> authenticate() {
+        return userService.authenticate();
+    }
+
+    @PostMapping("/verify-email")
+    public ResponseEntity<BooleanResponseDto> verifyEmail(
+            @RequestBody VerifyEmailRequestDto verifyEmailRequestDto
+    ) throws Exception {
+        return userService.verifyEmail(verifyEmailRequestDto);
+    }
+
     @PatchMapping("/update/name")
     public ResponseEntity<BooleanResponseDto> updateName(
-            @RequestBody UserDto userDto
+            @RequestBody UpdateUserNameRequestDto updateUserNameRequestDto
     ) throws Exception {
-        return userService.updateName(userDto);
+        return userService.updateName(updateUserNameRequestDto);
     }
 
     @PatchMapping("/update/profile-image")
     public ResponseEntity<BooleanResponseDto> updateProfileImage(
-            @RequestBody UserDto userDto
+            @RequestBody UpdateUserProfileImageRequestDto updateUserProfileImageRequestDto
     ) throws Exception {
-        return userService.updateProfileImage(userDto);
+        return userService.updateProfileImage(updateUserProfileImageRequestDto);
     }
 
     @DeleteMapping("/delete")
@@ -49,7 +53,7 @@ public class UserController {
     }
 
     @GetMapping("/get/profile")
-    public ResponseEntity<UserDto> getProfile() throws Exception {
+    public ResponseEntity<UserProfileResponseDto> getProfile() throws Exception {
         return userService.getProfile();
     }
 

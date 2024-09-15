@@ -2,13 +2,11 @@
 
 import { Card, CardContent, CardTitle } from "@/components/ui/card";
 import Link from "next/link";
-import { Exam } from "@/lib/type/model/Exam";
 import { SubmitButton } from "../SubmitButton";
 import { useToast } from "@/components/ui/use-toast";
 import { useState } from "react";
-import { deleteDraftExamAPI } from "@/actions/draft/exam/delete";
 import { Question } from "@/lib/type/model/Question";
-import { deleteDraftQuestionAPI } from "@/actions/draft/question/delete";
+import { deleteDraftQuestionAction } from "@/actions/question/draft/delete-draft-action";
 
 export function DraftQuestionCard({ data, index, removeFunction }: { data: Question, index: number, removeFunction(index: number): void }) {
 
@@ -29,7 +27,7 @@ export function DraftQuestionCard({ data, index, removeFunction }: { data: Quest
             return;
         }
         setIsProcessing(true);
-        const { success, error } = await deleteDraftQuestionAPI(data.id);
+        const { success, error } = await deleteDraftQuestionAction(data.id);
         if (success) {
             toast({
                 title: "Draft deleted successfully"

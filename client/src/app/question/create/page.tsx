@@ -1,18 +1,18 @@
 "use client"
 
-import { createQuestionAPI } from "@/actions/question/create";
+import { createDraftQuestionAction } from "@/actions/question/create/create-draft-action";
+import { createQuestionAction } from "@/actions/question/create/create-question-action";
 import QuestionForm from "@/components/custom/question/QuestionForm";
-import { Option } from "@/lib/type/model/Option";
-import { Question } from "@/lib/type/model/Question";
-import { Solution } from "@/lib/type/model/Solution";
-import { Subtopic } from "@/lib/type/model/Subtopic";
-import { schema } from "@/lib/zod-schema/question/question";
-import { z } from "zod";
+import { req } from "@/lib/type/request/question/question-form-request";
 
 export default function CreateQuestion() {
 
-    const onSubmit = async (data: Question) => {
-        return await createQuestionAPI(data);
+    const onSubmit = async (data: req) => {
+        return await createQuestionAction(data);
+    }
+
+    const onSubmitDraft = async (data: req) => {
+        return await createDraftQuestionAction(data);
     }
 
     return (
@@ -20,6 +20,7 @@ export default function CreateQuestion() {
             <QuestionForm
                 successMessage="Question created successfully"
                 onSubmit={onSubmit}
+                onSubmitDraft={onSubmitDraft}
                 defaultFormData={undefined}
             />
         </div>

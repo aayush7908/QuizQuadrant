@@ -1,15 +1,14 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { schema } from "@/lib/zod-schema/account/delete-account/confirm"
+import { schema } from "@/lib/zod-schema/account/delete-account/confirm-form-schema"
 import { useContext, useState } from "react"
 import { useRouter } from "next/navigation"
-import { deleteUserAPI } from "@/actions/user/delete"
+import { deleteUserAction } from "@/actions/account/profile/delete-user-action"
 import { useToast } from "@/components/ui/use-toast"
 import { SubmitButton } from "../../SubmitButton"
 import { removeToken } from "@/lib/cookie-store"
@@ -31,7 +30,7 @@ export default function ConfirmForm() {
 
     const onSubmit = async () => {
         setIsProcessing(true);
-        const { success, error } = await deleteUserAPI();
+        const { success, error } = await deleteUserAction();
         if (success) {
             toast({
                 title: "Account deleted successfully"

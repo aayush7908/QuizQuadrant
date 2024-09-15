@@ -27,18 +27,20 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(
-                                "/api/auth/register",
-                                "/api/auth/login",
-                                "/api/auth/forgot-password",
-                                "/api/auth/resend-otp",
-                                "/api/auth/verify-email",
+                                "/",
+                                "/api/auth/**",
                                 "/api/user/reset-password",
                                 "/api/subject/get/**",
                                 "/api/subtopic/get/**",
-                                "/api/question/get/by-id/**",
-                                "/api/question/get/by-subject/**",
-                                "/api/question/get/by-subtopic/**"
+                                "/api/question/get/**"
                         ).permitAll()
+                        .requestMatchers(
+                                "/api/question/create",
+                                "/api/question/update/**",
+                                "/api/question/delete/**",
+                                "/api/question/my-created",
+                                "/api/draft/**"
+                        ).hasAnyAuthority(Role.TEACHER.name(), Role.ADMIN.name())
                         .requestMatchers(
                                 "/api/subject/create",
                                 "/api/subject/update/**",
@@ -48,19 +50,6 @@ public class SecurityConfig {
                                 "/api/subtopic/delete/**",
                                 "/api/admin/**"
                         ).hasAuthority(Role.ADMIN.name())
-                        .requestMatchers(
-                                "/api/question/create",
-                                "/api/question/update/**",
-                                "/api/question/delete/**",
-                                "/api/question/get/my",
-                                "/api/exam/create",
-                                "/api/exam/update",
-                                "/api/exam/delete/**",
-                                "/api/draft/exam/create",
-                                "/api/draft/exam/update",
-                                "/api/draft/exam/delete/**",
-                                "/api/draft/exam/get/**"
-                        ).hasAnyAuthority(Role.TEACHER.name(), Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session

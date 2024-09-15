@@ -68,6 +68,7 @@ public class Exam {
     @ManyToOne
     @JoinColumn(
             name = "created_by",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_exam_user")
     )

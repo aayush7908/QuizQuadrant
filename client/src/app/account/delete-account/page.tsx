@@ -1,10 +1,10 @@
 "use client"
 
 import ConfirmForm from "@/components/custom/account/delete-account/ConfirmForm";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { AuthContext } from "@/context/auth/AuthContext";
+import { validateUserAccess } from "@/lib/validation/validate-access";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 
@@ -15,7 +15,7 @@ export default function DeleteAccount() {
     const router = useRouter();
 
     useEffect(() => {
-        if (!user || !user.isEmailVerified) {
+        if (!validateUserAccess(user)) {
             toast({
                 title: "Access Deined",
                 variant: "destructive"
@@ -27,7 +27,7 @@ export default function DeleteAccount() {
     return (
         <>
             {
-                user && user.isEmailVerified ? (
+                validateUserAccess(user) ? (
                     <div className="h-full flex justify-center items-center">
                         <Card className="max-w-sm m-[1rem]">
                             <CardHeader>

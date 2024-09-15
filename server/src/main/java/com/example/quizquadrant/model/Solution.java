@@ -34,6 +34,7 @@ public class Solution {
     @OneToOne
     @JoinColumn(
             name = "question_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_solution_question")
     )

@@ -6,10 +6,10 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { schema } from "@/lib/zod-schema/account/profile/name"
+import { schema } from "@/lib/zod-schema/account/profile/name-form-schema"
 import { useToast } from "@/components/ui/use-toast"
-import { req } from "@/lib/type/request/user/update/name"
-import { updateNameAPI } from "@/actions/user/update/name"
+import { req } from "@/lib/type/request/account/profile/user-name-form-request"
+import { updateNameAction } from "@/actions/account/profile/update-user-name-action"
 import { useState } from "react"
 import { SubmitButton } from "../../SubmitButton"
 
@@ -32,7 +32,7 @@ export default function NameForm({ firstName, lastName, isNameEditable, toggleIs
             firstName: formData.firstName,
             lastName: formData.lastName
         } as req;
-        const { success, error } = await updateNameAPI(reqBody);
+        const { success, error } = await updateNameAction(reqBody);
         if (success) {
             toast({
                 title: "Name changed successfully"

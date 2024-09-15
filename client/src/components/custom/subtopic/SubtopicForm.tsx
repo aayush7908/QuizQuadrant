@@ -1,20 +1,43 @@
 "use client"
 
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@/components/ui/form";
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card";
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
 import { useContext, useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { schema } from "@/lib/zod-schema/subtopic/subtopic";
+import { schema } from "@/lib/zod-schema/subtopic/subtopic-form-schema";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { SubjectContext } from "@/context/subject/SubjectContext";
 import { Subtopic } from "@/lib/type/model/Subtopic";
-import { error } from "@/lib/type/response/error/error";
+import { error } from "@/lib/type/response/error/error-response";
 import { SubmitButton } from "../SubmitButton";
 import { RefreshContext } from "@/context/refresh/RefreshContext";
+import { usePathname, useRouter } from "next/navigation";
+import { deleteSubtopicAction } from "@/actions/subtopic/delete-subtopic-action";
 
 export function SubtopicForm({
     successMessage,
@@ -32,7 +55,9 @@ export function SubtopicForm({
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const { subjects } = useContext(SubjectContext);
     const { refresh } = useContext(RefreshContext);
+    const router = useRouter();
     const { toast } = useToast();
+    const path = usePathname();
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
@@ -44,6 +69,39 @@ export function SubtopicForm({
             subject: ""
         }
     });
+
+    const handleDeleteSubtopic = async () => {
+        if (!defaultFormData) {
+            return;
+        }
+        setIsProcessing(true);
+        const isConfirm = window.confirm("All data related to this subtopic will be deleted and cannot be retrieved back again. Are you sure to delete this Subtopic ?");
+        if (!isConfirm) {
+            return;
+        }
+        const str = window.prompt("Write delete below to confirm.");
+        if (str !== "delete") {
+            toast({
+                title: "Action aborted",
+                variant: "destructive"
+            });
+            return;
+        }
+        const { success, error } = await deleteSubtopicAction(defaultFormData.id);
+        if (success) {
+            toast({
+                title: "Subtopic deleted successfully"
+            });
+            refresh();
+            router.back();
+        } else if (error) {
+            toast({
+                title: error.errorMessage,
+                variant: "destructive"
+            });
+        }
+        setIsProcessing(false);
+    }
 
     const handleSubmit = async (formData: z.infer<typeof schema>) => {
         setIsProcessing(true);
@@ -84,7 +142,12 @@ export function SubtopicForm({
                                         <FormItem>
                                             <FormLabel>Subtopic Name</FormLabel>
                                             <FormControl>
-                                                <Input {...field} type="text" required autoFocus={true} />
+                                                <Input
+                                                    {...field}
+                                                    type="text"
+                                                    required
+                                                    autoFocus={true}
+                                                />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -98,7 +161,10 @@ export function SubtopicForm({
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Subject</FormLabel>
-                                            <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                            <Select
+                                                onValueChange={field.onChange}
+                                                defaultValue={field.value}
+                                            >
                                                 <FormControl>
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Select a subject" />
@@ -126,7 +192,25 @@ export function SubtopicForm({
                                     )}
                                 />
                             </div>
-                            <SubmitButton type="submit" displayName="Save" isProcessing={isProcessing} onSubmit={() => { }} />
+                            <div className="grid gap-2">
+                                <SubmitButton
+                                    type="submit"
+                                    displayName="Save"
+                                    isProcessing={isProcessing}
+                                    onSubmit={() => { }}
+                                />
+                                {
+                                    path.startsWith("/subtopic/edit") && (
+                                        <SubmitButton
+                                            variant="destructive"
+                                            type="button"
+                                            displayName="Delete"
+                                            isProcessing={isProcessing}
+                                            onSubmit={handleDeleteSubtopic}
+                                        />
+                                    )
+                                }
+                            </div>
                         </div>
                     </form>
                 </Form>

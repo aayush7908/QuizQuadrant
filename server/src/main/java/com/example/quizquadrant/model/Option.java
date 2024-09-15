@@ -42,6 +42,7 @@ public class Option {
     @ManyToOne
     @JoinColumn(
             name = "question_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_option_question")
     )

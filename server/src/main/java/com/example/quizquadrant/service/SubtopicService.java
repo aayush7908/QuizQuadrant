@@ -3,7 +3,6 @@ package com.example.quizquadrant.service;
 import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.Subject;
 import com.example.quizquadrant.model.Subtopic;
-import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
@@ -13,11 +12,11 @@ public interface SubtopicService {
 
     //    controller service methods
     ResponseEntity<BooleanResponseDto> create(
-            SubtopicDto subtopicDto
+            SubtopicRequestDto subtopicRequestDto
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> update(
-            SubtopicDto subtopicDto,
+            SubtopicRequestDto subtopicRequestDto,
             String id
     ) throws Exception;
 
@@ -25,17 +24,20 @@ public interface SubtopicService {
             String id
     ) throws Exception;
 
-    ResponseEntity<SubtopicDto> getById(
+    ResponseEntity<SubtopicDto> getSubtopicById(
             String id
     ) throws Exception;
 
-    //    helper methods
+
+    //    repository access methods
+    Subtopic createSubtopic(Subtopic subtopic);
+
+    Subtopic updateSubtopic(Subtopic subtopic);
+
+    void deleteSubtopic(UUID id);
+
     Subtopic getSubtopicById(
             UUID id
-    ) throws Exception;
-
-    List<Subtopic> getSubtopicsBySubject(
-            Subject subject
     ) throws Exception;
 
 }

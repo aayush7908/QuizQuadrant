@@ -2,11 +2,11 @@ package com.example.quizquadrant.utils.otp;
 
 import com.example.quizquadrant.model.Otp;
 import com.example.quizquadrant.repository.OtpRepository;
-import com.example.quizquadrant.repository.UserRepository;
 import com.example.quizquadrant.utils.email.EmailDetails;
 import com.example.quizquadrant.utils.email.EmailService;
 import com.example.quizquadrant.utils.error.BadRequestError;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -26,29 +26,71 @@ public class OtpServiceImpl implements OtpService {
     private final int OTP_LIFE = 10 * 60 * 1000;  // 10 minutes
 
     @Override
-    public void sendOtp(String email) {
-//        generate otp
-        Otp newOtp = Otp
-                .builder()
-                .email(email)
-                .otp(generateOtp())
-                .expiresOn((new Timestamp(System.currentTimeMillis() + OTP_LIFE)).toLocalDateTime())
-                .build();
-
-
-//        check if otp is already present and act accordingly
-        Optional<Otp> otpOptional = otpRepository.findById(email);
-        if (otpOptional.isEmpty()) {
-            otpRepository.save(newOtp);
-        } else {
-            Otp otp = otpOptional.get();
-            otp.setOtp(newOtp.getOtp());
-            otp.setExpiresOn(newOtp.getExpiresOn());
-            otpRepository.save(otp);
-        }
+    public void sendOtpToVerifyEmail(String email) {
+//        save otp in database
+        Otp otp = createOrUpdateOtp(email);
 
 //        send email containing otp
-        emailService.sendOtpMail(newOtp.getOtp());
+        StringBuilder msgBody = new StringBuilder();
+        msgBody.append("<h1>")
+                .append("Welcome to QuizQuadrant")
+                .append("</h1>")
+                .append("<p style=\"font-size:1rem;\">")
+                .append("Your One Time Password for email verification is: ")
+                .append("<b>")
+                .append(otp.getOtp())
+                .append("</b>")
+                .append("</p>")
+                .append("<p style=\"font-size:0.7rem;\">")
+                .append("<b>")
+                .append("NOTE: ")
+                .append("</b>")
+                .append("This OTP will remain valid only for 10 minutes.")
+                .append("</p>");
+        try {
+            emailService.sendSimpleMail(
+                    EmailDetails
+                            .builder()
+                            .recipient(email)
+                            .subject("Your OTP")
+                            .msgBody(msgBody.toString())
+                            .build()
+            );
+        } catch (Exception ignored) {
+        }
+    }
+
+    @Override
+    public void sendOtpToResetPassword(String email) {
+//        save otp in database
+        Otp otp = createOrUpdateOtp(email);
+
+//        send email containing otp
+        StringBuilder msgBody = new StringBuilder();
+        msgBody
+                .append("<p style=\"font-size:1rem;\">")
+                .append("Your request was received to reset password. Your OTP is: ")
+                .append("<b>")
+                .append(otp.getOtp())
+                .append("</b>")
+                .append("</p>")
+                .append("<p style=\"font-size:0.7rem;\">")
+                .append("<b>")
+                .append("NOTE: ")
+                .append("</b>")
+                .append("This OTP will remain valid only for 10 minutes.")
+                .append("</p>");
+        try {
+            emailService.sendSimpleMail(
+                    EmailDetails
+                            .builder()
+                            .recipient(email)
+                            .subject("Your OTP")
+                            .msgBody(msgBody.toString())
+                            .build()
+            );
+        } catch (Exception ignored) {
+        }
     }
 
     @Override
@@ -59,9 +101,36 @@ public class OtpServiceImpl implements OtpService {
         }
     }
 
+    //    repository access methods
+    @Override
+    public Otp createOrUpdateOtp(String email) {
+//        generate otp
+        String otpString = generateOtp();
+//        generate otp object
+        Otp otp = Otp
+                .builder()
+                .email(email)
+                .otp(otpString)
+                .expiresOn(
+                        new Timestamp(System.currentTimeMillis() + OTP_LIFE)
+                                .toLocalDateTime()
+                )
+                .build();
+
+//        check if otp is already present and act accordingly
+        Optional<Otp> otpOptional = otpRepository.findById(email);
+        if (otpOptional.isPresent()) {
+            otp = otpOptional.get();
+            otp.setOtp(otp.getOtp());
+            otp.setExpiresOn(otp.getExpiresOn());
+        }
+        otp = otpRepository.save(otp);
+
+        return otp;
+    }
+
 
     //    helper methods for internal call
-
     private String generateOtp() {
         StringBuilder sb = new StringBuilder();
         Random random = new Random();
@@ -85,5 +154,4 @@ public class OtpServiceImpl implements OtpService {
         otpRepository.delete(otpData);
         return LocalDateTime.now().isBefore(otpData.getExpiresOn());
     }
-
 }

@@ -2,6 +2,8 @@ package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.Question;
+import com.example.quizquadrant.model.Subject;
+import com.example.quizquadrant.model.Subtopic;
 import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,12 +16,13 @@ public interface QuestionService {
     //    controller service methods
     @Transactional(rollbackFor = Exception.class)
     ResponseEntity<BooleanResponseDto> create(
-            QuestionDto questionDto
+            QuestionRequestDto questionRequestDto,
+            String draftId
     ) throws Exception;
 
     @Transactional(rollbackFor = Exception.class)
     ResponseEntity<BooleanResponseDto> update(
-            QuestionDto questionDto,
+            QuestionRequestDto questionRequestDto,
             String id
     ) throws Exception;
 
@@ -49,15 +52,37 @@ public interface QuestionService {
             Integer pageSize
     ) throws Exception;
 
-    //    helper methods
+    //    repository access methods
+    Question createQuestion(Question question);
+
+    Question updateQuestion(Question question);
+
+    void deleteQuestion(UUID id);
+
+    int countQuestionsCreatedByUser(User user);
+    int countQuestionsBySubject(Subject subject);
+    int countQuestionsBySubtopic(Subtopic subtopic);
+
     Question getQuestionById(
             UUID id
     ) throws Exception;
 
+    List<Question> getQuestionsByUser(
+            User user,
+            Integer pageNumber,
+            Integer pageSize
+    );
+
+
+    //    helper methods
     Question create(
-            QuestionDto questionDto,
-            Boolean isPublic,
+            QuestionRequestDto questionRequestDto,
             User user
+    ) throws Exception;
+
+    Question update(
+            QuestionRequestDto questionRequestDto,
+            Question question
     ) throws Exception;
 
     void authorizeUserQuestion(
@@ -65,7 +90,4 @@ public interface QuestionService {
             Question question
     ) throws Exception;
 
-    QuestionDto createQuestionDtoFromQuestion(
-            Question question
-    );
 }

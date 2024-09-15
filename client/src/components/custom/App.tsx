@@ -1,10 +1,10 @@
 "use client"
 
-import { authenticateAPI } from "@/actions/auth/authenticate";
+import { authenticateAction } from "@/actions/user/authenticate";
 import { AuthContext } from "@/context/auth/AuthContext";
 import { useContext, useEffect, useState } from "react";
 import { useToast } from "../ui/use-toast";
-import { getAllSubjectsAPI } from "@/actions/subject/get/all";
+import { getAllSubjectsAction } from "@/actions/subject/get/get-all-subject-action";
 import { SubjectContext } from "@/context/subject/SubjectContext";
 import { Loader } from "./Loader";
 import { RefreshContext } from "@/context/refresh/RefreshContext";
@@ -23,7 +23,7 @@ export default function App({
 
     useEffect(() => {
         (async () => {
-            const { success, data, error } = await authenticateAPI();
+            const { success, data, error } = await authenticateAction();
             if (success && data) {
                 authenticate(data.user);
             } else if (error) {
@@ -35,7 +35,7 @@ export default function App({
             setIsAuthenticating(false);
         })();
         (async () => {
-            const { success, data, error } = await getAllSubjectsAPI();
+            const { success, data, error } = await getAllSubjectsAction();
             if (success && data) {
                 addSubjects(data);
             } else if (error) {

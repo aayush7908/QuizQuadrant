@@ -7,7 +7,7 @@ import Link from "next/link";
 import { SubmitButton } from "../../SubmitButton";
 import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
-import { deleteQuestionAPI } from "@/actions/question/delete";
+import { deleteQuestionAction } from "@/actions/question/edit/delete-question-action";
 
 export function QuestionCard({ data, index, removeFunction }: { data: Question, index: number, removeFunction(index: number): void }) {
 
@@ -28,7 +28,7 @@ export function QuestionCard({ data, index, removeFunction }: { data: Question, 
             return;
         }
         setIsProcessing(true);
-        const { success, error } = await deleteQuestionAPI(data.id);
+        const { success, error } = await deleteQuestionAction(data.id);
         if (success) {
             toast({
                 title: "Question deleted successfully"

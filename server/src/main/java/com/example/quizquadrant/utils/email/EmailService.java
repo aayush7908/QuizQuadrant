@@ -11,6 +11,7 @@ public interface EmailService {
             maxAttempts = 4,
             backoff = @Backoff(delay = 1000)
     )
+    @Async
     void sendSimpleMail(
             EmailDetails emailDetails
     ) throws Exception;
@@ -18,9 +19,4 @@ public interface EmailService {
     @Recover
     void sendSimpleMailRecovery(Exception e, EmailDetails emailDetails);
 
-    @Async
-    void sendErrorMail(String title, Exception error);
-
-    @Async
-    void sendOtpMail(String otp);
 }

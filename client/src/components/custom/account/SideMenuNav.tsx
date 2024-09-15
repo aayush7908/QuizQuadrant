@@ -37,7 +37,7 @@ export function SideMenuNav() {
                     </Link>
                 </li>
                 {
-                    user?.isEmailVerified ? (
+                    (user?.role === "ADMIN" || user?.isEmailVerified) ? (
                         <>
                             {
                                 (user.role === "STUDENT" || user.role === "ADMIN") && (
@@ -87,7 +87,7 @@ export function SideMenuNav() {
                                                 <span>Questions Created</span>
                                             </Link>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <Link
                                                 href="/account/exams-created"
                                                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/exams-created" && "bg-muted text-primary"}`}
@@ -95,7 +95,7 @@ export function SideMenuNav() {
                                                 <BookCheck />
                                                 <span>Exams Created</span>
                                             </Link>
-                                        </li>
+                                        </li> */}
                                         <li>
                                             <Link
                                                 href="/account/draft-questions"
@@ -105,7 +105,7 @@ export function SideMenuNav() {
                                                 <span>Draft Questions</span>
                                             </Link>
                                         </li>
-                                        <li>
+                                        {/* <li>
                                             <Link
                                                 href="/account/draft-exams"
                                                 className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/draft-exams" && "bg-muted text-primary"}`}
@@ -113,7 +113,7 @@ export function SideMenuNav() {
                                                 <BookText />
                                                 <span>Draft Exams</span>
                                             </Link>
-                                        </li>
+                                        </li> */}
                                     </>
                                 )
                             }

@@ -1,9 +1,8 @@
 package com.example.quizquadrant.controller;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.QuestionDto;
+import com.example.quizquadrant.dto.SubjectRequestDto;
 import com.example.quizquadrant.dto.SubjectDto;
-import com.example.quizquadrant.service.QuestionService;
 import com.example.quizquadrant.service.SubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -21,17 +20,17 @@ public class SubjectController {
 
     @PostMapping("/create")
     public ResponseEntity<BooleanResponseDto> create(
-            @RequestBody SubjectDto subjectDto
-    ) throws Exception {
-        return subjectService.create(subjectDto);
+            @RequestBody SubjectRequestDto subjectRequestDto
+            ) throws Exception {
+        return subjectService.create(subjectRequestDto);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<BooleanResponseDto> update(
-            @RequestBody SubjectDto subjectDto,
+            @RequestBody SubjectRequestDto subjectRequestDto,
             @PathVariable String id
     ) throws Exception {
-        return subjectService.update(subjectDto, id);
+        return subjectService.update(subjectRequestDto, id);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -50,7 +49,7 @@ public class SubjectController {
     public ResponseEntity<SubjectDto> getById(
             @PathVariable String id
     ) throws Exception {
-        return subjectService.getById(id);
+        return subjectService.getSubjectById(id);
     }
 
 }

@@ -1,19 +1,17 @@
 "use client"
 
-import { getMyDraftExamsAPI } from "@/actions/draft/exam/get/my";
 import { Loader } from "@/components/custom/Loader";
 import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
 import { useToast } from "@/components/ui/use-toast";
 import { AuthContext } from "@/context/auth/AuthContext";
-import { Exam } from "@/lib/type/model/Exam";
 import { PlusSquare } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
-import { DraftExamCard } from "@/components/custom/draft/DraftExamCard";
-import { getMyDraftQuestionsAPI } from "@/actions/draft/question/get/my";
+import { getMyDraftQuestionsAction } from "@/actions/account/draft-questions/get-my-draft-questions-action";
 import { Question } from "@/lib/type/model/Question";
 import { DraftQuestionCard } from "@/components/custom/draft/DraftQuestionCard";
+import { validateTeacherAccess } from "@/lib/validation/validate-access";
 
 export default function DraftQuestions() {
 
@@ -25,7 +23,7 @@ export default function DraftQuestions() {
     const router = useRouter();
 
     const fetchFunction = async (pageNumber: number) => {
-        const { success, data, error } = await getMyDraftQuestionsAPI(pageNumber);
+        const { success, data, error } = await getMyDraftQuestionsAction(pageNumber);
         if (success && data) {
             return data;
         } else if (error) {
@@ -37,7 +35,7 @@ export default function DraftQuestions() {
     }
 
     useEffect(() => {
-        if (!user || (!user.isEmailVerified && user.role !== "TEACHER" && user.role !== "ADMIN")) {
+        if (!validateTeacherAccess(user)) {
             toast({
                 title: "Access Denied",
                 variant: "destructive"
@@ -63,7 +61,7 @@ export default function DraftQuestions() {
     return (
         <>
             {
-                user && user.isEmailVerified && (user.role === "TEACHER" || user.role === "ADMIN") ? (
+                validateTeacherAccess(user) ? (
                     <div className="p-[1rem] md:p-[2rem] lg:p-[3rem] pb-[3rem] grid gap-5">
                         <div className="flex justify-end">
                             <Link href={"/question/create"} className="h-[2.5rem] flex items-center gap-2 text-base bg-black text-white py-2 px-3 rounded-md cursor-pointer">

@@ -1,22 +1,34 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { schema } from "@/lib/zod-schema/forgot-password/otp"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@/components/ui/form"
+import {
+    Card,
+    CardContent,
+    CardDescription,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card"
+import { schema } from "@/lib/zod-schema/auth/forgot-password/otp-form-schema"
 import { useContext, useEffect, useState } from "react"
 import { useToast } from "@/components/ui/use-toast"
-import { req } from "@/lib/type/request/auth/verify-email"
-import { req as resendOtpReq } from "@/lib/type/request/auth/forgot-password"
+import { req } from "@/lib/type/request/auth/forgot-password/otp-form-request"
+import { req as sendOtpReq } from "@/lib/type/request/auth/forgot-password/email-form-request"
 import { AuthContext } from "@/context/auth/AuthContext"
 import { useRouter } from "next/navigation"
-import { verifyEmailAPI } from "@/actions/user/verify-email"
+import { verifyEmailAction } from "@/actions/account/verify-email/verify-email-action"
 import { SubmitButton } from "@/components/custom/SubmitButton"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { resendOtpAPI } from "@/actions/auth/resend-otp"
+import { emailFormAction } from "@/actions/auth/forgot-password/email-form-action"
 
 export default function VerifyEmail() {
 
@@ -38,7 +50,7 @@ export default function VerifyEmail() {
             email: user?.email,
             otp: formData.otp
         } as req;
-        const { success, error } = await verifyEmailAPI(reqBody);
+        const { success, error } = await verifyEmailAction(reqBody);
         if (success) {
             toast({
                 title: "Email verified successfully"
@@ -58,8 +70,9 @@ export default function VerifyEmail() {
         setIsProcessing(true);
         const reqBody = {
             email: user?.email
-        } as resendOtpReq;
-        const { success, error } = await resendOtpAPI(reqBody);
+        } as sendOtpReq;
+        console.log(reqBody);
+        const { success, error } = await emailFormAction(reqBody);
         if (success) {
             toast({
                 title: "OTP sent to your email"
@@ -107,15 +120,30 @@ export default function VerifyEmail() {
                                                         <FormItem>
                                                             <FormLabel>Otp</FormLabel>
                                                             <FormControl>
-                                                                <Input {...field} type="text" required autoFocus={true} />
+                                                                <Input
+                                                                    {...field}
+                                                                    type="text"
+                                                                    required
+                                                                    autoFocus={true}
+                                                                />
                                                             </FormControl>
                                                             <FormMessage />
                                                         </FormItem>
                                                     )}
                                                 />
                                             </div>
-                                            <SubmitButton type="submit" displayName="Verify" isProcessing={isProcessing} onSubmit={() => { }} />
-                                            <SubmitButton type="button" displayName="Resend OTP" isProcessing={isProcessing} onSubmit={handleResendOtp} />
+                                            <SubmitButton
+                                                type="submit"
+                                                displayName="Verify"
+                                                isProcessing={isProcessing}
+                                                onSubmit={() => { }}
+                                            />
+                                            <SubmitButton
+                                                type="button"
+                                                displayName="Resend OTP"
+                                                isProcessing={isProcessing}
+                                                onSubmit={handleResendOtp}
+                                            />
                                         </div>
                                     </form>
                                 </Form>

@@ -1,12 +1,14 @@
 "use client"
 
-import { getQuestionByIdAPI } from "@/actions/question/get/by-id";
-import { updateQuestionAPI } from "@/actions/question/update";
+import { getQuestionByIdAction } from "@/actions/question/edit/get-question-by-id-action";
+import { updateQuestionAction } from "@/actions/question/edit/update-question-action";
 import { Loader } from "@/components/custom/Loader";
 import QuestionForm from "@/components/custom/question/QuestionForm";
 import { useToast } from "@/components/ui/use-toast";
 import { Question } from "@/lib/type/model/Question";
+import { req } from "@/lib/type/request/question/question-form-request";
 import { useEffect, useState } from "react";
+import { deleteQuestionAction } from "@/actions/question/edit/delete-question-action";
 
 export default function EditQuestion({ params }: { params: { id: string } }) {
 
@@ -14,14 +16,18 @@ export default function EditQuestion({ params }: { params: { id: string } }) {
     const [question, setQuestion] = useState<Question | undefined>(undefined);
     const { toast } = useToast();
 
-    const onSubmit = async (data: Question) => {
-        return await updateQuestionAPI(data, params.id);
+    const onSubmit = async (data: req) => {
+        return await updateQuestionAction(data, params.id);
+    }
+
+    const onDelete = async () => {
+        return await deleteQuestionAction(params.id);
     }
 
     useEffect(() => {
         (async () => {
             setIsProcessing(true);
-            const { success, data, error } = await getQuestionByIdAPI(params.id);
+            const { success, data, error } = await getQuestionByIdAction(params.id);
             if (success && data) {
                 setQuestion(data);
             } else if (error) {
@@ -47,6 +53,7 @@ export default function EditQuestion({ params }: { params: { id: string } }) {
                         <QuestionForm
                             successMessage="Question updated successfully"
                             onSubmit={onSubmit}
+                            onDelete={onDelete}
                             defaultFormData={question}
                         />
                     </div>

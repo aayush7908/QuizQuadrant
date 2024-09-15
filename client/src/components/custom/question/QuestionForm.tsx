@@ -3,30 +3,53 @@
 import { useFieldArray, useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@/components/ui/form"
+import {
+    Select,
+    SelectContent,
+    SelectGroup,
+    SelectItem,
+    SelectLabel,
+    SelectTrigger,
+    SelectValue
+} from "@/components/ui/select"
 import { useContext, useEffect, useState } from "react"
-import { schema } from "@/lib/zod-schema/question/question"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { schema } from "@/lib/zod-schema/question/question-form-schema"
 import { Textarea } from "@/components/ui/textarea"
 import { usePathname, useRouter } from "next/navigation"
-import { error } from "@/lib/type/response/error/error"
+import { error } from "@/lib/type/response/error/error-response"
 import { useToast } from "@/components/ui/use-toast"
 import { SubmitButton } from "../SubmitButton"
 import { SubjectContext } from "@/context/subject/SubjectContext"
 import { Question } from "@/lib/type/model/Question"
-import { updateDraftQuestionAPI } from "@/actions/draft/question/update"
-import { createDraftQuestionAPI } from "@/actions/draft/question/create"
-import { Subtopic } from "@/lib/type/model/Subtopic"
-import { Option } from "@/lib/type/model/Option"
-import { Solution } from "@/lib/type/model/Solution"
+import { req } from "@/lib/type/request/question/question-form-request"
+import { Id } from "@/lib/type/response/id/id"
 
 export default function QuestionForm({
     successMessage,
     onSubmit,
+    onSubmitDraft,
+    onDelete,
     defaultFormData
 }: {
     successMessage: string,
-    onSubmit: (formData: Question) => Promise<{
+    onSubmit: (formData: req) => Promise<{
+        success: boolean;
+        error?: error | undefined;
+    }>,
+    onSubmitDraft?: (formData: req) => Promise<{
+        success: boolean;
+        error?: error | undefined;
+        data?: Id;
+    }>,
+    onDelete?: () => Promise<{
         success: boolean;
         error?: error | undefined;
     }>,
@@ -39,61 +62,55 @@ export default function QuestionForm({
     const router = useRouter();
     const path = usePathname();
 
-    const createQuestionFromSchema = (formData: z.infer<typeof schema>) => {
+    const createQuestionFromSchema = () => {
+        const formData = form.getValues();
         return {
-            id: formData.id,
             type: formData.type,
             isPublic: formData.visibility === "PUBLIC",
             statement: formData.statement,
             imageUrl: formData.imageUrl,
             subtopic: {
-                id: formData.subtopic,
+                id: formData.subtopicId,
                 subject: {
-                    id: formData.subject
+                    id: formData.subjectId
                 }
-            } as Subtopic,
+            },
             options: [
                 {
-                    id: defaultFormData?.options[0].id,
                     statement: formData.options[0].statement,
                     imageUrl: formData.options[0].imageUrl,
                     isCorrect: formData.options[0].isCorrect
-                } as Option,
+                },
                 {
-                    id: defaultFormData?.options[1].id,
                     statement: formData.options[1].statement,
                     imageUrl: formData.options[1].imageUrl,
                     isCorrect: formData.options[1].isCorrect
-                } as Option,
+                },
                 {
-                    id: defaultFormData?.options[2].id,
                     statement: formData.options[2].statement,
                     imageUrl: formData.options[2].imageUrl,
                     isCorrect: formData.options[2].isCorrect
-                } as Option,
+                },
                 {
-                    id: defaultFormData?.options[3].id,
                     statement: formData.options[3].statement,
                     imageUrl: formData.options[3].imageUrl,
                     isCorrect: formData.options[3].isCorrect
-                } as Option
+                }
             ],
             solution: {
-                id: defaultFormData?.solution.id,
                 statement: formData.solution.statement,
                 imageUrl: formData.solution.imageUrl
-            } as Solution
-        } as Question;
+            }
+        } as req;
     }
 
     const form = useForm<z.infer<typeof schema>>({
         resolver: zodResolver(schema),
         defaultValues: defaultFormData ? {
-            id: defaultFormData.id,
-            visibility: defaultFormData.isPublic ? "PUBLIC" : "PRIVATE",
             type: defaultFormData.type,
-            subject: defaultFormData.subtopic?.subject?.id || undefined,
-            subtopic: defaultFormData.subtopic?.id,
+            visibility: defaultFormData.isPublic ? "PUBLIC" : "PRIVATE",
+            subjectId: defaultFormData.subtopic?.subject?.id || undefined,
+            subtopicId: defaultFormData.subtopic?.id || undefined,
             statement: defaultFormData.statement,
             imageUrl: defaultFormData.imageUrl,
             options: [
@@ -123,10 +140,10 @@ export default function QuestionForm({
                 imageUrl: defaultFormData.solution.imageUrl
             }
         } : {
-            visibility: "",
             type: "",
-            subject: undefined,
-            subtopic: "",
+            visibility: "",
+            subjectId: undefined,
+            subtopicId: undefined,
             statement: "",
             imageUrl: undefined,
             options: [
@@ -162,10 +179,10 @@ export default function QuestionForm({
         name: "options"
     });
 
-    const handleOnSubmit = async (data: z.infer<typeof schema>) => {
+    const handleOnSubmit = async () => {
         setIsProcessing(true);
-        const { success, error } = await onSubmit(createQuestionFromSchema(form.getValues()));
-        if (success && data) {
+        const { success, error } = await onSubmit(createQuestionFromSchema());
+        if (success) {
             toast({
                 title: successMessage
             });
@@ -179,36 +196,63 @@ export default function QuestionForm({
         setIsProcessing(false);
     }
 
+    const handleSaveDraft = async () => {
+        if (onSubmitDraft) {
+            setIsProcessing(true);
+            const { success, data, error } = await onSubmitDraft(createQuestionFromSchema());
+            if (success && data) {
+                toast({
+                    title: "Draft saved successfully"
+                });
+                if (path.startsWith("/question/create")) {
+                    router.push(`/question/draft/${data.id}`);
+                }
+            } else if (error) {
+                toast({
+                    title: error.errorMessage,
+                    variant: "destructive"
+                });
+            }
+            setIsProcessing(false);
+        }
+    }
+
+    const handleDelete = async () => {
+        if (onDelete) {
+            const isConfirm = window.confirm("All data related to this question will be deleted and cannot be retrieved back again. Are you sure to delete this Question ?");
+            if (!isConfirm) {
+                return;
+            }
+            const str = window.prompt("Write delete below to confirm.");
+            if (str !== "delete") {
+                toast({
+                    title: "Action aborted",
+                    variant: "destructive"
+                });
+                return;
+            }
+            setIsProcessing(true);
+            const { success, error } = await onDelete();
+            if (success) {
+                toast({
+                    title: "Data Deleted Successfully"
+                });
+                router.push("/account/questions-created");
+            } else if (error) {
+                toast({
+                    title: error.errorMessage,
+                    variant: "destructive"
+                });
+            }
+            setIsProcessing(false);
+        }
+    }
+
     const onCancel = async () => {
         const isConfirm = window.confirm("All your data will be lost. Do you want to cancel ?");
         if (isConfirm) {
             router.back();
         }
-    }
-
-    const handleSaveDraft = async () => {
-        const question = createQuestionFromSchema(form.getValues());
-        setIsProcessing(true);
-        let res;
-        if (question.id && question.id !== "") {
-            res = await updateDraftQuestionAPI(question, question.id);
-        } else {
-            res = await createDraftQuestionAPI(question);
-            if (res.data) {
-                form.setValue("id", res.data.id);
-            }
-        }
-        if (res.success && res.data) {
-            toast({
-                title: "Draft saved successfully"
-            });
-        } else if (res.error) {
-            toast({
-                title: res.error.errorMessage,
-                variant: "destructive"
-            });
-        }
-        setIsProcessing(false);
     }
 
     useEffect(() => { }, [defaultFormData]);
@@ -225,7 +269,10 @@ export default function QuestionForm({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Question Visibility</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select question visibility" />
@@ -234,8 +281,12 @@ export default function QuestionForm({
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Select question visibility</SelectLabel>
-                                                    <SelectItem value="PUBLIC">Public</SelectItem>
-                                                    <SelectItem value="PRIVATE">Private</SelectItem>
+                                                    <SelectItem value="PUBLIC">
+                                                        Public
+                                                    </SelectItem>
+                                                    <SelectItem value="PRIVATE">
+                                                        Private
+                                                    </SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
@@ -251,7 +302,10 @@ export default function QuestionForm({
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Question Type</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select question type" />
@@ -260,8 +314,12 @@ export default function QuestionForm({
                                             <SelectContent>
                                                 <SelectGroup>
                                                     <SelectLabel>Select question type</SelectLabel>
-                                                    <SelectItem value="MCQ">MCQ</SelectItem>
-                                                    <SelectItem value="MSQ">MSQ</SelectItem>
+                                                    <SelectItem value="MCQ">
+                                                        MCQ
+                                                    </SelectItem>
+                                                    <SelectItem value="MSQ">
+                                                        MSQ
+                                                    </SelectItem>
                                                 </SelectGroup>
                                             </SelectContent>
                                         </Select>
@@ -275,11 +333,15 @@ export default function QuestionForm({
                         <div className="grid gap-2">
                             <FormField
                                 control={control}
-                                name="subject"
+                                name="subjectId"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Subject</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value} onOpenChange={router.refresh}>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                            onOpenChange={router.refresh}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a subject" />
@@ -292,7 +354,10 @@ export default function QuestionForm({
                                                         subjects && (
                                                             Array.from(subjects.values()).map((subject, index) => {
                                                                 return (
-                                                                    <SelectItem key={index} value={subject.id}>
+                                                                    <SelectItem
+                                                                        key={index}
+                                                                        value={subject.id}
+                                                                    >
                                                                         {subject.name}
                                                                     </SelectItem>
                                                                 )
@@ -310,11 +375,14 @@ export default function QuestionForm({
                         <div className="grid gap-2">
                             <FormField
                                 control={control}
-                                name="subtopic"
+                                name="subtopicId"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormLabel>Subtopic</FormLabel>
-                                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                                        <Select
+                                            onValueChange={field.onChange}
+                                            defaultValue={field.value}
+                                        >
                                             <FormControl>
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Select a subtopic" />
@@ -324,10 +392,13 @@ export default function QuestionForm({
                                                 <SelectGroup>
                                                     <SelectLabel>Select a subtopic</SelectLabel>
                                                     {
-                                                        subjects && form.getValues().subject && (
-                                                            subjects.get(form.getValues().subject)?.subtopics.map((subtopic, index) => {
+                                                        subjects && form.getValues().subjectId && (
+                                                            subjects.get(form.getValues().subjectId)?.subtopics.map((subtopic, index) => {
                                                                 return (
-                                                                    <SelectItem key={index} value={subtopic.id}>
+                                                                    <SelectItem
+                                                                        key={index}
+                                                                        value={subtopic.id}
+                                                                    >
                                                                         {subtopic.name}
                                                                     </SelectItem>
                                                                 )
@@ -351,7 +422,12 @@ export default function QuestionForm({
                                 <FormItem>
                                     <FormLabel>Question</FormLabel>
                                     <FormControl>
-                                        <Textarea placeholder="Enter question here ..." {...field} rows={5} required />
+                                        <Textarea
+                                            placeholder="Enter question here ..."
+                                            {...field}
+                                            rows={5}
+                                            required
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -369,7 +445,13 @@ export default function QuestionForm({
                                             <FormItem>
                                                 <FormLabel>Option - {index + 1}</FormLabel>
                                                 <FormControl>
-                                                    <Textarea placeholder={`Enter option - ${index + 1} here ...`} {...field} onKeyUp={router.refresh} rows={5} required />
+                                                    <Textarea
+                                                        placeholder={`Enter option - ${index + 1} here ...`}
+                                                        {...field}
+                                                        onKeyUp={router.refresh}
+                                                        rows={5}
+                                                        required
+                                                    />
                                                 </FormControl>
                                                 <FormMessage />
                                             </FormItem>
@@ -385,7 +467,17 @@ export default function QuestionForm({
                             form.getValues().type === "MCQ" && (
                                 fields.map((field, index) => {
                                     return (
-                                        <div key={index} onClick={() => { const newOptions = form.getValues().options; newOptions.forEach((option, i) => { option.isCorrect = (index === i) }); form.setValue("options", newOptions); }} className={`py-2 px-4 rounded-md cursor-pointer border ${field.isCorrect && "bg-green-400"}`}>
+                                        <div
+                                            key={index}
+                                            onClick={() => {
+                                                const newOptions = form.getValues().options;
+                                                newOptions.forEach((option, i) => {
+                                                    option.isCorrect = (index === i)
+                                                });
+                                                form.setValue("options", newOptions);
+                                            }}
+                                            className={`py-2 px-4 rounded-md cursor-pointer border ${field.isCorrect && "bg-green-400"}`}
+                                        >
                                             {form.getValues("options")[index].statement}
                                         </div>
                                     )
@@ -396,7 +488,15 @@ export default function QuestionForm({
                             form.getValues().type === "MSQ" && (
                                 fields.map((field, index) => {
                                     return (
-                                        <div key={index} onClick={() => { const newOptions = form.getValues().options; newOptions[index].isCorrect = !newOptions[index].isCorrect; form.setValue("options", newOptions); }} className={`py-2 px-4 rounded-md cursor-pointer border ${field.isCorrect && "bg-green-400"}`}>
+                                        <div
+                                            key={index}
+                                            onClick={() => {
+                                                const newOptions = form.getValues().options;
+                                                newOptions[index].isCorrect = !newOptions[index].isCorrect;
+                                                form.setValue("options", newOptions);
+                                            }}
+                                            className={`py-2 px-4 rounded-md cursor-pointer border ${field.isCorrect && "bg-green-400"}`}
+                                        >
                                             {form.getValues("options")[index].statement}
                                         </div>
                                     )
@@ -404,7 +504,10 @@ export default function QuestionForm({
                             )
                         }
                         {
-                            (form.getValues().type !== "MCQ" && form.getValues().type !== "MSQ") && (
+                            (
+                                form.getValues().type !== "MCQ" &&
+                                form.getValues().type !== "MSQ"
+                            ) && (
                                 <div className={`py-2 px-4 rounded-md border bg-red-300`}>
                                     Select question type first
                                 </div>
@@ -419,7 +522,12 @@ export default function QuestionForm({
                                 <FormItem>
                                     <FormLabel>Solution</FormLabel>
                                     <FormControl>
-                                        <Textarea placeholder="Enter solution here ..." {...field} rows={5} required />
+                                        <Textarea
+                                            placeholder="Enter solution here ..."
+                                            {...field}
+                                            rows={5}
+                                            required
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -430,7 +538,7 @@ export default function QuestionForm({
                         {
                             !path.startsWith("/question/edit") && (
                                 <SubmitButton
-                                    displayName="Save as draft"
+                                    displayName="Draft"
                                     type="button"
                                     isProcessing={isProcessing}
                                     onSubmit={handleSaveDraft}
@@ -444,12 +552,23 @@ export default function QuestionForm({
                             onSubmit={() => { }}
                         />
                         <SubmitButton
-                            variant="destructive"
                             displayName="Cancel"
                             type="button"
                             isProcessing={isProcessing}
                             onSubmit={onCancel}
                         />
+                        {
+                            !path.startsWith("/question/create") &&
+                            onDelete && (
+                                <SubmitButton
+                                    variant="destructive"
+                                    displayName="Delete"
+                                    type="button"
+                                    isProcessing={isProcessing}
+                                    onSubmit={handleDelete}
+                                />
+                            )
+                        }
                     </div>
                 </div>
             </form>

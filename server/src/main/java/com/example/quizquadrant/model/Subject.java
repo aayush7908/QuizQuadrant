@@ -40,7 +40,7 @@ public class Subject {
             mappedBy = "subject",
             cascade = CascadeType.REMOVE
     )
-    @JsonBackReference
+    @JsonManagedReference
     private List<Subtopic> subtopics;
 
 }

@@ -1,17 +1,11 @@
 package com.example.quizquadrant.service.implementation;
 
-import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.QuestionDto;
-import com.example.quizquadrant.dto.SubjectDto;
-import com.example.quizquadrant.dto.SubtopicDto;
-import com.example.quizquadrant.model.Question;
+import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
+import com.example.quizquadrant.dto.mapper.SubtopicDtoMapper;
 import com.example.quizquadrant.model.Subject;
 import com.example.quizquadrant.model.Subtopic;
-import com.example.quizquadrant.model.User;
-import com.example.quizquadrant.model.type.QuestionType;
-import com.example.quizquadrant.repository.QuestionRepository;
 import com.example.quizquadrant.repository.SubtopicRepository;
-import com.example.quizquadrant.service.QuestionService;
 import com.example.quizquadrant.service.SubjectService;
 import com.example.quizquadrant.service.SubtopicService;
 import com.example.quizquadrant.utils.error.DuplicateDataError;
@@ -19,10 +13,8 @@ import com.example.quizquadrant.utils.error.NotFoundError;
 import com.example.quizquadrant.utils.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,25 +26,29 @@ public class SubtopicServiceImpl implements SubtopicService {
     private final SubtopicRepository subtopicRepository;
     private final SubjectService subjectService;
     private final ValidationService validationService;
+    private final SubtopicDtoMapper subtopicDtoMapper;
+    private final BooleanResponseDtoMapper booleanResponseDtoMapper;
 
     @Override
     public ResponseEntity<BooleanResponseDto> create(
-            SubtopicDto subtopicDto
+            SubtopicRequestDto subtopicRequestDto
     ) throws Exception {
 //        validate input data
-        validationService.validateCreateSubtopicInput(subtopicDto);
+        validationService.validateSubtopicRequestInput(subtopicRequestDto);
 
 //        extract subtopic name in uppercase
-        String subtopicName = subtopicDto.name().toUpperCase();
+        String subtopicName = subtopicRequestDto.name().toUpperCase();
 
 //        fetch subject by id
-        Subject subject = subjectService.getSubjectById(subtopicDto.subject().id());
+        Subject subject = subjectService.getSubjectById(
+                subtopicRequestDto.subjectId()
+        );
 
 //        check if subtopic exists
         checkSubtopicExists(subtopicName, subject);
 
 //        save subtopic in database
-        subtopicRepository.save(
+        Subtopic subtopic = createSubtopic(
                 Subtopic
                         .builder()
                         .name(subtopicName)
@@ -64,29 +60,32 @@ public class SubtopicServiceImpl implements SubtopicService {
         return ResponseEntity
                 .status(200)
                 .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
+                        booleanResponseDtoMapper
+                                .toDto(true)
                 );
     }
 
     @Override
     public ResponseEntity<BooleanResponseDto> update(
-            SubtopicDto subtopicDto,
+            SubtopicRequestDto subtopicRequestDto,
             String id
     ) throws Exception {
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
 //        validate input data
-        validationService.validateUpdateSubtopicInput(subtopicDto);
+        validationService.validateSubtopicRequestInput(subtopicRequestDto);
 
 //        extract subtopic name in uppercase
-        String subtopicName = subtopicDto.name().toUpperCase();
+        String subtopicName = subtopicRequestDto.name().toUpperCase();
 
 //        fetch subtopic by id
-        Subtopic subtopic = getSubtopicById(UUID.fromString(id));
+        Subtopic subtopic = getSubtopicById(uuid);
 
 //        fetch subject by id
-        Subject subject = subjectService.getSubjectById(subtopicDto.subject().id());
+        Subject subject = subjectService.getSubjectById(
+                subtopicRequestDto.subjectId()
+        );
 
 //        check if subtopic exists
         checkSubtopicExists(subtopicName, subject);
@@ -94,16 +93,14 @@ public class SubtopicServiceImpl implements SubtopicService {
 //        update subtopic in database
         subtopic.setName(subtopicName);
         subtopic.setSubject(subject);
-        subtopicRepository.save(subtopic);
+        subtopic = updateSubtopic(subtopic);
 
 //        response
         return ResponseEntity
                 .status(200)
                 .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
+                        booleanResponseDtoMapper
+                                .toDto(true)
                 );
     }
 
@@ -111,47 +108,58 @@ public class SubtopicServiceImpl implements SubtopicService {
     public ResponseEntity<BooleanResponseDto> delete(
             String id
     ) throws Exception {
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
 //        fetch subtopic by id
-        Subtopic subtopic = getSubtopicById(UUID.fromString(id));
+        Subtopic subtopic = getSubtopicById(uuid);
 
 //        delete subtopic from database
-        subtopicRepository.delete(subtopic);
+        deleteSubtopic(uuid);
 
 //        return
         return ResponseEntity
                 .status(200)
                 .body(
-                        BooleanResponseDto
-                                .builder()
-                                .success(true)
-                                .build()
+                        booleanResponseDtoMapper
+                                .toDto(true)
                 );
     }
 
     @Override
-    public ResponseEntity<SubtopicDto> getById(
+    public ResponseEntity<SubtopicDto> getSubtopicById(
             String id
     ) throws Exception {
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
 //        fetch subtopic by id
-        Subtopic subtopic = getSubtopicById(UUID.fromString(id));
+        Subtopic subtopic = getSubtopicById(uuid);
 
 //        response
         return ResponseEntity
                 .status(200)
                 .body(
-                        SubtopicDto
-                                .builder()
-                                .id(subtopic.getId())
-                                .name(subtopic.getName())
-                                .subject(
-                                        SubjectDto
-                                                .builder()
-                                                .id(subtopic.getSubject().getId())
-                                                .name(subtopic.getSubject().getName())
-                                                .build()
-                                )
-                                .build()
+                        subtopicDtoMapper
+                                .toDto(subtopic, subtopic.getSubject().getId())
                 );
+    }
+
+    //    repository access methods
+
+    @Override
+    public Subtopic createSubtopic(Subtopic subtopic) {
+        return subtopicRepository.save(subtopic);
+    }
+
+    @Override
+    public Subtopic updateSubtopic(Subtopic subtopic) {
+        return subtopicRepository.save(subtopic);
+    }
+
+    @Override
+    public void deleteSubtopic(UUID id) {
+        subtopicRepository.deleteById(id);
     }
 
     @Override
@@ -163,13 +171,6 @@ public class SubtopicServiceImpl implements SubtopicService {
             throw new NotFoundError("Subtopic not found");
         }
         return subtopicOptional.get();
-    }
-
-    @Override
-    public List<Subtopic> getSubtopicsBySubject(
-            Subject subject
-    ) throws Exception {
-        return subtopicRepository.findBySubject(subject);
     }
 
     private void checkSubtopicExists(

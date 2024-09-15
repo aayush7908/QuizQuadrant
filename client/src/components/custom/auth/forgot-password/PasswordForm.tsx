@@ -1,22 +1,31 @@
 "use client"
 
-import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+    Form,
+    FormControl,
+    FormField,
+    FormItem,
+    FormLabel,
+    FormMessage
+} from "@/components/ui/form"
 import { useState } from "react"
-import { schema } from "@/lib/zod-schema/forgot-password/password"
+import { schema } from "@/lib/zod-schema/auth/forgot-password/password-form-schema"
 import { useToast } from "@/components/ui/use-toast"
-import { req } from "@/lib/type/request/user/reset-password"
-import { resetPasswordAPI } from "@/actions/user/reset-password"
+import { req } from "@/lib/type/request/auth/forgot-password/password-form-request"
+import { passwordFormAction } from "@/actions/auth/forgot-password/password-form-action"
 import { useRouter } from "next/navigation"
-import { Loader2 } from "lucide-react"
 import { SubmitButton } from "../../SubmitButton"
 
-export default function PasswordForm({ page, changePage, email }: { page: number, changePage: Function, email: string }) {
+export default function PasswordForm({
+    email
+}: {
+    email: string
+}) {
 
     const [isPasswordVisible, setIsPasswordVisible] = useState<boolean>(false);
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -38,7 +47,7 @@ export default function PasswordForm({ page, changePage, email }: { page: number
             password: formData.password,
             token: ""
         } as req;
-        const { success, error } = await resetPasswordAPI(reqBody);
+        const { success, error } = await passwordFormAction(reqBody);
         if (success) {
             toast({
                 title: "Password changed successfully"
@@ -65,7 +74,12 @@ export default function PasswordForm({ page, changePage, email }: { page: number
                                 <FormItem>
                                     <FormLabel>Password</FormLabel>
                                     <FormControl>
-                                        <Input {...field} type={isPasswordVisible ? "text" : "password"} required autoFocus={true} />
+                                        <Input
+                                            {...field}
+                                            type={isPasswordVisible ? "text" : "password"}
+                                            required
+                                            autoFocus={true}
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -80,7 +94,11 @@ export default function PasswordForm({ page, changePage, email }: { page: number
                                 <FormItem>
                                     <FormLabel>Confirm Password</FormLabel>
                                     <FormControl>
-                                        <Input {...field} type={isPasswordVisible ? "text" : "password"} required />
+                                        <Input
+                                            {...field}
+                                            type={isPasswordVisible ? "text" : "password"}
+                                            required
+                                        />
                                     </FormControl>
                                     <FormMessage />
                                 </FormItem>
@@ -88,10 +106,20 @@ export default function PasswordForm({ page, changePage, email }: { page: number
                         />
                     </div>
                     <div className="flex items-center gap-2 text-sm">
-                        <Checkbox id="showPassword" onClick={() => setIsPasswordVisible(isPasswordVisible => !isPasswordVisible)} />
+                        <Checkbox
+                            id="showPassword"
+                            onClick={() => {
+                                setIsPasswordVisible(isPasswordVisible => !isPasswordVisible);
+                            }}
+                        />
                         <label htmlFor="showPassword">Show Password</label>
                     </div>
-                    <SubmitButton type="submit" displayName="Save" isProcessing={isProcessing} onSubmit={() => { }} />
+                    <SubmitButton
+                        type="submit"
+                        displayName="Save"
+                        isProcessing={isProcessing}
+                        onSubmit={() => { }}
+                    />
                 </div>
             </form>
         </Form>

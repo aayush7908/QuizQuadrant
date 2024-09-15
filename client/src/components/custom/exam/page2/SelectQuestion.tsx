@@ -1,6 +1,6 @@
 "use client"
 
-import { getMyQuestionsAPI } from "@/actions/question/get/my";
+import { getMyQuestionsAPI } from "@/actions/account/draft-questions/my";
 import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
 import { Loader } from "@/components/custom/Loader";
 import { useToast } from "@/components/ui/use-toast";

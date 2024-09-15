@@ -1,10 +1,8 @@
 package com.example.quizquadrant.controller;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.ExamDto;
 import com.example.quizquadrant.dto.IdResponseDto;
 import com.example.quizquadrant.dto.QuestionDto;
-import com.example.quizquadrant.service.DraftExamService;
 import com.example.quizquadrant.service.DraftQuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -28,7 +26,7 @@ public class DraftQuestionController {
     }
 
     @PutMapping("/update/{id}")
-    public ResponseEntity<BooleanResponseDto> update(
+    public ResponseEntity<IdResponseDto> update(
             @PathVariable String id,
             @RequestBody QuestionDto questionDto
     ) throws Exception {
@@ -42,7 +40,7 @@ public class DraftQuestionController {
         return draftQuestionService.delete(id);
     }
 
-    @GetMapping("/get/my")
+    @GetMapping("/my-created")
     public ResponseEntity<List<QuestionDto>> getMyDraftExams(
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize

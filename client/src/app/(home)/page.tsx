@@ -1,8 +1,8 @@
 "use client"
 
-import { SubtopicCard } from "@/components/custom/home/SubtopicCard";
+import { useContext } from "react";
 import { SubjectContext } from "@/context/subject/SubjectContext";
-import { useContext, useEffect } from "react";
+import { SubtopicCard } from "@/components/custom/home/SubtopicCard";
 
 export default function Home() {
 

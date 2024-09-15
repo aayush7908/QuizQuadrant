@@ -12,7 +12,7 @@ type Question = {
     statement: string, 
     imageUrl: string | undefined, 
     subtopic: Subtopic, 
-    options: Array<Option>, 
+    options: Option[], 
     solution: Solution,
     createdBy: User,
     lastModifiedOn: Date

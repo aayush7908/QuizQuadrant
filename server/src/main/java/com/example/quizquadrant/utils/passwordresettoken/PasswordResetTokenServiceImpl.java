@@ -21,40 +21,53 @@ public class PasswordResetTokenServiceImpl implements PasswordResetTokenService 
 
     @Override
     public String generatePasswordResetToken(String email) {
-//        generate token
-        PasswordResetToken newPasswordResetToken = PasswordResetToken
-                .builder()
-                .email(email)
-                .token(generateToken())
-                .expiresOn((new Timestamp(System.currentTimeMillis() + TOKEN_LIFE)).toLocalDateTime())
-                .build();
+//        generate and save token
+        PasswordResetToken passwordResetToken = createOrUpdatePasswordResetToken(
+                email
+        );
 
-
-//        check if token is already present and act accordingly
-        Optional<PasswordResetToken> passwordResetTokenOptional = passwordResetTokenRepository.findById(email);
-        if (passwordResetTokenOptional.isEmpty()) {
-            passwordResetTokenRepository.save(newPasswordResetToken);
-        } else {
-            PasswordResetToken passwordResetToken = passwordResetTokenOptional.get();
-            passwordResetToken.setToken(newPasswordResetToken.getToken());
-            passwordResetToken.setExpiresOn(newPasswordResetToken.getExpiresOn());
-            passwordResetTokenRepository.save(passwordResetToken);
-        }
-
-        return newPasswordResetToken.getToken();
+        return passwordResetToken.getToken();
     }
 
     @Override
-    public void validatePasswordResetToken(String email, String token) throws Exception {
+    public void validatePasswordResetToken(
+            String email,
+            String token
+    ) throws Exception {
         boolean isTokenValid = isTokenValid(email, token);
         if (!isTokenValid) {
             throw new UnauthorizedAccessError();
         }
     }
 
+    //    repository access methods
+    @Override
+    public PasswordResetToken createOrUpdatePasswordResetToken(String email) {
+//        generate token
+        PasswordResetToken passwordResetToken = PasswordResetToken
+                .builder()
+                .email(email)
+                .token(generateToken())
+                .expiresOn(
+                        new Timestamp(System.currentTimeMillis() + TOKEN_LIFE)
+                                .toLocalDateTime()
+                )
+                .build();
+
+
+//        check if token is already present and act accordingly
+        Optional<PasswordResetToken> passwordResetTokenOptional = passwordResetTokenRepository.findById(email);
+        if (passwordResetTokenOptional.isPresent()) {
+            passwordResetToken = passwordResetTokenOptional.get();
+            passwordResetToken.setToken(passwordResetToken.getToken());
+            passwordResetToken.setExpiresOn(passwordResetToken.getExpiresOn());
+        }
+        passwordResetToken = passwordResetTokenRepository.save(passwordResetToken);
+
+        return passwordResetToken;
+    }
 
     //    helper methods for internal call
-
     private String generateToken() {
         return UUID.randomUUID().toString();
     }

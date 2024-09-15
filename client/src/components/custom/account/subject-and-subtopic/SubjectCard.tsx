@@ -1,5 +1,5 @@
-import { deleteSubjectAPI } from "@/actions/subject/delete";
-import { deleteSubtopicAPI } from "@/actions/subtopic/delete";
+import { deleteSubjectAction } from "@/actions/subject/edit/delete-subject-action";
+import { deleteSubtopicAction } from "@/actions/subtopic/delete-subtopic-action";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/components/ui/use-toast";
 import { RefreshContext } from "@/context/refresh/RefreshContext";
@@ -8,7 +8,11 @@ import { PenLineIcon, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { useContext, useState } from "react";
 
-export function SubjectCard({ subject }: { subject: Subject }) {
+export function SubjectCard({
+    subject
+}: {
+    subject: Subject
+}) {
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const { refresh } = useContext(RefreshContext);
@@ -28,7 +32,7 @@ export function SubjectCard({ subject }: { subject: Subject }) {
             });
             return;
         }
-        const { success, error } = await deleteSubjectAPI(id);
+        const { success, error } = await deleteSubjectAction(id);
         if (success) {
             toast({
                 title: "Subject deleted successfully"
@@ -57,7 +61,7 @@ export function SubjectCard({ subject }: { subject: Subject }) {
             });
             return;
         }
-        const { success, error } = await deleteSubtopicAPI(id);
+        const { success, error } = await deleteSubtopicAction(id);
         if (success) {
             toast({
                 title: "Subtopic deleted successfully"
@@ -81,7 +85,12 @@ export function SubjectCard({ subject }: { subject: Subject }) {
                         <Link href={`/subject/edit/${subject.id}`}>
                             <PenLineIcon className="cursor-pointer" />
                         </Link>
-                        <Trash2 className="cursor-pointer" onClick={() => { handleDeleteSubject(subject.id) }} />
+                        <Trash2
+                            className="cursor-pointer"
+                            onClick={() => {
+                                handleDeleteSubject(subject.id)
+                            }}
+                        />
                     </div>
                 </CardTitle>
             </CardHeader>
@@ -89,12 +98,20 @@ export function SubjectCard({ subject }: { subject: Subject }) {
                 {
                     subject.subtopics.map((subtopic, index) => {
                         return (
-                            <div key={index} className="px-3 flex gap-3 items-center border border-gray-400 rounded-md bg-muted text-lg">
+                            <div
+                                key={index}
+                                className="px-3 flex gap-3 items-center border border-gray-400 rounded-md bg-muted text-lg"
+                            >
                                 <span>{subtopic.name}</span>
                                 <Link href={`/subtopic/edit/${subtopic.id}`}>
                                     <PenLineIcon className="size-5 cursor-pointer" />
                                 </Link>
-                                <Trash2 className="size-5 cursor-pointer" onClick={() => { handleDeleteSubtopic(subtopic.id) }} />
+                                <Trash2
+                                    className="size-5 cursor-pointer"
+                                    onClick={() => {
+                                        handleDeleteSubtopic(subtopic.id)
+                                    }}
+                                />
                             </div>
                         )
                     })

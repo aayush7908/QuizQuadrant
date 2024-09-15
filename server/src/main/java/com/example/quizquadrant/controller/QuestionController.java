@@ -18,17 +18,18 @@ public class QuestionController {
 
     @PostMapping("/create")
     public ResponseEntity<BooleanResponseDto> create(
-            @RequestBody QuestionDto questionDto
+            @RequestBody QuestionRequestDto questionRequestDto,
+            @RequestParam("draftId") String draftId
     ) throws Exception {
-        return questionService.create(questionDto);
+        return questionService.create(questionRequestDto, draftId);
     }
 
     @PutMapping("/update/{id}")
     public ResponseEntity<BooleanResponseDto> update(
             @PathVariable String id,
-            @RequestBody QuestionDto questionDto
+            @RequestBody QuestionRequestDto questionRequestDto
     ) throws Exception {
-        return questionService.update(questionDto, id);
+        return questionService.update(questionRequestDto, id);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -38,7 +39,7 @@ public class QuestionController {
         return questionService.delete(id);
     }
 
-    @GetMapping("/get/my")
+    @GetMapping("/my-created")
     public ResponseEntity<List<QuestionDto>> getMyQuestions(
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize

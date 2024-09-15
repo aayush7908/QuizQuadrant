@@ -1,14 +1,25 @@
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Subject } from "@/lib/type/model/Subject";
+import {
+    Card,
+    CardContent,
+    CardHeader,
+    CardTitle
+} from "@/components/ui/card";
 import Link from "next/link";
+import { Subject } from "@/lib/type/model/Subject";
 
-export function SubtopicCard({ subject }: { subject: Subject }) {
+export function SubtopicCard({
+    subject
+}: {
+    subject: Subject
+}) {
     return (
         <Card className="bg-muted/30">
             <CardHeader className="border-b bg-muted">
                 <CardTitle>
-                    <Link href={`/practice/subject/${subject.id}`} className="hover:underline hover:text-blue-800">
+                    <Link
+                        href={`/practice/subject/${subject.id}`}
+                        className="hover:underline hover:text-blue-800"
+                    >
                         {subject.name}
                     </Link>
                 </CardTitle>

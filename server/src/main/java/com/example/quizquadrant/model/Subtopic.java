@@ -38,10 +38,11 @@ public class Subtopic {
     @ManyToOne
     @JoinColumn(
             name = "subject_id",
+            nullable = false,
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_subtopic_subject")
     )
-    @JsonManagedReference
+    @JsonBackReference
     private Subject subject;
 
     @OneToMany(

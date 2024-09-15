@@ -19,7 +19,7 @@ public interface DraftQuestionService {
             QuestionDto questionDto
     ) throws Exception;
 
-    ResponseEntity<BooleanResponseDto> update(
+    ResponseEntity<IdResponseDto> update(
             QuestionDto questionDto,
             String id
     ) throws Exception;
@@ -37,15 +37,20 @@ public interface DraftQuestionService {
             String id
     ) throws Exception;
 
-    //    helper methods
+
+    //    repository access methods
+    DraftQuestion createDraftQuestion(DraftQuestion draftQuestion);
+
+    DraftQuestion updateDraftQuestion(DraftQuestion draftQuestion);
+
+    void deleteDraftQuestion(UUID id);
+
     DraftQuestion getDraftQuestionById(
             UUID id
     ) throws Exception;
 
-    void deleteDraftQuestionById(
-            UUID id
-    ) throws Exception;
 
+    //    helper methods
     void authorizeUserDraftQuestion(
             User user,
             DraftQuestion draftQuestion

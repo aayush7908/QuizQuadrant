@@ -1,6 +1,6 @@
 "use client"
 
-import { getQuestionsBySubjectAPI } from "@/actions/question/get/by-subject";
+import { getQuestionsBySubjectAction } from "@/actions/practice/subject/get-questions-by-subject-action";
 import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
 import { Loader } from "@/components/custom/Loader";
 import { QuestionCard } from "@/components/custom/practice/QuestionCard";
@@ -16,7 +16,7 @@ export default function PracticeSubject({ params }: { params: { id: string } }) 
     const { toast } = useToast();
 
     const fetchFunction = async (pageNumber: number) => {
-        const { success, data, error } = await getQuestionsBySubjectAPI(params.id, pageNumber);
+        const { success, data, error } = await getQuestionsBySubjectAction(params.id, pageNumber);
         if (success && data) {
             return data;
         } else if (error) {
@@ -33,7 +33,7 @@ export default function PracticeSubject({ params }: { params: { id: string } }) 
             if (!data) {
                 return;
             }
-            setTotalLength(data[0].subtopic.subject.totalQuestions);
+            setTotalLength(data[0].createdBy.totalQuestions);
             const newInitialData = [] as Array<Question>;
             for (let i = 1; i < data.length; i++) {
                 newInitialData.push({ ...data[i] });
