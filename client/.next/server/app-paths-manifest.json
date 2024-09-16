@@ -1,0 +1,10 @@
+{
+  "/(home)/page": "app/(home)/page.js",
+  "/question/create/page": "app/question/create/page.js",
+  "/auth/logout/page": "app/auth/logout/page.js",
+  "/question/draft/[id]/page": "app/question/draft/[id]/page.js",
+  "/auth/login/page": "app/auth/login/page.js",
+  "/account/profile/page": "app/account/profile/page.js",
+  "/account/draft-questions/page": "app/account/draft-questions/page.js",
+  "/account/questions-created/page": "app/account/questions-created/page.js"
+}
