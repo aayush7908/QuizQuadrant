@@ -1,16 +1,22 @@
 package com.example.quizquadrant.dto;
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
+@Builder
 public record ExamDto(
-        Long id,
+        UUID id,
         String title,
-        Integer duration,
-        String startDate,
-        String startTime,
-        String candidateName,
-        String candidateEmail,
-        List<Long> questionIds
+        LocalDateTime startDateTime,
+        Integer durationInMinutes,
+        Boolean isResultGenerated,
+        Integer totalMarks,
+        LocalDateTime lastModifiedOn,
+        UserDto createdBy,
+        List<QuestionDto> questions,
+        List<UserDto> candidates
 ) {
 }

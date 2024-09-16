@@ -1,33 +1,49 @@
 package com.example.quizquadrant.service;
 
+import com.example.quizquadrant.dto.OptionRequestDto;
 import com.example.quizquadrant.model.Option;
 import com.example.quizquadrant.model.Question;
-import com.example.quizquadrant.repository.OptionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-@Service
-public class OptionService {
+import java.util.List;
+import java.util.UUID;
 
-    private final OptionRepository optionRepository;
+public interface OptionService {
 
-    @Autowired
-    public OptionService(OptionRepository optionRepository) {
-        this.optionRepository = optionRepository;
-    }
-
-    public Option createOption(
-            String statement,
-            Boolean hasImage,
-            Boolean isCorrect,
+    //    controller service methods
+    Option create(
+            OptionRequestDto optionRequestDto,
             Question question
-    ) {
-        Option option = new Option(
-                statement,
-                hasImage,
-                isCorrect,
-                question
-        );
-        return optionRepository.save(option);
-    }
+    ) throws Exception;
+
+    List<Option> create(
+            List<OptionRequestDto> optionRequestDtos,
+            Question question
+    ) throws Exception;
+
+    Option update(
+            OptionRequestDto optionRequestDto,
+            Option option
+    ) throws Exception;
+
+    List<Option> update(
+            List<OptionRequestDto> optionRequestDtos,
+            Question question
+    ) throws Exception;
+
+    //    repository access methods
+    Option createOption(
+            Option option
+    );
+    Option updateOption(
+            Option option
+    ) throws Exception;
+
+    List<Option> getOptionsByQuestion(
+            Question question
+    ) throws Exception;
+
+    Option getOptionById(
+            UUID id
+    ) throws Exception;
+
 }

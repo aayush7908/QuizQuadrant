@@ -1,58 +1,43 @@
 package com.example.quizquadrant.model;
 
+import com.example.quizquadrant.model.type.Role;
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
+import java.util.UUID;
 
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(
-        name = "user",
+        name = "_user",
         uniqueConstraints = {
                 @UniqueConstraint(
-                        name ="uk_user_email",
+                        name = "uk_user_email",
                         columnNames = "email"
                 )
         }
 )
 public class User implements UserDetails {
-    @Id
-    @SequenceGenerator(
-            name = "user_sequence",
-            sequenceName = "user_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "user_sequence"
-    )
-    private Long id;
 
-    @Column(
-            name = "name",
-            nullable = false,
-            columnDefinition ="VARCHAR(20)"
-    )
-    private String name;
+    @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(
             name = "email",
             nullable = false,
             unique = true,
-            columnDefinition ="VARCHAR(50)"
+            columnDefinition = "VARCHAR(50)"
     )
     private String email;
 
@@ -63,37 +48,92 @@ public class User implements UserDetails {
     private String password;
 
     @Column(
-            name = "type",
-            columnDefinition ="CHAR(1)"
+            name = "first_name",
+            nullable = false,
+            columnDefinition = "VARCHAR(20)"
     )
-    private String type;
+    private String firstName;
+
+    @Column(
+            name = "last_name",
+            nullable = false,
+            columnDefinition = "VARCHAR(20)"
+    )
+    private String lastName;
+
+    @Column(
+            name = "profile_image_url",
+            columnDefinition = "TEXT"
+    )
+    private String profileImageUrl;
+
+    @Column(
+            name = "account_created_on",
+            nullable = false,
+            columnDefinition = "TIMESTAMP"
+    )
+    private LocalDateTime accountCreatedOn;
+
+    @Column(
+            name = "email_verified_on",
+            columnDefinition = "TIMESTAMP"
+    )
+    private LocalDateTime emailVerifiedOn;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            name = "role",
+            nullable = false,
+            columnDefinition = "VARCHAR(10)"
+    )
+    private Role role;
 
     @OneToMany(
-            mappedBy = "creator",
+            mappedBy = "createdBy",
             cascade = CascadeType.REMOVE
     )
-    @JsonManagedReference
-    private List<Exam> examsCreated;
+    @JsonBackReference
+    private List<Question> createdQuestions;
+
+    @OneToMany(
+            mappedBy = "createdBy",
+            cascade = CascadeType.REMOVE
+    )
+    @JsonBackReference
+    private List<Exam> createdExams;
+
+    @OneToMany(
+            mappedBy = "createdBy",
+            cascade = CascadeType.REMOVE
+    )
+    @JsonBackReference
+    private List<DraftQuestion> draftQuestions;
+
+    @OneToMany(
+            mappedBy = "createdBy",
+            cascade = CascadeType.REMOVE
+    )
+    @JsonBackReference
+    private List<DraftExam> draftExams;
 
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.REMOVE
     )
-    @JsonManagedReference
-    private List<Result> examResults;
+    @JsonBackReference
+    private List<ExamCandidate> enrolledExams;
 
     @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.REMOVE
     )
-    @JsonManagedReference
-    private List<ExamResponses> examResponses;
-
+    @JsonBackReference
+    private List<ExamResponse> examResponses;
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(this.getType()));
+        return List.of(new SimpleGrantedAuthority(this.role.name()));
     }
 
     @Override

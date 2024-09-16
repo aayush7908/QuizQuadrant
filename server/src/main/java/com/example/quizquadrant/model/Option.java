@@ -4,26 +4,20 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+import java.util.UUID;
+
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "option_table")
+@Table(name = "_option")    // `option` is a reserved name in MySQL
 public class Option {
 
     @Id
-    @SequenceGenerator(
-            name = "option_sequence",
-            sequenceName = "option_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "option_sequence"
-    )
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(
             name = "statement",
@@ -33,38 +27,33 @@ public class Option {
     private String statement;
 
     @Column(
-            name = "hasImage",
-            nullable = false,
-            columnDefinition = "BOOLEAN"
+            name = "image_url",
+            columnDefinition = "TEXT"
     )
-    private Boolean hasImage;
+    private String imageUrl;
 
     @Column(
-            name = "isCorrect",
+            name = "is_correct",
             nullable = false,
             columnDefinition = "BOOLEAN"
     )
     private Boolean isCorrect;
 
     @ManyToOne
+    @JoinColumn(
+            name = "question_id",
+            nullable = false,
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_option_question")
+    )
     @JsonBackReference
-    @JoinColumn(name = "questionId")
     private Question question;
 
+    @OneToMany(
+            mappedBy = "option",
+            cascade = CascadeType.REMOVE
+    )
+    @JsonBackReference
+    private List<ExamResponse> examResponses;
 
-
-
-//    Constructor
-
-    public Option(
-            String statement,
-            Boolean hasImage,
-            Boolean isCorrect,
-            Question question
-    ) {
-        this.statement = statement;
-        this.hasImage = hasImage;
-        this.isCorrect = isCorrect;
-        this.question = question;
-    }
 }

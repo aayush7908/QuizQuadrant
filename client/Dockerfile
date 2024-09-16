@@ -4,8 +4,8 @@ COPY . /client
 
 WORKDIR /client
 
-EXPOSE 3000
-
 RUN npm i
 
-CMD [ "npm", "start" ]
+RUN npm run build
+
+ENTRYPOINT [ "npm", "start" ]

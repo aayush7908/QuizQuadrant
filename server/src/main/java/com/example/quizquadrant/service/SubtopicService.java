@@ -1,36 +1,43 @@
 package com.example.quizquadrant.service;
 
+import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.Subject;
 import com.example.quizquadrant.model.Subtopic;
-import com.example.quizquadrant.model.SubtopicKey;
-import com.example.quizquadrant.repository.SubtopicRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import org.springframework.http.ResponseEntity;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.UUID;
 
-@Service
-public class SubtopicService {
+public interface SubtopicService {
 
-    private final SubtopicRepository subtopicRepository;
-    private final SubjectService subjectService;
+    //    controller service methods
+    ResponseEntity<BooleanResponseDto> create(
+            SubtopicRequestDto subtopicRequestDto
+    ) throws Exception;
 
-    @Autowired
-    public SubtopicService(SubtopicRepository subtopicRepository, SubjectService subjectService) {
-        this.subtopicRepository = subtopicRepository;
-        this.subjectService = subjectService;
-    }
+    ResponseEntity<BooleanResponseDto> update(
+            SubtopicRequestDto subtopicRequestDto,
+            String id
+    ) throws Exception;
 
-    public Subtopic getSubtopicById(Long subjectId, Long subtopicId) {
-        Subject subject = subjectService.getSubjectById(subjectId);
-        if(subject != null) {
-            SubtopicKey subtopicKey = new SubtopicKey();
-            subtopicKey.setId(subtopicId);
-            subtopicKey.setSubject(subject);
-            Optional<Subtopic> subtopicOptional = subtopicRepository.findById(subtopicKey);
-            return subtopicOptional.orElse(null);
-        } else {
-            return null;
-        }
-    }
+    ResponseEntity<BooleanResponseDto> delete(
+            String id
+    ) throws Exception;
+
+    ResponseEntity<SubtopicDto> getSubtopicById(
+            String id
+    ) throws Exception;
+
+
+    //    repository access methods
+    Subtopic createSubtopic(Subtopic subtopic);
+
+    Subtopic updateSubtopic(Subtopic subtopic);
+
+    void deleteSubtopic(UUID id);
+
+    Subtopic getSubtopicById(
+            UUID id
+    ) throws Exception;
+
 }

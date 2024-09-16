@@ -1,23 +1,22 @@
 package com.example.quizquadrant.repository;
 
+import com.example.quizquadrant.model.DraftExam;
 import com.example.quizquadrant.model.Exam;
+import com.example.quizquadrant.model.Option;
 import com.example.quizquadrant.model.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.List;
+import java.util.UUID;
 
-import java.util.Optional;
-import java.util.List;
+public interface ExamRepository extends JpaRepository<Exam, UUID> {
 
-@Repository
-public interface ExamRepository extends JpaRepository<Exam, Long> {
-    @Transactional
-    @Modifying
-    @Query("UPDATE Exam e SET e.isResultGenerated = true WHERE e.id = :examId")
-    public void markResultGenerated(Long examId);
+    @Query("SELECT e FROM Exam e WHERE e.createdBy = :user")
+    Page<Exam> findByCreatedBy(User user, Pageable pageable);
+
+    @Query("SELECT COUNT(*) FROM Exam e WHERE e.createdBy = :user")
+    Integer countByCreatedBy(User user);
+
 }
