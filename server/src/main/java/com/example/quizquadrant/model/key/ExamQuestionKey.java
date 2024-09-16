@@ -1,6 +1,7 @@
 package com.example.quizquadrant.model.key;
 
-import com.example.quizquadrant.model.*;
+import com.example.quizquadrant.model.Exam;
+import com.example.quizquadrant.model.Question;
 import lombok.*;
 
 import java.io.Serializable;

@@ -1,11 +1,13 @@
 package com.example.quizquadrant.service.implementation;
 
-import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.BooleanResponseDto;
+import com.example.quizquadrant.dto.SubjectDto;
+import com.example.quizquadrant.dto.SubjectRequestDto;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.SubjectDtoMapper;
 import com.example.quizquadrant.model.Subject;
 import com.example.quizquadrant.repository.SubjectRepository;
-import com.example.quizquadrant.service.*;
+import com.example.quizquadrant.service.SubjectService;
 import com.example.quizquadrant.utils.error.DuplicateDataError;
 import com.example.quizquadrant.utils.error.NotFoundError;
 import com.example.quizquadrant.utils.validation.ValidationService;

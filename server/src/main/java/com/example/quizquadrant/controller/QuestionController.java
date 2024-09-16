@@ -1,6 +1,8 @@
 package com.example.quizquadrant.controller;
 
-import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.BooleanResponseDto;
+import com.example.quizquadrant.dto.QuestionDto;
+import com.example.quizquadrant.dto.QuestionRequestDto;
 import com.example.quizquadrant.service.QuestionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

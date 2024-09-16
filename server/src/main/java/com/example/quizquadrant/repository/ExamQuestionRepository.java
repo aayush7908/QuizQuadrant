@@ -4,7 +4,6 @@ import com.example.quizquadrant.model.Exam;
 import com.example.quizquadrant.model.ExamQuestion;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.key.ExamQuestionKey;
-import com.example.quizquadrant.model.key.ExamResponseKey;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;

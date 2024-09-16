@@ -1,7 +1,6 @@
 package com.example.quizquadrant.utils.otp;
 
 import com.example.quizquadrant.model.Otp;
-import com.example.quizquadrant.model.User;
 
 public interface OtpService {
 

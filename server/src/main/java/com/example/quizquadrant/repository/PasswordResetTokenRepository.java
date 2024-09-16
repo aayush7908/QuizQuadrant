@@ -1,6 +1,5 @@
 package com.example.quizquadrant.repository;
 
-import com.example.quizquadrant.model.Otp;
 import com.example.quizquadrant.model.PasswordResetToken;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

@@ -6,7 +6,6 @@ import com.example.quizquadrant.utils.email.EmailDetails;
 import com.example.quizquadrant.utils.email.EmailService;
 import com.example.quizquadrant.utils.error.BadRequestError;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;

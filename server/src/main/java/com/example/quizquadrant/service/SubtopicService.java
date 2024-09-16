@@ -1,11 +1,11 @@
 package com.example.quizquadrant.service;
 
-import com.example.quizquadrant.dto.*;
-import com.example.quizquadrant.model.Subject;
+import com.example.quizquadrant.dto.BooleanResponseDto;
+import com.example.quizquadrant.dto.SubtopicDto;
+import com.example.quizquadrant.dto.SubtopicRequestDto;
 import com.example.quizquadrant.model.Subtopic;
 import org.springframework.http.ResponseEntity;
 
-import java.util.List;
 import java.util.UUID;
 
 public interface SubtopicService {

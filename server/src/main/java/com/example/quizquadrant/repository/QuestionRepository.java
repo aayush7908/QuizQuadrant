@@ -1,7 +1,6 @@
 package com.example.quizquadrant.repository;
 
 import com.example.quizquadrant.model.Question;
-import com.example.quizquadrant.model.Solution;
 import com.example.quizquadrant.model.Subtopic;
 import com.example.quizquadrant.model.User;
 import org.springframework.data.domain.Page;
