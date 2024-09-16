@@ -28,7 +28,7 @@ public class Option {
 
     @Column(
             name = "image_url",
-            columnDefinition = "TINYTEXT"
+            columnDefinition = "TEXT"
     )
     private String imageUrl;
 

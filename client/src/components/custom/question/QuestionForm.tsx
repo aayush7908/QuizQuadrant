@@ -437,7 +437,7 @@ export default function QuestionForm({
                     {
                         fields.map((field, index) => {
                             return (
-                                <div className="grid gap-2">
+                                <div key={index} className="grid gap-2">
                                     <FormField
                                         control={control}
                                         name={`options.${index}.statement`}

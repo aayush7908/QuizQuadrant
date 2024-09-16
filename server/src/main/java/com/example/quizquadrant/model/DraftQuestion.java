@@ -15,7 +15,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "draft_question")
+@Table(name = "_draft_question")
 public class DraftQuestion {
 
     @Id
@@ -25,14 +25,14 @@ public class DraftQuestion {
     @Column(
             name = "data",
             nullable = false,
-            columnDefinition = "JSON"
+            columnDefinition = "TEXT"
     )
     private String data;
 
     @Column(
             name = "last_modified_on",
             nullable = false,
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime lastModifiedOn;
 

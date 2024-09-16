@@ -11,7 +11,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "solution")
+@Table(name = "_solution")
 public class Solution {
 
     @Id
@@ -27,7 +27,7 @@ public class Solution {
 
     @Column(
             name = "image_url",
-            columnDefinition = "TINYTEXT"
+            columnDefinition = "TEXT"
     )
     private String imageUrl;
 

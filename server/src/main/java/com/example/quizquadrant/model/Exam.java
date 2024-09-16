@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "exam")
+@Table(name = "_exam")
 public class Exam {
 
     @Id
@@ -33,7 +33,7 @@ public class Exam {
     @Column(
             name = "start_date_time",
             nullable = false,
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime startDateTime;
 
@@ -61,7 +61,7 @@ public class Exam {
     @Column(
             name = "last_modified_on",
             nullable = false,
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime lastModifiedOn;
 

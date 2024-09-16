@@ -18,7 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "exam_question")
+@Table(name = "_exam_question")
 @IdClass(ExamQuestionKey.class)
 public class ExamQuestion {
 

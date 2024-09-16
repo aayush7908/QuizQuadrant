@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "exam_response")
+@Table(name = "_exam_response")
 @IdClass(ExamResponseKey.class)
 public class ExamResponse {
 

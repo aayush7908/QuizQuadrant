@@ -16,7 +16,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "question")
+@Table(name = "_question")
 public class Question {
 
     @Id
@@ -54,7 +54,7 @@ public class Question {
     @Column(
             name = "last_modified_on",
             nullable = false,
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime lastModifiedOn;
 

@@ -26,7 +26,9 @@ export default async function RootLayout({
 					<SubjectState>
 						<RefreshState>
 							<Navbar />
-							<App children={children} />
+							<App>
+								{children}
+							</App>
 							<Toaster />
 						</RefreshState>
 					</SubjectState>

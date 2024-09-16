@@ -19,7 +19,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "otp")
+@Table(name = "_otp")
 public class Otp {
 
     @Id
@@ -34,7 +34,7 @@ public class Otp {
     @Column(
             name = "expires_on",
             nullable = false,
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime expiresOn;
 

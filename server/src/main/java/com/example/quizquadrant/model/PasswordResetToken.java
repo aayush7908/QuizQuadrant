@@ -17,7 +17,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "password_reset_token")
+@Table(name = "_password_reset_token")
 public class PasswordResetToken {
 
     @Id
@@ -33,7 +33,7 @@ public class PasswordResetToken {
     @Column(
             name = "expires_on",
             nullable = false,
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime expiresOn;
 

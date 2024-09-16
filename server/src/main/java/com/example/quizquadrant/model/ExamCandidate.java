@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "exam_candidate")
+@Table(name = "_exam_candidate")
 @IdClass(ExamCandidateKey.class)
 public class ExamCandidate {
 
@@ -42,7 +42,7 @@ public class ExamCandidate {
 
     @Column(
             name = "exam_finished_on",
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private Boolean examFinishedOn;
 

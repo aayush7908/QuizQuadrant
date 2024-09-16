@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "subject",
+        name = "_subject",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_subject_name",

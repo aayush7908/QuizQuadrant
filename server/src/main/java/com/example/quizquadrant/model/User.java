@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "user",
+        name = "_user",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_user_email",
@@ -70,13 +70,13 @@ public class User implements UserDetails {
     @Column(
             name = "account_created_on",
             nullable = false,
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime accountCreatedOn;
 
     @Column(
             name = "email_verified_on",
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime emailVerifiedOn;
 

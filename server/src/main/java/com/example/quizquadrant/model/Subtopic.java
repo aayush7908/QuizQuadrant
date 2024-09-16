@@ -14,7 +14,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Entity
 @Table(
-        name = "subtopic",
+        name = "_subtopic",
         uniqueConstraints = {
                 @UniqueConstraint(
                         name = "uk_subtopic_name",
