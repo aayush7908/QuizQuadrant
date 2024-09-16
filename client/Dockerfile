@@ -6,4 +6,6 @@ WORKDIR /client
 
 RUN npm i
 
-CMD [ "npm", "run", "dev" ]
+RUN npm run build
+
+ENTRYPOINT [ "npm", "start" ]
