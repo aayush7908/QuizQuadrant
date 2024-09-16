@@ -1,0 +1,9 @@
+Create APIs:
+exam/delete
+exam/update
+
+Edit APIs:
+question/update => check if question is asked in any exam, if so restrict from update.
+
+Add Feature:
+firebase config
