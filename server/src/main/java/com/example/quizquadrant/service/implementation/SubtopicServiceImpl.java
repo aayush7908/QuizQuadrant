@@ -1,6 +1,8 @@
 package com.example.quizquadrant.service.implementation;
 
-import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.BooleanResponseDto;
+import com.example.quizquadrant.dto.SubtopicDto;
+import com.example.quizquadrant.dto.SubtopicRequestDto;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.SubtopicDtoMapper;
 import com.example.quizquadrant.model.Subject;
@@ -15,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 

@@ -4,7 +4,6 @@ import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.Option;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subject;
-import com.example.quizquadrant.model.Subtopic;
 import com.example.quizquadrant.service.SubjectService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

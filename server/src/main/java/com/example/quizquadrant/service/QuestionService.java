@@ -1,6 +1,8 @@
 package com.example.quizquadrant.service;
 
-import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.BooleanResponseDto;
+import com.example.quizquadrant.dto.QuestionDto;
+import com.example.quizquadrant.dto.QuestionRequestDto;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subject;
 import com.example.quizquadrant.model.Subtopic;

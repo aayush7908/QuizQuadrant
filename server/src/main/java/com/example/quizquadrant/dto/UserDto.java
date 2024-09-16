@@ -1,6 +1,5 @@
 package com.example.quizquadrant.dto;
 
-import com.example.quizquadrant.model.type.Role;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

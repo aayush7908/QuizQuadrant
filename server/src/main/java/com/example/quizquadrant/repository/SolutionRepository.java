@@ -2,7 +2,6 @@ package com.example.quizquadrant.repository;
 
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Solution;
-import com.example.quizquadrant.model.Subject;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 

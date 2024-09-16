@@ -1,9 +1,6 @@
 package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.*;
-import com.example.quizquadrant.dto.LoginRequestDto;
-import com.example.quizquadrant.dto.RegisterRequestDto;
-import com.example.quizquadrant.dto.AuthenticationResponseDto;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthenticationService {

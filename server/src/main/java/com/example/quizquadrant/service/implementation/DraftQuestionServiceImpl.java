@@ -2,7 +2,6 @@ package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
-import com.example.quizquadrant.model.DraftExam;
 import com.example.quizquadrant.model.DraftQuestion;
 import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.model.type.Role;
@@ -19,7 +18,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

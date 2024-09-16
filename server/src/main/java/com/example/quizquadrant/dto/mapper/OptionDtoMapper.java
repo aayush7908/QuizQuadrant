@@ -1,9 +1,7 @@
 package com.example.quizquadrant.dto.mapper;
 
 import com.example.quizquadrant.dto.OptionDto;
-import com.example.quizquadrant.dto.QuestionDto;
 import com.example.quizquadrant.model.Option;
-import com.example.quizquadrant.model.Question;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

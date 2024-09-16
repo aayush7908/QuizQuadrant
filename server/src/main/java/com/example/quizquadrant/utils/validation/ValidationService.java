@@ -1,8 +1,6 @@
 package com.example.quizquadrant.utils.validation;
 
 import com.example.quizquadrant.dto.*;
-import com.example.quizquadrant.dto.LoginRequestDto;
-import com.example.quizquadrant.dto.RegisterRequestDto;
 
 import java.util.UUID;
 
