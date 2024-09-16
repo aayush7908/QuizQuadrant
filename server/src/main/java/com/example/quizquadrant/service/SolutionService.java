@@ -1,21 +1,39 @@
 package com.example.quizquadrant.service;
 
+import com.example.quizquadrant.dto.SolutionRequestDto;
+import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Solution;
-import com.example.quizquadrant.repository.SolutionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
+import java.util.UUID;
 
-@Service
-public class SolutionService {
-    private final SolutionRepository solutionRepository;
-    @Autowired
-    public SolutionService(SolutionRepository solutionRepository) {
-        this.solutionRepository = solutionRepository;
-    }
+public interface SolutionService {
 
-    public Solution createSolution(Boolean hasImage, String statement) {
-        Solution s = new Solution(statement, hasImage);
-        return solutionRepository.save(s);
-    }
+    //    controller service methods
+    Solution create(
+            SolutionRequestDto solutionRequestDto,
+            Question question
+    );
+
+    Solution update(
+            SolutionRequestDto solutionRequestDto,
+            Question question
+    ) throws Exception;
+
+    //    repository access methods
+    Solution createSolution(
+            Solution solution
+    );
+
+    Solution updateSolution(
+            Solution solution
+    ) throws Exception;
+
+    Solution getSolutionByQuestion(
+            Question question
+    ) throws Exception;
+
+    Solution getSolutionById(
+            UUID id
+    ) throws Exception;
+
 }

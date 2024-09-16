@@ -1,9 +1,13 @@
 package com.example.quizquadrant.dto;
 
-public record SubtopicDto (
-        String subtopicName,
-        Long subId,
-        Integer noq,
-        Long subtopicId
+import lombok.Builder;
+
+import java.util.UUID;
+
+@Builder
+public record SubtopicDto(
+        UUID id,
+        String name,
+        SubjectDto subject
 ) {
 }

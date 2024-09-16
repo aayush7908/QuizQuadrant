@@ -6,56 +6,50 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
-import java.util.Objects;
+import java.util.UUID;
 
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "subtopic")
-@IdClass(SubtopicKey.class)
+@Table(
+        name = "_subtopic",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_subtopic_name",
+                        columnNames = {"subject_id", "name"}
+                )
+        }
+)
 public class Subtopic {
+
     @Id
-    @SequenceGenerator(
-            name = "subtopic_sequence",
-            sequenceName = "subtopic_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "subtopic_sequence"
-    )
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(
-            name = "subtopicName",
-            nullable = false
-         
+            name = "name",
+            nullable = false,
+            columnDefinition = "VARCHAR(20)"
     )
-    private String subtopicName;
+    private String name;
 
     @ManyToOne
-    @JoinColumn(name = "subjectId")
-    @Id
+    @JoinColumn(
+            name = "subject_id",
+            nullable = false,
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_subtopic_subject")
+    )
+    @JsonBackReference
     private Subject subject;
 
     @OneToMany(
             mappedBy = "subtopic",
             cascade = CascadeType.REMOVE
     )
-    @JsonManagedReference
+    @JsonBackReference
     private List<Question> questions;
-
-
-
-
-//    constructors
-
-    public Subtopic(String subtopicName, Subject subject) {
-        this.subtopicName = subtopicName;
-        this.subject = subject;
-    }
 
 }

@@ -1,50 +1,46 @@
 package com.example.quizquadrant.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "subject")
+@Table(
+        name = "_subject",
+        uniqueConstraints = {
+                @UniqueConstraint(
+                        name = "uk_subject_name",
+                        columnNames = "name"
+                )
+        }
+)
 public class Subject {
 
     @Id
-    @SequenceGenerator(
-            name = "subject_sequence",
-            sequenceName = "subject_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "subject_sequence"
-    )
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(
-            name = "subName",
-            nullable = false
+            name = "name",
+            unique = true,
+            nullable = false,
+            columnDefinition = "VARCHAR(20)"
     )
-    private String subName;
+    private String name;
 
     @OneToMany(
             mappedBy = "subject",
             cascade = CascadeType.REMOVE
     )
+    @JsonManagedReference
     private List<Subtopic> subtopics;
-
-
-
-
-//    constructors ...
-
-    public Subject(String subName) {
-        this.subName = subName;
-    }
 
 }

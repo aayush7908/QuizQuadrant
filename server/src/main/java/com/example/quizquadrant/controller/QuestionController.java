@@ -1,54 +1,75 @@
 package com.example.quizquadrant.controller;
 
-import com.example.quizquadrant.dto.CreateQuestionDto;
-import com.example.quizquadrant.dto.PracticeQuestionDto;
-import com.example.quizquadrant.model.Question;
+import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.service.QuestionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
-
-@RestController 
+@RequiredArgsConstructor
 @CrossOrigin
+@RestController
 @RequestMapping("/api/question")
 public class QuestionController {
 
     private final QuestionService questionService;
 
-    @Autowired
-    public QuestionController(QuestionService questionService) {
-        this.questionService = questionService;
+    @PostMapping("/create")
+    public ResponseEntity<BooleanResponseDto> create(
+            @RequestBody QuestionRequestDto questionRequestDto,
+            @RequestParam("draftId") String draftId
+    ) throws Exception {
+        return questionService.create(questionRequestDto, draftId);
     }
 
-    @GetMapping("/get-questions-by-subtopic")
-    public List<PracticeQuestionDto> getQuestionsBySubtopic(
-            @RequestParam("subjectId") Long subjectId,
-            @RequestParam("subtopicId") Long subtopicId,
-            @RequestParam("pageNumber") Integer setNumber
-    ) {
-        return questionService.getQuestionsBySubtopic(subjectId, subtopicId, setNumber);
+    @PutMapping("/update/{id}")
+    public ResponseEntity<BooleanResponseDto> update(
+            @PathVariable String id,
+            @RequestBody QuestionRequestDto questionRequestDto
+    ) throws Exception {
+        return questionService.update(questionRequestDto, id);
     }
 
-    @GetMapping("/get-questions-by-subject")
-    public List<PracticeQuestionDto> getQuestionsBySubject(
-            @RequestParam("subjectId") Long subjectId,
-            @RequestParam("pageNumber") Integer setNumber
-    ) {
-        return questionService.getQuestionsBySubject(subjectId, setNumber);
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<BooleanResponseDto> delete(
+            @PathVariable String id
+    ) throws Exception {
+        return questionService.delete(id);
     }
 
-    @PostMapping("/create-question")
-    public Question createQuestion(@RequestBody CreateQuestionDto createQuestionDto) {
-        return questionService.createQuestion(createQuestionDto);
+    @GetMapping("/my-created")
+    public ResponseEntity<List<QuestionDto>> getMyQuestions(
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws Exception {
+        return questionService.getMyQuestions(pageNumber, pageSize);
     }
 
-    @GetMapping("/get-question-by-id")
-    public PracticeQuestionDto getQuestion(@RequestParam("questionID") Long qid) {
-        return questionService.getQuestionById(qid);
+    @GetMapping("/get/by-id/{id}")
+    public ResponseEntity<QuestionDto> getById(
+            @PathVariable String id
+    ) throws Exception {
+        return questionService.getQuestionById(id);
+    }
+
+    @GetMapping("/get/by-subject/{id}")
+    public ResponseEntity<List<QuestionDto>> getBySubject(
+            @PathVariable String id,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws Exception {
+        return questionService.getQuestionsBySubject(id, pageNumber, pageSize);
+    }
+
+    @GetMapping("/get/by-subtopic/{id}")
+    public ResponseEntity<List<QuestionDto>> getBySubtopic(
+            @PathVariable String id,
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws Exception {
+        return questionService.getQuestionsBySubtopic(id, pageNumber, pageSize);
     }
 
 }

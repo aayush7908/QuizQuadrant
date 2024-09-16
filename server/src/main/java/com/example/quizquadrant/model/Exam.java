@@ -9,97 +9,83 @@ import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "exam")
+@Table(name = "_exam")
 public class Exam {
+
     @Id
-    @SequenceGenerator(
-            name = "exam_sequence",
-            sequenceName = "exam_sequence",
-            allocationSize = 1
-    )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "exam_sequence"
-    )
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
 
     @Column(
             name = "title",
             nullable = false,
-            columnDefinition ="VARCHAR(200)"
+            columnDefinition = "VARCHAR(50)"
     )
     private String title;
 
     @Column(
-            name = "startDateTime",
+            name = "start_date_time",
             nullable = false,
-            columnDefinition = "DATETIME"
+            columnDefinition = "TIMESTAMP"
     )
     private LocalDateTime startDateTime;
 
     @Column(
-            name = "isResultGenerated",
-            nullable = false
+            name = "duration_in_minutes",
+            nullable = false,
+            columnDefinition = "INT(3)"
+    )
+    private Integer durationInMinutes;
+
+    @Column(
+            name = "is_result_generated",
+            nullable = false,
+            columnDefinition = "BOOLEAN"
     )
     private Boolean isResultGenerated;
 
     @Column(
-            name = "duration",
+            name = "total_marks",
             nullable = false,
-            columnDefinition = "int(4)"
-    )
-    private Integer duration;
-
-    @Column(
-            name = "totalMarks",
-            nullable = false
+            columnDefinition = "BOOLEAN"
     )
     private Integer totalMarks;
 
-    @OneToMany(
-            mappedBy = "exam",
-            cascade = CascadeType.REMOVE
+    @Column(
+            name = "last_modified_on",
+            nullable = false,
+            columnDefinition = "TIMESTAMP"
     )
-    @JsonManagedReference
-    private List<Result> examResults;
+    private LocalDateTime lastModifiedOn;
 
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn (name = "creator")
-    private User creator;
+    @JoinColumn(
+            name = "created_by",
+            nullable = false,
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_exam_user")
+    )
+    @JsonManagedReference
+    private User createdBy;
 
     @OneToMany(
             mappedBy = "exam",
             cascade = CascadeType.REMOVE
     )
     @JsonManagedReference
-    private List<PrivateQuestion> privateQuestions;
-  
-  //    @OneToMany(
-  //            mappedBy = "exam",
-  //            cascade = CascadeType.REMOVE
-  //    )
-  //    private List<ExamResponses> examResponses;
-  
+    private List<ExamQuestion> questions;
 
-
-
-//    constructors
-
-
-    public Exam(String title, LocalDateTime startDateTime, Boolean isResultGenerated, Integer duration, Integer totalMarks, User creator) {
-        this.title = title;
-        this.startDateTime = startDateTime;
-        this.isResultGenerated = isResultGenerated;
-        this.duration = duration;
-        this.totalMarks = totalMarks;
-        this.creator = creator;
-    }
+    @OneToMany(
+            mappedBy = "exam",
+            cascade = CascadeType.REMOVE
+    )
+    @JsonBackReference
+    private List<ExamCandidate> candidates;
 }

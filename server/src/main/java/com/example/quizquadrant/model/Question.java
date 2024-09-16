@@ -1,78 +1,82 @@
 package com.example.quizquadrant.model;
 
 
+import com.example.quizquadrant.model.type.QuestionType;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Data
-@Getter
-@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(
-        name = "question"
+@Table(name = "_question")
+public class Question {
 
-)
-@ToString
-public class Question implements Serializable {
     @Id
-    @SequenceGenerator(
-            name = "question_sequence",
-            sequenceName = "question_sequence",
-            allocationSize = 1
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private UUID id;
+
+    @Enumerated(EnumType.STRING)
+    @Column(
+            name = "type",
+            nullable = false,
+            columnDefinition = "VARCHAR(3)"
     )
-    @GeneratedValue(
-            strategy = GenerationType.SEQUENCE,
-            generator = "question_sequence"
-    )
-    private Long id;
+    private QuestionType type;
 
     @Column(
-            name = "positiveMarks",
-            nullable = false
+            name = "is_public",
+            nullable = false,
+            columnDefinition = "BOOLEAN"
     )
-    private Integer positiveMarks;
-
-    @Column(
-            name = "negativeMarks",
-            nullable = false
-    )
-    private Integer negativeMarks;
-
+    private Boolean isPublic;
 
     @Column(
             name = "statement",
             nullable = false,
-            columnDefinition ="LONGTEXT"
+            columnDefinition = "TEXT"
     )
     private String statement;
 
     @Column(
-            name = "type",
-            nullable = false,
-            columnDefinition ="CHAR(3)"
+            name = "image_url",
+            columnDefinition = "TEXT"
     )
-    private String type;
-
+    private String imageUrl;
 
     @Column(
-            name = "hasImage",
+            name = "last_modified_on",
             nullable = false,
-            columnDefinition = "BOOLEAN"
+            columnDefinition = "TIMESTAMP"
     )
-    private Boolean hasImage;
+    private LocalDateTime lastModifiedOn;
 
     @ManyToOne
-    @JsonBackReference
-    @JoinColumn(name = "subtopicId", referencedColumnName = "id")
-    @JoinColumn(name = "subjectId", referencedColumnName = "subjectId")
+    @JoinColumn(
+            name = "subtopic_id",
+            nullable = false,
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_question_subtopic")
+    )
+    @JsonManagedReference
     private Subtopic subtopic;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "created_by",
+            nullable = false,
+            referencedColumnName = "id",
+            foreignKey = @ForeignKey(name = "fk_question_user")
+    )
+    @JsonManagedReference
+    private User createdBy;
 
     @OneToMany(
             mappedBy = "question",
@@ -81,31 +85,17 @@ public class Question implements Serializable {
     @JsonManagedReference
     private List<Option> options;
 
-    @OneToOne
+    @OneToOne(
+            mappedBy = "question",
+            cascade = CascadeType.REMOVE
+    )
     @JsonManagedReference
-    @JoinColumn(name = "solutionId")
     private Solution solution;
 
-
-
-
-//    constructor
-
-    public Question(
-            Integer positiveMarks,
-            Integer negativeMarks,
-            String statement,
-            String type,
-            Boolean hasImage,
-            Subtopic subtopic,
-            Solution solution
-    ) {
-        this.positiveMarks = positiveMarks;
-        this.negativeMarks = negativeMarks;
-        this.statement = statement;
-        this.type = type;
-        this.hasImage = hasImage;
-        this.subtopic = subtopic;
-        this.solution = solution;
-    }
+    @OneToMany(
+            mappedBy = "question",
+            cascade = CascadeType.REMOVE
+    )
+    @JsonBackReference
+    private List<ExamQuestion> exams;
 }

@@ -1,272 +1,93 @@
 package com.example.quizquadrant.service;
 
-import com.example.quizquadrant.dto.CreateQuestionDto;
-import com.example.quizquadrant.dto.PracticeOptionDto;
-import com.example.quizquadrant.dto.PracticeQuestionDto;
-import com.example.quizquadrant.dto.PracticeSolutionDto;
 import com.example.quizquadrant.dto.*;
-import com.example.quizquadrant.model.*;
-import com.example.quizquadrant.repository.QuestionRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.stereotype.Service;
+import com.example.quizquadrant.model.Question;
+import com.example.quizquadrant.model.Subject;
+import com.example.quizquadrant.model.Subtopic;
+import com.example.quizquadrant.model.User;
+import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.UUID;
 
-@Service
-public class QuestionService {
+public interface QuestionService {
 
-    private final QuestionRepository questionRepository;
-    private final SubtopicService subtopicService;
-    private final ImageService imageService;
-    private  final SubjectService subjectService;
-    private final SolutionService solutionService;
-    private  final OptionService optionService;
+    //    controller service methods
+    @Transactional(rollbackFor = Exception.class)
+    ResponseEntity<BooleanResponseDto> create(
+            QuestionRequestDto questionRequestDto,
+            String draftId
+    ) throws Exception;
 
-    @Autowired
-    public QuestionService(QuestionRepository questionRepository, SubtopicService subtopicService, ImageService imageService, SubjectService subjectService, SolutionService solutionService, OptionService optionService) {
-        this.questionRepository = questionRepository;
-        this.subtopicService = subtopicService;
-        this.imageService = imageService;
-        this.subjectService = subjectService;
-        this.solutionService = solutionService;
-        this.optionService = optionService;
-    }
+    @Transactional(rollbackFor = Exception.class)
+    ResponseEntity<BooleanResponseDto> update(
+            QuestionRequestDto questionRequestDto,
+            String id
+    ) throws Exception;
 
-    public List<PracticeQuestionDto> getQuestionsBySubtopic(Long subjectId, Long subtopicId, Integer pageNumber) {
-        System.out.println("page no "+pageNumber);
+    @Transactional(rollbackFor = Exception.class)
+    ResponseEntity<BooleanResponseDto> delete(
+            String id
+    ) throws Exception;
 
-        Subtopic subtopic = subtopicService.getSubtopicById(subjectId, subtopicId);
-        if(subtopic != null) {
-            int pageSize = 5;
-            Pageable pageable = PageRequest.of(pageNumber, pageSize);
-            Page<Question> questionPage = this.questionRepository.findQuestionsBySubtopic(subtopic, pageable);
-            List<Question> questions = questionPage.getContent();
-            List<PracticeQuestionDto> questionDtos = new ArrayList<>();
-            for(Question question: questions) {
-                PracticeSolutionDto solutionDto = new PracticeSolutionDto(
-                        question.getSolution().getId(),
-                        question.getSolution().getStatement(),
-                        question.getSolution().getHasImage(),
-                        (question.getSolution().getHasImage() ? imageService.getImageById(question.getSolution().getId(), ImageTypes.SOLUTION) : "")
-                );
-                List<PracticeOptionDto> optionDtos = new ArrayList<>();
-                for(Option option: question.getOptions()) {
-                    PracticeOptionDto optionDto = new PracticeOptionDto(
-                            option.getId(),
-                            option.getStatement(),
-                            option.getHasImage(),
-                            option.getIsCorrect(),
-                            (option.getHasImage() ? imageService.getImageById(option.getId(), ImageTypes.OPTION) : "")
-                    );
-                    optionDtos.add(optionDto);
-                }
-                PracticeQuestionDto questionDto = new PracticeQuestionDto(
-                        question.getId(),
-                        question.getPositiveMarks(),
-                        question.getNegativeMarks(),
-                        question.getStatement(),
-                        question.getType(),
-                        question.getSubtopic().getSubtopicName(),
-                        question.getSubtopic().getSubject().getSubName(),
-                        solutionDto,
-                        optionDtos,
-                        (question.getHasImage() ? imageService.getImageById(question.getId(), ImageTypes.QUESTION) : "")
-                );
-                questionDtos.add(questionDto);
-            }
-            return questionDtos;
-        } else {
-            return null;
-        }
-    }
+    ResponseEntity<List<QuestionDto>> getMyQuestions(
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception;
 
-    public List<PracticeQuestionDto> getQuestionsBySubject(Long subjectId, Integer pageNumber) {
-        List<Subtopic> subtopics = this.subjectService.getSubjectById(subjectId).getSubtopics();
-        if(!subtopics.isEmpty()) {
-            int pageSize = 5;
-            Pageable pageable = PageRequest.of(pageNumber, pageSize);
-            Page<Question> questionPage = this.questionRepository.findQuestionsBySubtopics(subtopics, pageable);
-            List<Question> questions = questionPage.getContent();
-            List<PracticeQuestionDto> questionDtos = new ArrayList<>();
-            for(Question question: questions) {
-                PracticeSolutionDto solutionDto = new PracticeSolutionDto(
-                        question.getSolution().getId(),
-                        question.getSolution().getStatement(),
-                        question.getSolution().getHasImage(),
-                        (question.getSolution().getHasImage() ? imageService.getImageById(question.getSolution().getId(), ImageTypes.SOLUTION) : "")
-                );
-                List<PracticeOptionDto> optionDtos = new ArrayList<>();
-                for(Option option: question.getOptions()) {
-                    PracticeOptionDto optionDto = new PracticeOptionDto(
-                            option.getId(),
-                            option.getStatement(),
-                            option.getHasImage(),
-                            option.getIsCorrect(),
-                            (option.getHasImage() ? imageService.getImageById(option.getId(), ImageTypes.OPTION) : "")
-                    );
-                    optionDtos.add(optionDto);
-                }
-                PracticeQuestionDto questionDto = new PracticeQuestionDto(
-                        question.getId(),
-                        question.getPositiveMarks(),
-                        question.getNegativeMarks(),
-                        question.getStatement(),
-                        question.getType(),
-                        question.getSubtopic().getSubtopicName(),
-                        question.getSubtopic().getSubject().getSubName(),
-                        solutionDto,
-                        optionDtos,
-                        (question.getHasImage() ? imageService.getImageById(question.getId(), ImageTypes.QUESTION) : "")
-                );
-                questionDtos.add(questionDto);
-            }
-            return questionDtos;
-        } else {
-            return null;
-        }
-    }
+    ResponseEntity<QuestionDto> getQuestionById(
+            String id
+    ) throws Exception;
 
-    public Question createQuestion(CreateQuestionDto createQuestionDto) {
-        Solution solution = solutionService.createSolution(
-                !createQuestionDto.solutionImageURL().isEmpty(),
-                createQuestionDto.solutionStatement()
-        );
+    ResponseEntity<List<QuestionDto>> getQuestionsBySubject(
+            String id,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception;
 
-        Subtopic subtopic = subtopicService.getSubtopicById(
-                createQuestionDto.subjectId(),
-                createQuestionDto.subtopicId()
-        );
+    ResponseEntity<List<QuestionDto>> getQuestionsBySubtopic(
+            String id,
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception;
 
-        Question question = new Question(
-                createQuestionDto.positiveMarks(),
-                createQuestionDto.negativeMarks(),
-                createQuestionDto.questionStatement(),
-                createQuestionDto.type(),
-                !createQuestionDto.questionImageURL().isEmpty(),
-                subtopic,
-                solution
-        );
-        question = questionRepository.save(question);
+    //    repository access methods
+    Question createQuestion(Question question);
 
-        Option optionA = optionService.createOption(
-                createQuestionDto.optionAStatement(),
-                !createQuestionDto.optionAImageURL().isEmpty(),
-                createQuestionDto.correctAnswer().contains("A"),
-                question
-        );
+    Question updateQuestion(Question question);
 
-        Option optionB = optionService.createOption(
-                createQuestionDto.optionBStatement(),
-                !createQuestionDto.optionBImageURL().isEmpty(),
-                createQuestionDto.correctAnswer().contains("B"),
-                question
-        );
+    void deleteQuestion(UUID id);
 
-        Option optionC = optionService.createOption(
-                createQuestionDto.optionCStatement(),
-                !createQuestionDto.optionCImageURL().isEmpty(),
-                createQuestionDto.correctAnswer().contains("C"),
-                question
-        );
+    int countQuestionsCreatedByUser(User user);
+    int countQuestionsBySubject(Subject subject);
+    int countQuestionsBySubtopic(Subtopic subtopic);
 
-        Option optionD = optionService.createOption(
-                createQuestionDto.optionDStatement(),
-                !createQuestionDto.optionDImageURL().isEmpty(),
-                createQuestionDto.correctAnswer().contains("D"),
-                question
-        );
+    Question getQuestionById(
+            UUID id
+    ) throws Exception;
 
-        if(question.getHasImage()) {
-            Image imgQues = imageService.createImage(ImageTypes.QUESTION, question.getId(), createQuestionDto.questionImageURL());
-        }
-        if(solution.getHasImage()) {
-            Image imgSol = imageService.createImage(ImageTypes.SOLUTION, solution.getId(), createQuestionDto.solutionImageURL());
-        }
-        if(optionA.getHasImage()) {
-            Image imgOptionA = imageService.createImage(ImageTypes.OPTION, optionA.getId(), createQuestionDto.optionAImageURL());
-        }
-        if(optionB.getHasImage()) {
-            Image imgOptionB = imageService.createImage(ImageTypes.OPTION, optionB.getId(), createQuestionDto.optionBImageURL());
-        }
-        if(optionC.getHasImage()) {
-            Image imgOptionC = imageService.createImage(ImageTypes.OPTION, optionC.getId(), createQuestionDto.optionCImageURL());
-        }
-        if(optionD.getHasImage()) {
-            Image imgOptionD = imageService.createImage(ImageTypes.OPTION, optionD.getId(), createQuestionDto.optionDImageURL());
-        }
-
-        return question;
-    }
-
-    public MockExamDto getQuestionIdsBySubtopics(CreateMockTestDto createMockTestDto, Integer total) {
-        int pageSize = total;
-        Pageable pageable = PageRequest.of(0, pageSize);
-        List<Subtopic> subtopics = new ArrayList<>();
-        for(SubtopicDto subtopicDto : createMockTestDto.subtopicDtos()) {
-            Subtopic subtopic = subtopicService.getSubtopicById(subtopicDto.subId(), subtopicDto.subtopicId());
-            subtopics.add(subtopic);
-        }
-        Optional<List<Long>> Qids = questionRepository.findQuestionIdsBySubtopics(subtopics, pageable);
-        Long totalMarks = questionRepository.getSumOfPositiveMarks(Qids.orElse(null));
-
-        MockExamDto mock = new MockExamDto(Qids.orElse(null), totalMarks);
-        return mock;
-    }
+    List<Question> getQuestionsByUser(
+            User user,
+            Integer pageNumber,
+            Integer pageSize
+    );
 
 
-//    public Long totalNumberOfQuestions (CreateMockTestDto createMockTestDto) {
-//        List<Subtopic> subtopics = new ArrayList<>();
-//        for(SubtopicDto subtopicDto : createMockTestDto.subtopicDtos()) {
-//            Subtopic subtopic = subtopicService.getSubtopicById(subtopicDto.subId(), subtopicDto.subtopicId());
-//            subtopics.add(subtopic);
-//        }
-//        return questionRepository.countAllBySubtopic(subtopics);
-//    }
+    //    helper methods
+    Question create(
+            QuestionRequestDto questionRequestDto,
+            User user
+    ) throws Exception;
 
+    Question update(
+            QuestionRequestDto questionRequestDto,
+            Question question
+    ) throws Exception;
 
-
-    //QUESTION BY ID
-    public PracticeQuestionDto getQuestionById(Long questionId) {
-
-        Question question = this.questionRepository.findById(questionId).get();
-        PracticeSolutionDto solutionDto = new PracticeSolutionDto(
-                question.getSolution().getId(),
-                question.getSolution().getStatement(),
-                question.getSolution().getHasImage(),
-                (question.getSolution().getHasImage() ? imageService.getImageById(question.getSolution().getId(), ImageTypes.SOLUTION) : "")
-        );
-        List<PracticeOptionDto> optionDtos = new ArrayList<>();
-        for(Option option: question.getOptions()) {
-            PracticeOptionDto optionDto = new PracticeOptionDto(
-                    option.getId(),
-                    option.getStatement(),
-                    option.getHasImage(),
-                    option.getIsCorrect(),
-                    (option.getHasImage() ? imageService.getImageById(option.getId(), ImageTypes.OPTION) : "")
-            );
-            optionDtos.add(optionDto);
-        }
-        PracticeQuestionDto questionDto = new PracticeQuestionDto(
-                question.getId(),
-                question.getPositiveMarks(),
-                question.getNegativeMarks(),
-                question.getStatement(),
-                question.getType(),
-                question.getSubtopic().getSubtopicName(),
-                question.getSubtopic().getSubject().getSubName(),
-                solutionDto,
-                optionDtos,
-                (question.getHasImage() ? imageService.getImageById(question.getId(), ImageTypes.QUESTION) : "")
-        );
-
-        return questionDto;
-
-    }
-
+    void authorizeUserQuestion(
+            User user,
+            Question question
+    ) throws Exception;
 
 }

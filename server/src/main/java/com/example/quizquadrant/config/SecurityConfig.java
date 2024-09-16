@@ -1,6 +1,7 @@
 package com.example.quizquadrant.config;
 
-import jakarta.servlet.Filter;
+import com.example.quizquadrant.model.type.Role;
+import com.example.quizquadrant.utils.jwt.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,7 +12,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.server.csrf.CookieServerCsrfTokenRepository;
 
 @Configuration
 @EnableWebSecurity(debug = true)
@@ -26,10 +26,31 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/api/auth/**", "/api/homepage/**", "/api/question/get-questions-by-subject","/api/question/get-questions-by-subtopic")
-                        .permitAll()
-                        .anyRequest()
-                        .authenticated()
+                        .requestMatchers(
+                                "/",
+                                "/api/auth/**",
+                                "/api/user/reset-password",
+                                "/api/subject/get/**",
+                                "/api/subtopic/get/**",
+                                "/api/question/get/**"
+                        ).permitAll()
+                        .requestMatchers(
+                                "/api/question/create",
+                                "/api/question/update/**",
+                                "/api/question/delete/**",
+                                "/api/question/my-created",
+                                "/api/draft/**"
+                        ).hasAnyAuthority(Role.TEACHER.name(), Role.ADMIN.name())
+                        .requestMatchers(
+                                "/api/subject/create",
+                                "/api/subject/update/**",
+                                "/api/subject/delete/**",
+                                "/api/subtopic/create",
+                                "/api/subtopic/update/**",
+                                "/api/subtopic/delete/**",
+                                "/api/admin/**"
+                        ).hasAuthority(Role.ADMIN.name())
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
