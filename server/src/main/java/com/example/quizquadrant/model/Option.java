@@ -52,11 +52,11 @@ public class Option {
     @JsonBackReference
     private Question question;
 
-    @OneToMany(
-            mappedBy = "option",
-            cascade = CascadeType.REMOVE
-    )
-    @JsonBackReference
-    private List<ExamResponse> examResponses;
+//    @OneToMany(
+//            mappedBy = "option",
+//            cascade = CascadeType.REMOVE
+//    )
+//    @JsonBackReference
+//    private List<ExamResponse> examResponses;
 
 }

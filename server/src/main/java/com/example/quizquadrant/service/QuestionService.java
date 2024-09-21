@@ -33,7 +33,20 @@ public interface QuestionService {
             String id
     ) throws Exception;
 
-    ResponseEntity<List<QuestionDto>> getMyQuestions(
+    ResponseEntity<BooleanResponseDto> save(
+            String id
+    ) throws Exception;
+
+    ResponseEntity<BooleanResponseDto> unsave(
+            String id
+    ) throws Exception;
+
+    ResponseEntity<List<QuestionDto>> getMyCreatedQuestions(
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception;
+
+    ResponseEntity<List<QuestionDto>> getMySavedQuestions(
             Integer pageNumber,
             Integer pageSize
     ) throws Exception;
@@ -62,7 +75,9 @@ public interface QuestionService {
     void deleteQuestion(UUID id);
 
     int countQuestionsCreatedByUser(User user);
+
     int countQuestionsBySubject(Subject subject);
+
     int countQuestionsBySubtopic(Subtopic subtopic);
 
     Question getQuestionById(

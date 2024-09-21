@@ -41,12 +41,34 @@ public class QuestionController {
         return questionService.delete(id);
     }
 
-    @GetMapping("/my-created")
-    public ResponseEntity<List<QuestionDto>> getMyQuestions(
+    @PostMapping("/save/{id}")
+    public ResponseEntity<BooleanResponseDto> save(
+            @PathVariable String id
+    ) throws Exception {
+        return questionService.save(id);
+    }
+
+    @PostMapping("/unsave/{id}")
+    public ResponseEntity<BooleanResponseDto> unsave(
+            @PathVariable String id
+    ) throws Exception {
+        return questionService.unsave(id);
+    }
+
+    @GetMapping("/my/created")
+    public ResponseEntity<List<QuestionDto>> getMyCreatedQuestions(
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize
     ) throws Exception {
-        return questionService.getMyQuestions(pageNumber, pageSize);
+        return questionService.getMyCreatedQuestions(pageNumber, pageSize);
+    }
+
+    @GetMapping("/my/saved")
+    public ResponseEntity<List<QuestionDto>> getMySavedQuestions(
+            @RequestParam("pageNumber") Integer pageNumber,
+            @RequestParam("pageSize") Integer pageSize
+    ) throws Exception {
+        return questionService.getMySavedQuestions(pageNumber, pageSize);
     }
 
     @GetMapping("/get/by-id/{id}")

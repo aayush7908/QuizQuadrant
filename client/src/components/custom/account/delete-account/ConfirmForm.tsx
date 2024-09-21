@@ -30,6 +30,10 @@ export default function ConfirmForm() {
 
     const onSubmit = async () => {
         setIsProcessing(true);
+        const isConfirm = window.confirm("All data related to your account will be deleted and cannot be retrieved back again. Are you sure to delete your Account ?");
+        if (!isConfirm) {
+            return;
+        }
         const { success, error } = await deleteUserAction();
         if (success) {
             toast({

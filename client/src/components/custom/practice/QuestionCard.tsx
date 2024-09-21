@@ -1,16 +1,24 @@
 "use client"
 
+import { saveQuestionAction } from "@/actions/question/save/save-question-action";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { useToast } from "@/components/ui/use-toast";
+import { AuthContext } from "@/context/auth/AuthContext";
 import { Question } from "@/lib/type/model/Question";
-import { useEffect, useState } from "react";
+import { Bookmark, BookmarkX, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useContext, useEffect, useState } from "react";
 
 export function QuestionCard({ data, index }: { data: Question, index: number }) {
 
     const [choice, setChoice] = useState<Map<string, boolean>>(new Map());
-    const [isSolutionVisible, setIsSolutionVisible] = useState<boolean>(false);
+    const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const [isAnswerCorrect, setIsAnswerCorrect] = useState<boolean>(false);
+    const [isSolutionVisible, setIsSolutionVisible] = useState<boolean>(false);
+    const { user } = useContext(AuthContext);
+    const { toast } = useToast();
 
     const handleCheckAnswer = () => {
         let flag: boolean = true;
@@ -19,6 +27,30 @@ export function QuestionCard({ data, index }: { data: Question, index: number })
         });
         setIsAnswerCorrect(flag);
         setIsSolutionVisible(true);
+    }
+
+    const handleSaveQuestion = async () => {
+        if (!user) {
+            toast({
+                title: "Please Login to continue ...",
+                variant: "destructive",
+                action: <Link href={"/auth/login"} className="text-sm border rounded-sm px-3 py-2 hover:underline">Login</Link>
+            });
+        } else {
+            setIsProcessing(true);
+            const { success, error } = await saveQuestionAction(data.id);
+            if (success) {
+                toast({
+                    title: "Question saved successfully"
+                });
+            } else if (error) {
+                toast({
+                    title: error.errorMessage,
+                    variant: "destructive"
+                });
+            }
+            setIsProcessing(false);
+        }
     }
 
     const handleOptionSelection = (id: string) => {
@@ -46,7 +78,7 @@ export function QuestionCard({ data, index }: { data: Question, index: number })
 
     return (
         <Card>
-            <CardHeader className="border-b p-[1rem] bg-muted">
+            <CardHeader className="border-b p-[1rem] bg-muted rounded-t-md">
                 <CardTitle className="flex justify-between items-center">
                     <span className="text-lg">Question - {index + 1}</span>
                     <Badge className="text-sm">{data.type}</Badge>
@@ -99,12 +131,27 @@ export function QuestionCard({ data, index }: { data: Question, index: number })
                 </div>
             </CardContent>
             <CardFooter>
-                <div className={`w-full flex justify-center ${isSolutionVisible ? "hidden" : "flex"}`}>
+                <div className="w-full flex justify-between">
                     <Button
+                        className={`${isSolutionVisible ? "hidden" : "flex"}`}
                         onClick={handleCheckAnswer}
                     >
                         Check Answer
                     </Button>
+                    <div className="flex gap-3">
+                        <Button
+                            className="p-2"
+                            onClick={handleSaveQuestion}
+                        >
+                            {
+                                isProcessing ? (
+                                    <Loader2 className="animate-spin" />
+                                ) : (
+                                    <Bookmark />
+                                )
+                            }
+                        </Button>
+                    </div>
                 </div>
             </CardFooter>
         </Card>

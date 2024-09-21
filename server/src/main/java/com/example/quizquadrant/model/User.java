@@ -103,35 +103,42 @@ public class User implements UserDetails {
             cascade = CascadeType.REMOVE
     )
     @JsonBackReference
-    private List<Exam> createdExams;
-
-    @OneToMany(
-            mappedBy = "createdBy",
-            cascade = CascadeType.REMOVE
-    )
-    @JsonBackReference
     private List<DraftQuestion> draftQuestions;
 
     @OneToMany(
-            mappedBy = "createdBy",
-            cascade = CascadeType.REMOVE
-    )
-    @JsonBackReference
-    private List<DraftExam> draftExams;
-
-    @OneToMany(
             mappedBy = "user",
             cascade = CascadeType.REMOVE
     )
     @JsonBackReference
-    private List<ExamCandidate> enrolledExams;
+    private List<SavedQuestion> savedQuestions;
 
-    @OneToMany(
-            mappedBy = "user",
-            cascade = CascadeType.REMOVE
-    )
-    @JsonBackReference
-    private List<ExamResponse> examResponses;
+//    @OneToMany(
+//            mappedBy = "createdBy",
+//            cascade = CascadeType.REMOVE
+//    )
+//    @JsonBackReference
+//    private List<Exam> createdExams;
+//
+//    @OneToMany(
+//            mappedBy = "createdBy",
+//            cascade = CascadeType.REMOVE
+//    )
+//    @JsonBackReference
+//    private List<DraftExam> draftExams;
+//
+//    @OneToMany(
+//            mappedBy = "user",
+//            cascade = CascadeType.REMOVE
+//    )
+//    @JsonBackReference
+//    private List<ExamCandidate> enrolledExams;
+//
+//    @OneToMany(
+//            mappedBy = "user",
+//            cascade = CascadeType.REMOVE
+//    )
+//    @JsonBackReference
+//    private List<ExamResponse> examResponses;
 
 
     @Override

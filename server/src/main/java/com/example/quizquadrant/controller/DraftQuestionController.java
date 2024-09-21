@@ -40,7 +40,7 @@ public class DraftQuestionController {
         return draftQuestionService.delete(id);
     }
 
-    @GetMapping("/my-created")
+    @GetMapping("/my/created")
     public ResponseEntity<List<QuestionDto>> getMyDraftExams(
             @RequestParam("pageNumber") Integer pageNumber,
             @RequestParam("pageSize") Integer pageSize

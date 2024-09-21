@@ -6,10 +6,7 @@ import com.example.quizquadrant.dto.QuestionRequestDto;
 import com.example.quizquadrant.dto.UserDto;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.QuestionDtoMapper;
-import com.example.quizquadrant.model.Question;
-import com.example.quizquadrant.model.Subject;
-import com.example.quizquadrant.model.Subtopic;
-import com.example.quizquadrant.model.User;
+import com.example.quizquadrant.model.*;
 import com.example.quizquadrant.model.type.QuestionType;
 import com.example.quizquadrant.model.type.Role;
 import com.example.quizquadrant.repository.QuestionRepository;
@@ -42,6 +39,7 @@ public class QuestionServiceImpl implements QuestionService {
     private final OptionService optionService;
     private final UserService userService;
     private final DraftQuestionService draftQuestionService;
+    private final SavedQuestionService savedQuestionService;
     private final BooleanResponseDtoMapper booleanResponseDtoMapper;
     private final QuestionDtoMapper questionDtoMapper;
 
@@ -147,7 +145,64 @@ public class QuestionServiceImpl implements QuestionService {
     }
 
     @Override
-    public ResponseEntity<List<QuestionDto>> getMyQuestions(
+    public ResponseEntity<BooleanResponseDto> save(
+            String id
+    ) throws Exception {
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
+//        find authenticated user
+        User user = userService.getAuthenticatedUser();
+        user = userService.getUserById(user.getId());
+
+//        authorize user
+        userService.authorizeUser(user);
+
+//        fetch question by id
+        Question question = getQuestionById(uuid);
+
+//        save question
+        SavedQuestion savedQuestion = savedQuestionService.saveQuestion(user, question);
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(
+                        booleanResponseDtoMapper
+                                .toDto(true)
+                );
+    }
+
+    @Override
+    public ResponseEntity<BooleanResponseDto> unsave(
+            String id
+    ) throws Exception {
+//        validate and get UUID from id-string
+        UUID uuid = validationService.validateAndGetUUID(id);
+
+//        find authenticated user
+        User user = userService.getAuthenticatedUser();
+
+//        authorize user
+        userService.authorizeUser(user);
+
+//        fetch question by id
+        Question question = getQuestionById(uuid);
+
+//        unsave question
+        savedQuestionService.unsaveQuestion(user, question);
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(
+                        booleanResponseDtoMapper
+                                .toDto(true)
+                );
+    }
+
+    @Override
+    public ResponseEntity<List<QuestionDto>> getMyCreatedQuestions(
             Integer pageNumber,
             Integer pageSize
     ) throws Exception {
@@ -174,6 +229,51 @@ public class QuestionServiceImpl implements QuestionService {
 //        and put it into first question
         if (pageNumber == 0) {
             int totalQuestions = countQuestionsCreatedByUser(user);
+            questionDtos.add(0, QuestionDto
+                    .builder()
+                    .createdBy(
+                            UserDto
+                                    .builder()
+                                    .totalQuestions(totalQuestions)
+                                    .build()
+                    )
+                    .build());
+        }
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(questionDtos);
+    }
+
+    @Override
+    public ResponseEntity<List<QuestionDto>> getMySavedQuestions(
+            Integer pageNumber,
+            Integer pageSize
+    ) throws Exception {
+//        validate pageNumber and pageSize
+        validationService.validatePageNumber(pageNumber);
+        validationService.validatePageSize(pageSize);
+
+//        find authenticated user
+        User user = userService.getAuthenticatedUser();
+
+//        fetch questions saved by user
+        List<SavedQuestion> savedQuestions = savedQuestionService.getSavedQuestionsByUser(user, pageNumber, pageSize);
+
+//        create list of question dto
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        for (SavedQuestion savedQuestion : savedQuestions) {
+            Question question = getQuestionById(savedQuestion.getQuestion().getId());
+            questionDtos.add(
+                    questionDtoMapper.toDto(question)
+            );
+        }
+
+//        if pageNumber is 0, calculate total number of questions saved by user
+//        and put it into first question
+        if (pageNumber == 0) {
+            int totalQuestions = savedQuestionService.countQuestionsSavedByUser(user);
             questionDtos.add(0, QuestionDto
                     .builder()
                     .createdBy(

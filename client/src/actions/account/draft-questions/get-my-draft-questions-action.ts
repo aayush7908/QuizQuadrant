@@ -18,7 +18,7 @@ const getMyDraftQuestionsAction = async (pageNumber: number) => {
         }
 
         // API call
-        const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/draft/question/my-created?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
+        const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/draft/question/my/created?pageNumber=${pageNumber}&pageSize=${pageSize}`, {
             method: "GET",
             cache: "no-cache",
             headers: {

@@ -1,23 +1,7 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/(home)/page": "app/(home)/page.js",
-  "/practice/subject/[id]/page": "app/practice/subject/[id]/page.js",
-  "/practice/subtopic/[id]/page": "app/practice/subtopic/[id]/page.js",
-  "/account/draft-questions/page": "app/account/draft-questions/page.js",
-  "/account/delete-account/page": "app/account/delete-account/page.js",
-  "/account/subject-and-subtopic/page": "app/account/subject-and-subtopic/page.js",
-  "/auth/login/page": "app/auth/login/page.js",
-  "/account/profile/page": "app/account/profile/page.js",
-  "/auth/logout/page": "app/auth/logout/page.js",
   "/account/verify-email/page": "app/account/verify-email/page.js",
-  "/question/create/page": "app/question/create/page.js",
-  "/auth/forgot-password/page": "app/auth/forgot-password/page.js",
-  "/account/questions-created/page": "app/account/questions-created/page.js",
-  "/auth/register/page": "app/auth/register/page.js",
-  "/question/draft/[id]/page": "app/question/draft/[id]/page.js",
-  "/question/edit/[id]/page": "app/question/edit/[id]/page.js",
-  "/subject/edit/[id]/page": "app/subject/edit/[id]/page.js",
-  "/subject/create/page": "app/subject/create/page.js",
-  "/subtopic/create/page": "app/subtopic/create/page.js",
-  "/subtopic/edit/[id]/page": "app/subtopic/edit/[id]/page.js"
+  "/account/saved-questions/page": "app/account/saved-questions/page.js",
+  "/account/profile/page": "app/account/profile/page.js",
+  "/account/delete-account/page": "app/account/delete-account/page.js"
 }

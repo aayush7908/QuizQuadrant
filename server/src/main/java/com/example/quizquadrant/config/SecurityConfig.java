@@ -38,7 +38,7 @@ public class SecurityConfig {
                                 "/api/question/create",
                                 "/api/question/update/**",
                                 "/api/question/delete/**",
-                                "/api/question/my-created",
+                                "/api/question/my/created",
                                 "/api/draft/**"
                         ).hasAnyAuthority(Role.TEACHER.name(), Role.ADMIN.name())
                         .requestMatchers(
