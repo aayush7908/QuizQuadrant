@@ -1,7 +1,6 @@
 {
   "/(home)/page": "app/(home)/page.js",
-  "/account/verify-email/page": "app/account/verify-email/page.js",
-  "/account/saved-questions/page": "app/account/saved-questions/page.js",
+  "/practice/subject/[id]/page": "app/practice/subject/[id]/page.js",
   "/account/profile/page": "app/account/profile/page.js",
-  "/account/delete-account/page": "app/account/delete-account/page.js"
+  "/account/admin/users/page": "app/account/admin/users/page.js"
 }

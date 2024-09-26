@@ -16,12 +16,16 @@ import com.example.quizquadrant.utils.otp.OtpService;
 import com.example.quizquadrant.utils.passwordresettoken.PasswordResetTokenService;
 import com.example.quizquadrant.utils.validation.ValidationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -244,10 +248,21 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> getAllUsers(Integer pageNumber, Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<User> userPage = userRepository.findAll(pageable);
+        return userPage.getContent();
+    }
+
+    @Override
     public boolean checkUserExistsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
 
+    @Override
+    public Integer countTotalUsers() {
+        return userRepository.countAll();
+    }
 
     //    helper methods
     @Override

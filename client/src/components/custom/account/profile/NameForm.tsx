@@ -12,8 +12,27 @@ import { req } from "@/lib/type/request/account/profile/user-name-form-request"
 import { updateNameAction } from "@/actions/account/profile/update-user-name-action"
 import { useState } from "react"
 import { SubmitButton } from "../../SubmitButton"
+import { error } from "@/lib/type/response/error/error-response"
 
-export default function NameForm({ firstName, lastName, isNameEditable, toggleIsNameEditable }: { firstName: string, lastName: string, isNameEditable: boolean, toggleIsNameEditable: Function }) {
+export default function NameForm({
+    firstName,
+    lastName,
+    isNameEditable,
+    toggleIsNameEditable,
+    onSubmit
+}: {
+    firstName: string,
+    lastName: string,
+    isNameEditable: boolean,
+    toggleIsNameEditable: Function,
+    onSubmit(body: req): Promise<{
+        success: boolean;
+        error?: undefined;
+    } | {
+        success: boolean;
+        error: error;
+    }>
+}) {
 
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const { toast } = useToast();
@@ -26,13 +45,13 @@ export default function NameForm({ firstName, lastName, isNameEditable, toggleIs
         }
     });
 
-    const onSubmit = async (formData: z.infer<typeof schema>) => {
+    const handleSubmit = async (formData: z.infer<typeof schema>) => {
         setIsProcessing(true);
         const reqBody = {
             firstName: formData.firstName,
             lastName: formData.lastName
         } as req;
-        const { success, error } = await updateNameAction(reqBody);
+        const { success, error } = await onSubmit(reqBody);
         if (success) {
             toast({
                 title: "Name changed successfully"
@@ -49,7 +68,7 @@ export default function NameForm({ firstName, lastName, isNameEditable, toggleIs
 
     return (
         <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)}>
+            <form onSubmit={form.handleSubmit(handleSubmit)}>
                 <div className="grid gap-4">
                     <div className="grid gap-3">
                         <FormField

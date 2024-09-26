@@ -77,8 +77,9 @@ public class CentralizedErrorHandler {
                 .append("Below is the stack trace:")
                 .append("</h3>");
         for (StackTraceElement stackTraceElement : error.getStackTrace()) {
-            msgBody.append(stackTraceElement)
-                    .append("\n");
+            msgBody.append("<p>")
+                    .append(stackTraceElement)
+                    .append("</p>");
         }
         try {
             emailService.sendSimpleMail(

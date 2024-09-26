@@ -16,7 +16,8 @@ import {
     Folder,
     MailQuestion,
     Radio,
-    Trash2
+    Trash2,
+    Users
 } from "lucide-react"
 import Link from "next/link";
 import { usePathname } from "next/navigation"
@@ -81,15 +82,26 @@ export function SideMenuNav() {
                             }
                             {
                                 validateAdminAccess(user) && (
-                                    <li>
-                                        <Link
-                                            href="/account/subject-and-subtopic"
-                                            className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/subject-and-subtopic" && "bg-muted text-primary"}`}
-                                        >
-                                            <Folder />
-                                            <span>Subject & Subtopic</span>
-                                        </Link>
-                                    </li>
+                                    <>
+                                        <li>
+                                            <Link
+                                                href="/account/admin/subject-and-subtopic"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/admin/subject-and-subtopic" && "bg-muted text-primary"}`}
+                                            >
+                                                <Folder />
+                                                <span>Subject & Subtopic</span>
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <Link
+                                                href="/account/admin/users"
+                                                className={`flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary ${path === "/account/admin/users" && "bg-muted text-primary"}`}
+                                            >
+                                                <Users />
+                                                <span>Users</span>
+                                            </Link>
+                                        </li>
+                                    </>
                                 )
                             }
                             {

@@ -7,7 +7,7 @@ import { Loader } from "@/components/custom/Loader";
 import { useToast } from "@/components/ui/use-toast";
 import { AuthContext } from "@/context/auth/AuthContext";
 import { Question } from "@/lib/type/model/Question";
-import { validateTeacherAccess, validateUserAccess } from "@/lib/validation/validate-access";
+import { validateUserAccess } from "@/lib/validation/validate-access";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 

@@ -4,6 +4,7 @@ import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.SavedQuestion;
 import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.model.key.SavedQuestionKey;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,7 +20,7 @@ public interface SavedQuestionRepository extends JpaRepository<SavedQuestion, Sa
     Optional<SavedQuestion> findByUserAndQuestion(User user, Question question);
 
     @Query("SELECT sq FROM SavedQuestion sq WHERE sq.user = :user")
-    Optional<List<SavedQuestion>> findByUser(User user, Pageable pageable);
+    Page<SavedQuestion> findByUser(User user, Pageable pageable);
 
     @Query("SELECT CASE WHEN COUNT(sq) > 0 THEN TRUE ELSE false END FROM SavedQuestion sq WHERE sq.user = :user AND sq.question = :question")
     Boolean existsByUserAndQuestion(User user, Question question);

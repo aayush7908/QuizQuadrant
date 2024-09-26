@@ -47,7 +47,9 @@ export default function Profile() {
                     <Loader />
                 ) : (
                     user && (
-                        <UserCard user={user} />
+                        <div className="min-h-full p-[1rem] md:p-[2rem] lg:p-[3rem] pb-[3rem]">
+                            <UserCard user={user} />
+                        </div>
                     )
                 )
             }

@@ -31,6 +31,11 @@
       "static/chunks/main-app.js",
       "static/chunks/app/account/layout.js"
     ],
+    "/account/admin/users/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/account/admin/users/page.js"
+    ],
     "/account/saved-questions/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -41,75 +46,20 @@
       "static/chunks/main-app.js",
       "static/chunks/app/account/questions-created/page.js"
     ],
-    "/practice/subject/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/practice/subject/[id]/page.js"
-    ],
-    "/auth/logout/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/logout/page.js"
-    ],
-    "/auth/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/layout.js"
-    ],
-    "/auth/login/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/login/page.js"
-    ],
-    "/account/verify-email/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/account/verify-email/page.js"
-    ],
-    "/practice/subtopic/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/practice/subtopic/[id]/page.js"
-    ],
     "/account/draft-questions/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/account/draft-questions/page.js"
     ],
-    "/question/create/page": [
+    "/account/admin/subject-and-subtopic/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/question/create/page.js"
+      "static/chunks/app/account/admin/subject-and-subtopic/page.js"
     ],
-    "/question/layout": [
+    "/practice/subject/[id]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/question/layout.js"
-    ],
-    "/question/draft/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/question/draft/[id]/page.js"
-    ],
-    "/account/delete-account/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/account/delete-account/page.js"
-    ],
-    "/auth/forgot-password/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/forgot-password/page.js"
-    ],
-    "/auth/register/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/auth/register/page.js"
-    ],
-    "/_not-found/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/_not-found/page.js"
+      "static/chunks/app/practice/subject/[id]/page.js"
     ]
   }
 }

@@ -20,6 +20,7 @@ public class UserProfileResponseDtoMapper {
                 .accountCreatedOn(user.getAccountCreatedOn())
                 .role(user.getRole().name())
                 .isEmailVerified(user.getEmailVerifiedOn() != null)
+                .totalUsers(0)
                 .build();
     }
 

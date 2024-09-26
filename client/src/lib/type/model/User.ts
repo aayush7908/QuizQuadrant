@@ -10,7 +10,8 @@ type User = {
     totalQuestions: number,
     totalExams: number,
     totalDraftQuestions: number,
-    totalDraftExams: number
+    totalDraftExams: number,
+    totalUsers: number
 };
 
 export type {

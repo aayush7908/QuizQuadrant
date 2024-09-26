@@ -4,6 +4,7 @@ import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
@@ -47,9 +48,16 @@ public interface UserService {
             UUID id
     ) throws Exception;
 
+    List<User> getAllUsers(
+            Integer pageNumber,
+            Integer pageSize
+    );
+
     boolean checkUserExistsByEmail(
             String email
     );
+
+    Integer countTotalUsers();
 
 
     //    helper methods

@@ -8,6 +8,7 @@ import com.example.quizquadrant.service.SavedQuestionService;
 import com.example.quizquadrant.utils.error.DuplicateDataError;
 import com.example.quizquadrant.utils.error.NotFoundError;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -52,11 +53,8 @@ public class SavedQuestionServiceImpl implements SavedQuestionService {
             Integer pageSize
     ) {
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        Optional<List<SavedQuestion>> savedQuestionsOptional = savedQuestionRepository.findByUser(user, pageable);
-        if (savedQuestionsOptional.isEmpty()) {
-            return new ArrayList<>();
-        }
-        return savedQuestionsOptional.get();
+        Page<SavedQuestion> savedQuestionPage = savedQuestionRepository.findByUser(user, pageable);
+        return savedQuestionPage.getContent();
     }
 
     @Override
