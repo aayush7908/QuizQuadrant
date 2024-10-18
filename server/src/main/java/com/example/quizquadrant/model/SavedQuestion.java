@@ -41,7 +41,7 @@ public class SavedQuestion {
             referencedColumnName = "id",
             foreignKey = @ForeignKey(name = "fk_savedquestion_question")
     )
-    @JsonBackReference
+    @JsonManagedReference
     private Question question;
 
 }

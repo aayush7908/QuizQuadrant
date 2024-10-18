@@ -1,7 +1,7 @@
 package com.example.quizquadrant.dto.mapper;
 
-import com.example.quizquadrant.dto.SubjectDto;
-import com.example.quizquadrant.dto.SubtopicDto;
+import com.example.quizquadrant.dto.subject.SubjectDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicDto;
 import com.example.quizquadrant.model.Subject;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

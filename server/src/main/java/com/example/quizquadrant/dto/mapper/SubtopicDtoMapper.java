@@ -1,7 +1,7 @@
 package com.example.quizquadrant.dto.mapper;
 
-import com.example.quizquadrant.dto.SubjectDto;
-import com.example.quizquadrant.dto.SubtopicDto;
+import com.example.quizquadrant.dto.subject.SubjectDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicDto;
 import com.example.quizquadrant.model.Subtopic;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -16,29 +16,21 @@ public class SubtopicDtoMapper {
 
     public SubtopicDto toDto(
             Subtopic subtopic,
-            UUID subjectId
+            boolean includeSubject
     ) {
         return SubtopicDto
                 .builder()
                 .id(subtopic.getId())
                 .name(subtopic.getName())
                 .subject(
-                        SubjectDto
-                                .builder()
-                                .id(subjectId)
-                                .build()
+                        includeSubject ?
+                                SubjectDto
+                                        .builder()
+                                        .id(subtopic.getSubject().getId())
+                                        .name(subtopic.getSubject().getName())
+                                        .build() :
+                                null
                 )
-                .build();
-    }
-
-    public SubtopicDto toDto(
-            Subtopic subtopic
-    ) {
-        return SubtopicDto
-                .builder()
-                .id(subtopic.getId())
-                .name(subtopic.getName())
-                .subject(null)
                 .build();
     }
 
@@ -47,7 +39,7 @@ public class SubtopicDtoMapper {
     ) {
         List<SubtopicDto> subtopicDtos = new ArrayList<>();
         for (Subtopic subtopic : subtopics) {
-            subtopicDtos.add(toDto(subtopic));
+            subtopicDtos.add(toDto(subtopic, false));
         }
         return subtopicDtos;
     }

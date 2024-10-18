@@ -1,11 +1,11 @@
 package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.*;
-import com.example.quizquadrant.model.User;
+import com.example.quizquadrant.dto.user.UpdateUserNameRequestDto;
+import com.example.quizquadrant.dto.user.UserProfileResponseDto;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;
-import java.util.UUID;
 
 public interface AdminService {
 

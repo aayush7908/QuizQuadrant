@@ -6,6 +6,15 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.scheduling.annotation.Async;
 
 public interface EmailService {
+
+    void sendEmailVerificationOtp(String email, String otp);
+
+    void sendResetPasswordOtp(String email, String otp);
+
+    void sendConfirmationMail(String email, String title, String msg);
+
+    void sendErrorMail(String title, Exception error);
+
     @Retryable(
             retryFor = Exception.class,
             maxAttempts = 4,

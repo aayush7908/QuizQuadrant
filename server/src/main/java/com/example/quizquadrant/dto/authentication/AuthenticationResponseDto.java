@@ -1,10 +1,10 @@
-package com.example.quizquadrant.dto;
+package com.example.quizquadrant.dto.authentication;
 
 import lombok.Builder;
 
 @Builder
 public record AuthenticationResponseDto(
         String token,
-        UserProfileResponseDto user
+        AuthenticatedUserDto user
 ) {
 }

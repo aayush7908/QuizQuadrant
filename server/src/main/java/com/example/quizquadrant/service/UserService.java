@@ -1,6 +1,8 @@
 package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.authentication.AuthenticationResponseDto;
+import com.example.quizquadrant.dto.user.*;
 import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 
@@ -11,13 +13,15 @@ public interface UserService {
 
     //    controller service methods
     ResponseEntity<BooleanResponseDto> resetPassword(
-            ResetPasswordDto resetPasswordDto
+            ResetPasswordRequestDto resetPasswordRequestDto
     ) throws Exception;
 
     ResponseEntity<AuthenticationResponseDto> authenticate();
 
-    ResponseEntity<BooleanResponseDto> verifyEmail(
-            VerifyEmailRequestDto verifyEmailRequestDto
+    ResponseEntity<BooleanResponseDto> sendVerifyEmailOtp() throws Exception;
+
+    ResponseEntity<BooleanResponseDto> verifyVerifyEmailOtp(
+            VerifyEmailOtpRequestDto verifyEmailOtpRequestDto
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> updateName(

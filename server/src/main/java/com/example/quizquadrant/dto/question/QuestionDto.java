@@ -1,5 +1,7 @@
-package com.example.quizquadrant.dto;
+package com.example.quizquadrant.dto.question;
 
+import com.example.quizquadrant.dto.subtopic.SubtopicDto;
+import com.example.quizquadrant.dto.user.UserDto;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
@@ -17,6 +19,7 @@ public record QuestionDto(
         SubtopicDto subtopic,
         List<OptionDto> options,
         SolutionDto solution,
-        UserDto createdBy
+        QuestionCreatedByDto createdBy,
+        Integer totalQuestions
 ) {
 }

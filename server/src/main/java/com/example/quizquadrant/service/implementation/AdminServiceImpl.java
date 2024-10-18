@@ -3,6 +3,8 @@ package com.example.quizquadrant.service.implementation;
 import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.UserProfileResponseDtoMapper;
+import com.example.quizquadrant.dto.user.UpdateUserNameRequestDto;
+import com.example.quizquadrant.dto.user.UserProfileResponseDto;
 import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.service.AdminService;
 import com.example.quizquadrant.service.UserService;

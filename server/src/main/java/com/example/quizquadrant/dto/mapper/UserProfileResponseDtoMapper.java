@@ -1,6 +1,6 @@
 package com.example.quizquadrant.dto.mapper;
 
-import com.example.quizquadrant.dto.UserProfileResponseDto;
+import com.example.quizquadrant.dto.user.UserProfileResponseDto;
 import com.example.quizquadrant.model.User;
 import org.springframework.stereotype.Component;
 

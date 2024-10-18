@@ -1,12 +1,15 @@
 package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.authentication.*;
 import com.example.quizquadrant.dto.mapper.AuthenticationResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
+import com.example.quizquadrant.model.Otp;
 import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.model.type.Role;
 import com.example.quizquadrant.service.AuthenticationService;
 import com.example.quizquadrant.service.UserService;
+import com.example.quizquadrant.utils.email.EmailService;
 import com.example.quizquadrant.utils.error.BadRequestError;
 import com.example.quizquadrant.utils.error.DuplicateDataError;
 import com.example.quizquadrant.utils.error.UnauthorizedAccessError;
@@ -34,6 +37,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final ValidationService validationService;
     private final JwtService jwtService;
     private final OtpService otpService;
+    private final EmailService emailService;
     private final PasswordResetTokenService passwordResetTokenService;
     private final AuthenticationResponseDtoMapper authenticationResponseDtoMapper;
     private final BooleanResponseDtoMapper booleanResponseDtoMapper;
@@ -69,8 +73,14 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .build()
         );
 
+//        generate otp
+        Otp otp = otpService.createOrUpdateOtp(registerRequestDto.email());
+
 //        send otp for email verification
-        otpService.sendOtpToVerifyEmail(registerRequestDto.email());
+        emailService.sendEmailVerificationOtp(
+                registerRequestDto.email(),
+                otp.getOtp()
+        );
 
 //        generate jwt token
         String token = jwtService.generateToken(user);
@@ -119,17 +129,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ResponseEntity<BooleanResponseDto> sendOtp(
-            OtpRequestDto otpRequestDto
+    public ResponseEntity<BooleanResponseDto> sendResetPasswordOtp(
+            SendResetPasswordOtpRequestDto sendResetPasswordOtpRequestDto
     ) throws Exception {
 //        validate email
-        validationService.validateEmail(otpRequestDto.email());
+        validationService.validateEmail(sendResetPasswordOtpRequestDto.email());
 
         try {
 //            check if user exists
-            userService.getUserByEmail(otpRequestDto.email());
+            userService.getUserByEmail(sendResetPasswordOtpRequestDto.email());
+
+//            generate otp
+            Otp otp = otpService.createOrUpdateOtp(sendResetPasswordOtpRequestDto.email());
+
 //            send email containing otp
-            otpService.sendOtpToResetPassword(otpRequestDto.email());
+            emailService.sendResetPasswordOtp(
+                    sendResetPasswordOtpRequestDto.email(),
+                    otp.getOtp()
+            );
         } catch (Exception ignore) {
         }
 
@@ -143,27 +160,27 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public ResponseEntity<SendPasswordResetTokenResponseDto> sendPasswordResetToken(
-            SendPasswordResetTokenRequestDto sendPasswordResetTokenRequestDto
+    public ResponseEntity<VerifyResetPasswordOtpResponseDto> verifyResetPasswordOtp(
+            VerifyResetPasswordOtpRequestDto verifyResetPasswordOtpRequestDto
     ) throws Exception {
 //        validate email
-        validationService.validateEmail(sendPasswordResetTokenRequestDto.email());
+        validationService.validateEmail(verifyResetPasswordOtpRequestDto.email());
 
         String token = null;
 
         try {
 //            check if user exists
-            userService.getUserByEmail(sendPasswordResetTokenRequestDto.email());
+            userService.getUserByEmail(verifyResetPasswordOtpRequestDto.email());
 
 //            validate otp
             otpService.validateOtp(
-                    sendPasswordResetTokenRequestDto.email(),
-                    sendPasswordResetTokenRequestDto.otp()
+                    verifyResetPasswordOtpRequestDto.email(),
+                    verifyResetPasswordOtpRequestDto.otp()
             );
 
 //            generate password reset token
             token = passwordResetTokenService
-                    .generatePasswordResetToken(sendPasswordResetTokenRequestDto.email());
+                    .generatePasswordResetToken(verifyResetPasswordOtpRequestDto.email());
         } catch (Exception e) {
             throw new BadRequestError("Invalid OTP");
         }
@@ -172,7 +189,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         return ResponseEntity
                 .status(200)
                 .body(
-                        SendPasswordResetTokenResponseDto
+                        VerifyResetPasswordOtpResponseDto
                                 .builder()
                                 .token(token)
                                 .build()

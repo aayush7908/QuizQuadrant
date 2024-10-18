@@ -1,11 +1,13 @@
 package com.example.quizquadrant.service.implementation;
 
-import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.QuestionDto;
-import com.example.quizquadrant.dto.QuestionRequestDto;
-import com.example.quizquadrant.dto.UserDto;
+import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
+import com.example.quizquadrant.dto.mapper.IdResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.QuestionDtoMapper;
+import com.example.quizquadrant.dto.question.QuestionCreatedByDto;
+import com.example.quizquadrant.dto.question.QuestionDto;
+import com.example.quizquadrant.dto.question.QuestionRequestDto;
+import com.example.quizquadrant.dto.user.UserDto;
 import com.example.quizquadrant.model.*;
 import com.example.quizquadrant.model.type.QuestionType;
 import com.example.quizquadrant.model.type.Role;
@@ -42,10 +44,11 @@ public class QuestionServiceImpl implements QuestionService {
     private final SavedQuestionService savedQuestionService;
     private final BooleanResponseDtoMapper booleanResponseDtoMapper;
     private final QuestionDtoMapper questionDtoMapper;
+    private final IdResponseDtoMapper idResponseDtoMapper;
 
     //    controller service methods
     @Override
-    public ResponseEntity<BooleanResponseDto> create(
+    public ResponseEntity<IdResponseDto> create(
             QuestionRequestDto questionRequestDto,
             String draftId
     ) throws Exception {
@@ -73,13 +76,13 @@ public class QuestionServiceImpl implements QuestionService {
         return ResponseEntity
                 .status(200)
                 .body(
-                        booleanResponseDtoMapper
-                                .toDto(true)
+                        idResponseDtoMapper
+                                .toDto(question)
                 );
     }
 
     @Override
-    public ResponseEntity<BooleanResponseDto> update(
+    public ResponseEntity<IdResponseDto> update(
             QuestionRequestDto questionRequestDto,
             String id
     ) throws Exception {
@@ -108,8 +111,8 @@ public class QuestionServiceImpl implements QuestionService {
         return ResponseEntity
                 .status(200)
                 .body(
-                        booleanResponseDtoMapper
-                                .toDto(true)
+                        idResponseDtoMapper
+                                .toDto(question)
                 );
     }
 
@@ -217,13 +220,7 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questions = getQuestionsByUser(user, pageNumber, pageSize);
 
 //        create list of question dto
-        List<QuestionDto> questionDtos = new ArrayList<>();
-        for (Question question : questions) {
-//            create question dto and add it to question dto list
-            questionDtos.add(
-                    questionDtoMapper.toDto(question)
-            );
-        }
+        List<QuestionDto> questionDtos = questionDtoMapper.toDtos(questions);
 
 //        if pageNumber is 0, calculate total number of questions created by user
 //        and put it into first question
@@ -231,12 +228,7 @@ public class QuestionServiceImpl implements QuestionService {
             int totalQuestions = countQuestionsCreatedByUser(user);
             questionDtos.add(0, QuestionDto
                     .builder()
-                    .createdBy(
-                            UserDto
-                                    .builder()
-                                    .totalQuestions(totalQuestions)
-                                    .build()
-                    )
+                    .totalQuestions(totalQuestions)
                     .build());
         }
 
@@ -262,13 +254,8 @@ public class QuestionServiceImpl implements QuestionService {
         List<SavedQuestion> savedQuestions = savedQuestionService.getSavedQuestionsByUser(user, pageNumber, pageSize);
 
 //        create list of question dto
-        List<QuestionDto> questionDtos = new ArrayList<>();
-        for (SavedQuestion savedQuestion : savedQuestions) {
-            Question question = getQuestionById(savedQuestion.getQuestion().getId());
-            questionDtos.add(
-                    questionDtoMapper.toDto(question)
-            );
-        }
+        List<Question> questions = savedQuestions.stream().map(SavedQuestion::getQuestion).toList();
+        List<QuestionDto> questionDtos = questionDtoMapper.toDtos(questions);
 
 //        if pageNumber is 0, calculate total number of questions saved by user
 //        and put it into first question
@@ -276,12 +263,7 @@ public class QuestionServiceImpl implements QuestionService {
             int totalQuestions = savedQuestionService.countQuestionsSavedByUser(user);
             questionDtos.add(0, QuestionDto
                     .builder()
-                    .createdBy(
-                            UserDto
-                                    .builder()
-                                    .totalQuestions(totalQuestions)
-                                    .build()
-                    )
+                    .totalQuestions(totalQuestions)
                     .build());
         }
 
@@ -330,13 +312,7 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questions = getQuestionsBySubject(subject, pageNumber, pageSize);
 
 //        create list of question dto
-        List<QuestionDto> questionDtos = new ArrayList<>();
-        for (Question question : questions) {
-//            create question dto and add it to question dto list
-            questionDtos.add(
-                    questionDtoMapper.toDto(question, subject)
-            );
-        }
+        List<QuestionDto> questionDtos = questionDtoMapper.toDtos(questions);
 
 //        if pageNumber is 0, calculate total number of questions within the subject
 //        and put it into first question
@@ -344,12 +320,7 @@ public class QuestionServiceImpl implements QuestionService {
             int totalQuestions = countQuestionsBySubject(subject);
             questionDtos.add(0, QuestionDto
                     .builder()
-                    .createdBy(
-                            UserDto
-                                    .builder()
-                                    .totalQuestions(totalQuestions)
-                                    .build()
-                    )
+                    .totalQuestions(totalQuestions)
                     .build());
         }
 
@@ -379,13 +350,7 @@ public class QuestionServiceImpl implements QuestionService {
         List<Question> questions = getQuestionsBySubtopic(subtopic, pageNumber, pageSize);
 
 //        create list of question dto
-        List<QuestionDto> questionDtos = new ArrayList<>();
-        for (Question question : questions) {
-//            create question dto and add it to question dto list
-            questionDtos.add(
-                    questionDtoMapper.toDto(question)
-            );
-        }
+        List<QuestionDto> questionDtos = questionDtoMapper.toDtos(questions);
 
 //        if pageNumber is 0, calculate total number of questions within the subtopic
 //        and put it into first question
@@ -393,12 +358,7 @@ public class QuestionServiceImpl implements QuestionService {
             int totalQuestions = countQuestionsBySubtopic(subtopic);
             questionDtos.add(0, QuestionDto
                     .builder()
-                    .createdBy(
-                            UserDto
-                                    .builder()
-                                    .totalQuestions(totalQuestions)
-                                    .build()
-                    )
+                    .totalQuestions(totalQuestions)
                     .build());
         }
 

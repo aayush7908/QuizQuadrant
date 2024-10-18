@@ -1,6 +1,7 @@
 package com.example.quizquadrant.controller;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.authentication.*;
 import com.example.quizquadrant.service.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,9 @@ public class AuthenticationController {
 
     private final AuthenticationService authenticationService;
 
+
+    //    ROUTE: 1 => Register a new user
+    //    POST: "/api/auth/register"
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponseDto> register(
             @RequestBody RegisterRequestDto registerRequestDto
@@ -21,6 +25,9 @@ public class AuthenticationController {
         return authenticationService.register(registerRequestDto);
     }
 
+
+    //    ROUTE: 2 => Authenticate a user using email and password
+    //    POST: "/api/auth/login"
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDto> login(
             @RequestBody LoginRequestDto loginRequestDto
@@ -28,18 +35,24 @@ public class AuthenticationController {
         return authenticationService.login(loginRequestDto);
     }
 
-    @PostMapping("/send/otp")
-    public ResponseEntity<BooleanResponseDto> sendOtp(
-            @RequestBody OtpRequestDto otpRequestDto
+
+    //    ROUTE: 3 => Send OTP to a user for Forgot Password Service
+    //    POST: "/api/auth/reset-password/otp/send"
+    @PostMapping("/reset-password/otp/send")
+    public ResponseEntity<BooleanResponseDto> sendResetPasswordOtp(
+            @RequestBody SendResetPasswordOtpRequestDto sendResetPasswordOtpRequestDto
     ) throws Exception {
-        return authenticationService.sendOtp(otpRequestDto);
+        return authenticationService.sendResetPasswordOtp(sendResetPasswordOtpRequestDto);
     }
 
-    @PostMapping("/send/password-reset-token")
-    public ResponseEntity<SendPasswordResetTokenResponseDto> sendPasswordResetToken(
-            @RequestBody SendPasswordResetTokenRequestDto sendPasswordResetTokenRequestDto
+
+    //    ROUTE: 4 => Verify OTP and send a PasswordResetToken for Forgot Password Service
+    //    POST: "/api/auth/reset-password/otp/verify"
+    @PostMapping("/reset-password/otp/verify")
+    public ResponseEntity<VerifyResetPasswordOtpResponseDto> verifyResetPasswordOtp(
+            @RequestBody VerifyResetPasswordOtpRequestDto verifyResetPasswordOtpRequestDto
     ) throws Exception {
-        return authenticationService.sendPasswordResetToken(sendPasswordResetTokenRequestDto);
+        return authenticationService.verifyResetPasswordOtp(verifyResetPasswordOtpRequestDto);
     }
 
 }

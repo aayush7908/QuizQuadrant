@@ -1,6 +1,7 @@
 package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.authentication.*;
 import org.springframework.http.ResponseEntity;
 
 public interface AuthenticationService {
@@ -14,12 +15,12 @@ public interface AuthenticationService {
             LoginRequestDto loginRequestDto
     ) throws Exception;
 
-    ResponseEntity<BooleanResponseDto> sendOtp(
-            OtpRequestDto otpRequestDto
+    ResponseEntity<BooleanResponseDto> sendResetPasswordOtp(
+            SendResetPasswordOtpRequestDto sendResetPasswordOtpRequestDto
     ) throws Exception;
 
-    ResponseEntity<SendPasswordResetTokenResponseDto> sendPasswordResetToken(
-            SendPasswordResetTokenRequestDto sendPasswordResetTokenRequestDto
+    ResponseEntity<VerifyResetPasswordOtpResponseDto> verifyResetPasswordOtp(
+            VerifyResetPasswordOtpRequestDto verifyResetPasswordOtpRequestDto
     ) throws Exception;
 
 }

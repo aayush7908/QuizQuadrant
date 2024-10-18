@@ -1,5 +1,6 @@
-package com.example.quizquadrant.dto;
+package com.example.quizquadrant.dto.subtopic;
 
+import com.example.quizquadrant.dto.subject.SubjectDto;
 import lombok.Builder;
 
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.example.quizquadrant.dto;
+package com.example.quizquadrant.dto.subject;
 
 import lombok.Builder;
 

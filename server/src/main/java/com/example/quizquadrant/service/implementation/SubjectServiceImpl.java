@@ -1,8 +1,8 @@
 package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.SubjectDto;
-import com.example.quizquadrant.dto.SubjectRequestDto;
+import com.example.quizquadrant.dto.subject.SubjectDto;
+import com.example.quizquadrant.dto.subject.SubjectRequestDto;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.SubjectDtoMapper;
 import com.example.quizquadrant.model.Subject;

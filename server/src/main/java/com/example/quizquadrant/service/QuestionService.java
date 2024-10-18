@@ -1,8 +1,9 @@
 package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.QuestionDto;
-import com.example.quizquadrant.dto.QuestionRequestDto;
+import com.example.quizquadrant.dto.IdResponseDto;
+import com.example.quizquadrant.dto.question.QuestionDto;
+import com.example.quizquadrant.dto.question.QuestionRequestDto;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subject;
 import com.example.quizquadrant.model.Subtopic;
@@ -17,13 +18,13 @@ public interface QuestionService {
 
     //    controller service methods
     @Transactional(rollbackFor = Exception.class)
-    ResponseEntity<BooleanResponseDto> create(
+    ResponseEntity<IdResponseDto> create(
             QuestionRequestDto questionRequestDto,
             String draftId
     ) throws Exception;
 
     @Transactional(rollbackFor = Exception.class)
-    ResponseEntity<BooleanResponseDto> update(
+    ResponseEntity<IdResponseDto> update(
             QuestionRequestDto questionRequestDto,
             String id
     ) throws Exception;

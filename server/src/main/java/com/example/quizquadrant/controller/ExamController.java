@@ -2,8 +2,8 @@
 //
 //import com.example.quizquadrant.dto.BooleanResponseDto;
 //import com.example.quizquadrant.dto.ExamDto;
-//import com.example.quizquadrant.dto.QuestionDto;
-//import com.example.quizquadrant.dto.SubjectDto;
+//import com.example.quizquadrant.dto.question.QuestionDto;
+//import com.example.quizquadrant.dto.subject.SubjectDto;
 //import com.example.quizquadrant.service.ExamService;
 //import com.example.quizquadrant.service.SubjectService;
 //import lombok.RequiredArgsConstructor;

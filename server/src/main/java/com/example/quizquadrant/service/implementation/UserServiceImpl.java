@@ -1,13 +1,17 @@
 package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.authentication.AuthenticationResponseDto;
 import com.example.quizquadrant.dto.mapper.AuthenticationResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.UserProfileResponseDtoMapper;
+import com.example.quizquadrant.dto.user.*;
+import com.example.quizquadrant.model.Otp;
 import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.model.type.Role;
 import com.example.quizquadrant.repository.UserRepository;
 import com.example.quizquadrant.service.UserService;
+import com.example.quizquadrant.utils.email.EmailService;
 import com.example.quizquadrant.utils.error.AccessDeniedError;
 import com.example.quizquadrant.utils.error.NotFoundError;
 import com.example.quizquadrant.utils.error.UnauthorizedAccessError;
@@ -37,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final JwtService jwtService;
     private final ValidationService validationService;
     private final OtpService otpService;
+    private final EmailService emailService;
     private final PasswordResetTokenService passwordResetTokenService;
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationResponseDtoMapper authenticationResponseDtoMapper;
@@ -47,25 +52,33 @@ public class UserServiceImpl implements UserService {
     //    controller service methods
     @Override
     public ResponseEntity<BooleanResponseDto> resetPassword(
-            ResetPasswordDto resetPasswordDto
+            ResetPasswordRequestDto resetPasswordRequestDto
     ) throws Exception {
 //        validate email and password
-        validationService.validateEmail(resetPasswordDto.email());
-        validationService.validatePassword(resetPasswordDto.password());
+        validationService.validateEmail(resetPasswordRequestDto.email());
+        validationService.validatePassword(resetPasswordRequestDto.password());
 
         try {
 //        fetch user by email
-            User user = getUserByEmail(resetPasswordDto.email());
+            User user = getUserByEmail(resetPasswordRequestDto.email());
 
 //        validate password reset token
             passwordResetTokenService.validatePasswordResetToken(
-                    resetPasswordDto.email(),
-                    resetPasswordDto.token()
+                    resetPasswordRequestDto.email(),
+                    resetPasswordRequestDto.token()
             );
 
 //        reset password and save user in database
-            user.setPassword(passwordEncoder.encode(resetPasswordDto.password()));
+            user.setPassword(passwordEncoder.encode(resetPasswordRequestDto.password()));
             updateUser(user);
+
+//            send confirmation email
+            emailService.sendConfirmationMail(
+                    resetPasswordRequestDto.email(),
+                    "Password Changed",
+                    "Password for your account has been changed. Please login again to continue."
+            );
+
         } catch (Exception e) {
             throw new UnauthorizedAccessError();
         }
@@ -97,8 +110,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<BooleanResponseDto> verifyEmail(
-            VerifyEmailRequestDto verifyEmailRequestDto
+    public ResponseEntity<BooleanResponseDto> sendVerifyEmailOtp() throws Exception {
+//        fetch authenticated user
+        User user = getAuthenticatedUser();
+
+//        generate otp
+        Otp otp = otpService.createOrUpdateOtp(user.getEmail());
+
+//        send otp for email verification
+        emailService.sendEmailVerificationOtp(
+                user.getEmail(),
+                otp.getOtp()
+        );
+
+//        response
+        return ResponseEntity
+                .status(200)
+                .body(
+                        booleanResponseDtoMapper
+                                .toDto(true)
+                );
+    }
+
+    @Override
+    public ResponseEntity<BooleanResponseDto> verifyVerifyEmailOtp(
+            VerifyEmailOtpRequestDto verifyEmailOtpRequestDto
     ) throws Exception {
 //        fetch authenticated user
         User user = getAuthenticatedUser();
@@ -106,7 +142,7 @@ public class UserServiceImpl implements UserService {
 //        validate otp
         otpService.validateOtp(
                 user.getEmail(),
-                verifyEmailRequestDto.otp()
+                verifyEmailOtpRequestDto.otp()
         );
 
 //        update user data

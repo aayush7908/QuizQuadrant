@@ -1,6 +1,11 @@
 package com.example.quizquadrant.dto.mapper;
 
-import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.question.OptionDto;
+import com.example.quizquadrant.dto.question.QuestionCreatedByDto;
+import com.example.quizquadrant.dto.question.QuestionDto;
+import com.example.quizquadrant.dto.question.SolutionDto;
+import com.example.quizquadrant.dto.subject.SubjectDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicDto;
 import com.example.quizquadrant.model.Option;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.model.Subject;
@@ -17,27 +22,16 @@ public class QuestionDtoMapper {
 
     private final OptionDtoMapper optionDtoMapper;
     private final SolutionDtoMapper solutionDtoMapper;
-    private final SubjectService subjectService;
+
 
     public QuestionDto toDto(
             Question question
     ) throws Exception {
-//        fetch subject by id
-        Subject subject = subjectService.getSubjectById(question.getSubtopic().getSubject().getId());
-
-//        create question and return
-        return toDto(question, subject);
-    }
-
-    public QuestionDto toDto(
-            Question question,
-            Subject subject
-    ) throws Exception {
 //        create subject dto
         SubjectDto subjectDto = SubjectDto
                 .builder()
-                .id(subject.getId())
-                .name(subject.getName())
+                .id(question.getSubtopic().getSubject().getId())
+                .name(question.getSubtopic().getSubject().getName())
                 .build();
 
 //        create subtopic dto
@@ -49,15 +43,16 @@ public class QuestionDtoMapper {
                 .build();
 
 //        create option dtos
-        List<OptionDto> optionDtos = new ArrayList<>();
-        for (Option option : question.getOptions()) {
-            optionDtos.add(
-                    optionDtoMapper.toDto(option)
-            );
-        }
+        List<OptionDto> optionDtos = optionDtoMapper.toDtos(question.getOptions());
 
 //        create solution dto
         SolutionDto solutionDto = solutionDtoMapper.toDto(question.getSolution());
+
+//        create question created by dto
+        QuestionCreatedByDto questionCreatedByDto = QuestionCreatedByDto
+                .builder()
+                .id(question.getCreatedBy().getId())
+                .build();
 
 //        create question dto and return
         return QuestionDto
@@ -71,7 +66,21 @@ public class QuestionDtoMapper {
                 .subtopic(subtopicDto)
                 .options(optionDtos)
                 .solution(solutionDto)
+                .createdBy(questionCreatedByDto)
+                .totalQuestions(0)
                 .build();
+    }
+
+    public List<QuestionDto> toDtos(
+            List<Question> questions
+    ) throws Exception {
+        List<QuestionDto> questionDtos = new ArrayList<>();
+        for (Question question : questions) {
+            questionDtos.add(
+                    toDto(question)
+            );
+        }
+        return questionDtos;
     }
 
 }

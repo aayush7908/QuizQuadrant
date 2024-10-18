@@ -1,6 +1,13 @@
 package com.example.quizquadrant.utils.validation;
 
-import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.authentication.LoginRequestDto;
+import com.example.quizquadrant.dto.authentication.RegisterRequestDto;
+import com.example.quizquadrant.dto.question.OptionRequestDto;
+import com.example.quizquadrant.dto.question.QuestionRequestDto;
+import com.example.quizquadrant.dto.question.SolutionRequestDto;
+import com.example.quizquadrant.dto.subject.SubjectRequestDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicRequestDto;
+import com.example.quizquadrant.dto.user.UpdateUserNameRequestDto;
 
 import java.util.UUID;
 

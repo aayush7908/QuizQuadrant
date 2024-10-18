@@ -1,6 +1,4 @@
 {
-  "/(home)/page": "app/(home)/page.js",
-  "/practice/subject/[id]/page": "app/practice/subject/[id]/page.js",
-  "/account/profile/page": "app/account/profile/page.js",
-  "/account/admin/users/page": "app/account/admin/users/page.js"
+  "/page": "app/page.js",
+  "/favicon.ico/route": "app/favicon.ico/route.js"
 }
