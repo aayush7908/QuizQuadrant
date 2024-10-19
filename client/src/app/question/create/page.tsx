@@ -1,17 +1,17 @@
 "use client"
 
-import { createDraftQuestionAction } from "@/actions/question/create/create-draft-action";
-import { createQuestionAction } from "@/actions/question/create/create-question-action";
-import QuestionForm from "@/components/custom/question/QuestionForm";
-import { req } from "@/lib/type/request/question/question-form-request";
+import QuestionForm from "@/app/question/_components/QuestionForm";
+import QuestionRequest from "../_types/question-request";
+import { createQuestionAction } from "../_actions/create-question-action";
+import { createDraftQuestionAction } from "../_actions/create-draft-action";
 
 export default function CreateQuestion() {
 
-    const onSubmit = async (data: req) => {
+    const onSubmit = async (data: QuestionRequest) => {
         return await createQuestionAction(data);
     }
 
-    const onSubmitDraft = async (data: req) => {
+    const onSubmitDraft = async (data: QuestionRequest) => {
         return await createDraftQuestionAction(data);
     }
 

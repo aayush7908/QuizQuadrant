@@ -1,5 +1,7 @@
 package com.example.quizquadrant.dto;
 
+import com.example.quizquadrant.dto.question.QuestionDto;
+import com.example.quizquadrant.dto.user.UserDto;
 import lombok.Builder;
 
 import java.time.LocalDateTime;

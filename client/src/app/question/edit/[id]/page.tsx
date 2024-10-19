@@ -1,14 +1,14 @@
 "use client"
 
-import { getQuestionByIdAction } from "@/actions/question/edit/get-question-by-id-action";
-import { updateQuestionAction } from "@/actions/question/edit/update-question-action";
-import { Loader } from "@/components/custom/Loader";
-import QuestionForm from "@/components/custom/question/QuestionForm";
-import { useToast } from "@/components/ui/use-toast";
-import { Question } from "@/lib/type/model/Question";
-import { req } from "@/lib/type/request/question/question-form-request";
+import { Loader } from "@/app/_components/Loader";
+import Question from "@/app/_types/question";
+import QuestionForm from "@/app/question/_components/QuestionForm";
+import { useToast } from "@/components/hooks/use-toast";
 import { useEffect, useState } from "react";
-import { deleteQuestionAction } from "@/actions/question/edit/delete-question-action";
+import { updateQuestionAction } from "../../_actions/update-question-action";
+import { deleteQuestionAction } from "../../../_actions/delete-question-action";
+import { getQuestionAction } from "../../_actions/get-question-action";
+import QuestionRequest from "../../_types/question-request";
 
 export default function EditQuestion({ params }: { params: { id: string } }) {
 
@@ -16,7 +16,7 @@ export default function EditQuestion({ params }: { params: { id: string } }) {
     const [question, setQuestion] = useState<Question | undefined>(undefined);
     const { toast } = useToast();
 
-    const onSubmit = async (data: req) => {
+    const onSubmit = async (data: QuestionRequest) => {
         return await updateQuestionAction(data, params.id);
     }
 
@@ -27,7 +27,7 @@ export default function EditQuestion({ params }: { params: { id: string } }) {
     useEffect(() => {
         (async () => {
             setIsProcessing(true);
-            const { success, data, error } = await getQuestionByIdAction(params.id);
+            const { success, data, error } = await getQuestionAction(params.id);
             if (success && data) {
                 setQuestion(data);
             } else if (error) {

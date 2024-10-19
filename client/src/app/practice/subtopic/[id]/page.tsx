@@ -1,17 +1,17 @@
 "use client"
 
-import { getQuestionsBySubtopicAction } from "@/actions/practice/subtopic/get-questions-by-subtopic-action";
-import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
-import { Loader } from "@/components/custom/Loader";
-import { QuestionCard } from "@/components/custom/practice/QuestionCard";
-import { useToast } from "@/components/ui/use-toast";
-import { Question } from "@/lib/type/model/Question";
+import { InfiniteScroll } from "@/app/_components/InfiniteScroll";
+import { Loader } from "@/app/_components/Loader";
+import Question from "@/app/_types/question";
+import { QuestionCard } from "@/app/practice/_components/QuestionCard";
+import { useToast } from "@/components/hooks/use-toast";
 import { useEffect, useState } from "react";
+import { getQuestionsBySubtopicAction } from "../../_actions/get-questions-by-subtopic-action";
 
 export default function PracticeSubtopic({ params }: { params: { id: string } }) {
 
     const [totalLength, setTotalLength] = useState<number>(0);
-    const [initialData, setInitialData] = useState<Array<Question>>([]);
+    const [initialData, setInitialData] = useState<Question[]>([]);
     const [isProcessing, setIsProcessing] = useState<boolean>(true);
     const { toast } = useToast();
 
@@ -33,7 +33,7 @@ export default function PracticeSubtopic({ params }: { params: { id: string } })
             if (!data) {
                 return;
             }
-            setTotalLength(data[0].createdBy.totalQuestions);
+            setTotalLength(data[0].totalQuestions);
             const newInitialData = [] as Array<Question>;
             for (let i = 1; i < data.length; i++) {
                 newInitialData.push({ ...data[i] });

@@ -1,15 +1,15 @@
 "use client"
 
-import { getDraftQuestionByIdAction } from "@/actions/question/draft/get-draft-action";
-import { createQuestionAction } from "@/actions/question/create/create-question-action";
-import { updateDraftQuestionAction } from "@/actions/question/draft/update-draft-action";
-import { Loader } from "@/components/custom/Loader";
-import QuestionForm from "@/components/custom/question/QuestionForm";
-import { useToast } from "@/components/ui/use-toast";
-import { Question } from "@/lib/type/model/Question";
-import { req } from "@/lib/type/request/question/question-form-request";
 import { useEffect, useState } from "react";
-import { deleteDraftQuestionAction } from "@/actions/question/draft/delete-draft-action";
+import { useToast } from "@/components/hooks/use-toast";
+import { Loader } from "@/app/_components/Loader";
+import QuestionForm from "@/app/question/_components/QuestionForm";
+import { createQuestionAction } from "../../_actions/create-question-action";
+import { updateDraftQuestionAction } from "../../_actions/update-draft-action";
+import { deleteDraftQuestionAction } from "../../../_actions/delete-draft-action";
+import { getDraftQuestionAction } from "../../_actions/get-draft-action";
+import Question from "@/app/_types/question";
+import QuestionRequest from "../../_types/question-request";
 
 export default function DraftQuestion({ params }: { params: { id: string } }) {
 
@@ -17,11 +17,11 @@ export default function DraftQuestion({ params }: { params: { id: string } }) {
     const [question, setQuestion] = useState<Question | undefined>(undefined);
     const { toast } = useToast();
 
-    const onSubmit = async (data: req) => {
+    const onSubmit = async (data: QuestionRequest) => {
         return await createQuestionAction(data, params.id);
     }
 
-    const onSubmitDraft = async (data: req) => {
+    const onSubmitDraft = async (data: QuestionRequest) => {
         return await updateDraftQuestionAction(data, params.id);
     }
 
@@ -32,7 +32,7 @@ export default function DraftQuestion({ params }: { params: { id: string } }) {
     useEffect(() => {
         (async () => {
             setIsProcessing(true);
-            const { success, data, error } = await getDraftQuestionByIdAction(params.id);
+            const { success, data, error } = await getDraftQuestionAction(params.id);
             if (success && data) {
                 setQuestion(data);
             } else if (error) {

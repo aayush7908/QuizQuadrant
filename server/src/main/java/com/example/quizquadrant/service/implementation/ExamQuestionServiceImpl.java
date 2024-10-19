@@ -2,7 +2,7 @@
 //
 //import com.example.quizquadrant.dto.BooleanResponseDto;
 //import com.example.quizquadrant.dto.ExamDto;
-//import com.example.quizquadrant.dto.QuestionDto;
+//import com.example.quizquadrant.dto.question.QuestionDto;
 //import com.example.quizquadrant.model.Exam;
 //import com.example.quizquadrant.model.ExamQuestion;
 //import com.example.quizquadrant.model.Question;

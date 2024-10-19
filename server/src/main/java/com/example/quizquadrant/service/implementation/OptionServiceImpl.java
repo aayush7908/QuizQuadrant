@@ -1,6 +1,6 @@
 package com.example.quizquadrant.service.implementation;
 
-import com.example.quizquadrant.dto.OptionRequestDto;
+import com.example.quizquadrant.dto.question.OptionRequestDto;
 import com.example.quizquadrant.model.Option;
 import com.example.quizquadrant.model.Question;
 import com.example.quizquadrant.repository.OptionRepository;

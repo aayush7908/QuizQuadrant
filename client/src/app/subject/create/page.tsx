@@ -1,17 +1,17 @@
 "use client"
 
-import { createSubjectAction } from "@/actions/subject/create/create-subject-action";
-import { SubjectForm } from "@/components/custom/subject/SubjectForm";
-import { req } from "@/lib/type/request/subject/subject-form-request";
-import { schema } from "@/lib/zod-schema/subject/subject-form-schema";
 import { z } from "zod";
+import { SubjectForm } from "@/app/subject/_components/SubjectForm";
+import { createSubjectAction } from "../_actions/create-subject-action";
+import SubjectRequest from "../_types/subject-request";
+import { SubjectFormSchema } from "../_types/subject-form-schema";
 
 export default function CreateSubject() {
 
-    const onSubmit = async (data: z.infer<typeof schema>) => {
+    const onSubmit = async (data: z.infer<typeof SubjectFormSchema>) => {
         const reqBody = {
             name: data.name
-        } as req;
+        } as SubjectRequest;
         return await createSubjectAction(reqBody);
     }
 

@@ -1,22 +1,22 @@
 "use client"
 
-import { getMyQuestionsAction } from "@/actions/account/questions-created/get-my-questions-action";
-import { QuestionCard } from "@/components/custom/account/questions-created/QuestionCard";
-import { InfiniteScroll } from "@/components/custom/InfiniteScroll";
-import { Loader } from "@/components/custom/Loader";
-import { useToast } from "@/components/ui/use-toast";
+import { QuestionCard } from "@/app/account/questions-created/_components/QuestionCard";
+import { InfiniteScroll } from "@/app/_components/InfiniteScroll";
+import { Loader } from "@/app/_components/Loader";
 import { AuthContext } from "@/context/auth/AuthContext";
-import { Question } from "@/lib/type/model/Question";
-import { validateTeacherAccess } from "@/lib/validation/validate-access";
 import { PlusSquare } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
+import Question from "@/app/_types/question";
+import { useToast } from "@/components/hooks/use-toast";
+import { getMyQuestionsAction } from "./_actions/get-my-created-questions-action";
+import { validateTeacherAccess } from "@/app/_lib/user-access-validation-utils";
 
 export default function QuestionsCreated() {
 
     const [totalLength, setTotalLength] = useState<number>(0);
-    const [initialData, setInitialData] = useState<Array<Question>>([]);
+    const [initialData, setInitialData] = useState<Question[]>([]);
     const [isProcessing, setIsProcessing] = useState<boolean>(true);
     const { user } = useContext(AuthContext);
     const { toast } = useToast();
@@ -48,7 +48,7 @@ export default function QuestionsCreated() {
             if (!data) {
                 return;
             }
-            setTotalLength(data[0].createdBy.totalQuestions);
+            setTotalLength(data[0].totalQuestions);
             const newInitialData = [] as Array<Question>;
             for (let i = 1; i < data.length; i++) {
                 newInitialData.push({ ...data[i] });

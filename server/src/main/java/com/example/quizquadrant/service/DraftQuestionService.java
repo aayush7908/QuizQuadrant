@@ -2,7 +2,8 @@ package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
 import com.example.quizquadrant.dto.IdResponseDto;
-import com.example.quizquadrant.dto.QuestionDto;
+import com.example.quizquadrant.dto.question.QuestionDto;
+import com.example.quizquadrant.dto.question.QuestionRequestDto;
 import com.example.quizquadrant.model.DraftQuestion;
 import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +15,11 @@ public interface DraftQuestionService {
 
     //    controller service methods
     ResponseEntity<IdResponseDto> create(
-            QuestionDto questionDto
+            QuestionRequestDto questionRequestDto
     ) throws Exception;
 
     ResponseEntity<IdResponseDto> update(
-            QuestionDto questionDto,
+            QuestionRequestDto questionRequestDto,
             String id
     ) throws Exception;
 

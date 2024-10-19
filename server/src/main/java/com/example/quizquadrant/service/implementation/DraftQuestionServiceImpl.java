@@ -2,6 +2,11 @@ package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.*;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
+import com.example.quizquadrant.dto.question.QuestionDto;
+import com.example.quizquadrant.dto.question.QuestionRequestDto;
+import com.example.quizquadrant.dto.subject.SubjectDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicDto;
+import com.example.quizquadrant.dto.user.UserDto;
 import com.example.quizquadrant.model.DraftQuestion;
 import com.example.quizquadrant.model.User;
 import com.example.quizquadrant.model.type.Role;
@@ -38,7 +43,7 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
 
     @Override
     public ResponseEntity<IdResponseDto> create(
-            QuestionDto questionDto
+            QuestionRequestDto questionRequestDto
     ) throws Exception {
 //        fetch authenticated user
         User user = userService.getAuthenticatedUser();
@@ -49,7 +54,7 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
 //        convert dto to json
         String data = "";
         try {
-            data = objectMapper.writeValueAsString(questionDto);
+            data = objectMapper.writeValueAsString(questionRequestDto);
         } catch (Exception e) {
             throw new BadRequestError("Invalid Data");
         }
@@ -77,7 +82,7 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
 
     @Override
     public ResponseEntity<IdResponseDto> update(
-            QuestionDto questionDto,
+            QuestionRequestDto questionRequestDto,
             String id
     ) throws Exception {
 //        fetch draft-question by id
@@ -95,7 +100,7 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
 //        convert dto to json
         String data = "";
         try {
-            data = objectMapper.writeValueAsString(questionDto);
+            data = objectMapper.writeValueAsString(questionRequestDto);
         } catch (Exception e) {
             throw new BadRequestError("Invalid Data");
         }
@@ -182,12 +187,7 @@ public class DraftQuestionServiceImpl implements DraftQuestionService {
             int totalDrafts = draftQuestionRepository.countByCreatedBy(user);
             questionDtos.add(0, QuestionDto
                     .builder()
-                    .createdBy(
-                            UserDto
-                                    .builder()
-                                    .totalDraftQuestions(totalDrafts)
-                                    .build()
-                    )
+                    .totalQuestions(totalDrafts)
                     .build()
             );
         }

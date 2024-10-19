@@ -2,7 +2,7 @@
 
 import { useContext } from "react";
 import { SubjectContext } from "@/context/subject/SubjectContext";
-import { SubtopicCard } from "@/components/custom/home/SubtopicCard";
+import { SubtopicCard } from "@/app/(home)/_components/SubtopicCard";
 
 export default function Home() {
 

@@ -1,15 +1,15 @@
 "use client"
 
-import { getSubjectByIdAction } from "@/actions/subject/get/get-subject-action";
-import { updateSubjectAction } from "@/actions/subject/edit/update-subject-action";
-import { Loader } from "@/components/custom/Loader";
-import { SubjectForm } from "@/components/custom/subject/SubjectForm";
-import { useToast } from "@/components/ui/use-toast";
-import { Subject } from "@/lib/type/model/Subject";
 import { useEffect, useState } from "react";
 import { z } from "zod";
-import { schema } from "@/lib/zod-schema/subject/subject-form-schema";
-import { req } from "@/lib/type/request/subject/subject-form-request";
+import { useToast } from "@/components/hooks/use-toast";
+import { Loader } from "@/app/_components/Loader";
+import { SubjectForm } from "@/app/subject/_components/SubjectForm";
+import { updateSubjectAction } from "../../_actions/update-subject-action";
+import { getSubjectAction } from "../../_actions/get-subject-action";
+import { SubjectFormSchema } from "../../_types/subject-form-schema";
+import Subject from "@/app/_types/subject";
+import SubjectRequest from "../../_types/subject-request";
 
 export default function EditSubject({ params }: { params: { id: string } }) {
 
@@ -17,17 +17,17 @@ export default function EditSubject({ params }: { params: { id: string } }) {
     const [subject, setSubject] = useState<Subject | undefined>(undefined);
     const { toast } = useToast();
 
-    const onSubmit = async (data: z.infer<typeof schema>) => {
+    const onSubmit = async (data: z.infer<typeof SubjectFormSchema>) => {
         const reqBody = {
             name: data.name
-        } as req;
+        } as SubjectRequest;
         return await updateSubjectAction(reqBody, params.id);
     }
 
     useEffect(() => {
         (async () => {
             setIsProcessing(true);
-            const { success, data, error } = await getSubjectByIdAction(params.id);
+            const { success, data, error } = await getSubjectAction(params.id);
             if (success && data) {
                 setSubject(data);
             } else if (error) {

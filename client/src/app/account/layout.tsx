@@ -1,10 +1,10 @@
 "use client"
 
-import { SideMenu } from "@/components/custom/account/SideMenu";
-import { useToast } from "@/components/ui/use-toast";
-import { AuthContext } from "@/context/auth/AuthContext";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
+import { useToast } from "@/components/hooks/use-toast";
+import { SideMenu } from "./_components/SideMenu";
+import { AuthContext } from "@/context/auth/AuthContext";
 
 export default function AccountLayout({
     children,

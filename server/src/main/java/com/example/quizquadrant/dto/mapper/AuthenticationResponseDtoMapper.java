@@ -1,7 +1,7 @@
 package com.example.quizquadrant.dto.mapper;
 
-import com.example.quizquadrant.dto.AuthenticationResponseDto;
-import com.example.quizquadrant.dto.UserProfileResponseDto;
+import com.example.quizquadrant.dto.authentication.AuthenticatedUserDto;
+import com.example.quizquadrant.dto.authentication.AuthenticationResponseDto;
 import com.example.quizquadrant.model.User;
 import org.springframework.stereotype.Component;
 
@@ -16,11 +16,13 @@ public class AuthenticationResponseDtoMapper {
                 .builder()
                 .token(token)
                 .user(
-                        UserProfileResponseDto
+                        AuthenticatedUserDto
                                 .builder()
+                                .id(user.getId())
                                 .email(user.getEmail())
-                                .isEmailVerified(user.getEmailVerifiedOn() != null)
+                                .profileImageUrl(user.getProfileImageUrl())
                                 .role(user.getRole().name())
+                                .isEmailVerified(user.getEmailVerifiedOn() != null)
                                 .build()
                 )
                 .build();

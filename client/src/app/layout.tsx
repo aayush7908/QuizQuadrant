@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/custom/navbar/Navbar";
+import Navbar from "@/app/_components/navbar/Navbar";
 import AuthState from "@/context/auth/AuthState";
 import { Toaster } from "@/components/ui/toaster";
 import SubjectState from "@/context/subject/SubjectState";
-import App from "@/components/custom/App";
+import App from "@/app/_components/App";
 import RefreshState from "@/context/refresh/RefreshState";
 
 const inter = Inter({ subsets: ["latin"] });

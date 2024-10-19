@@ -24,7 +24,7 @@ public class CentralizedErrorHandler {
     @ExceptionHandler(BaseError.class)
     public ResponseEntity<ErrorResponseDto> handleCustomError(BaseError error) {
         if (error.isCritical()) {
-            sendErrorMail(error.getErrorMsg(), error);
+            emailService.sendErrorMail(error.getErrorMsg(), error);
         }
         return ResponseEntity
                 .status(error.getStatusCode())
@@ -57,7 +57,7 @@ public class CentralizedErrorHandler {
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponseDto> handleCriticalError(Exception error) {
         System.out.println(error.getClass());
-        sendErrorMail("Unexpected Error", error);
+        emailService.sendErrorMail("Unexpected Error", error);
         return ResponseEntity
                 .status(500)
                 .body(
@@ -68,28 +68,4 @@ public class CentralizedErrorHandler {
                 );
     }
 
-    public void sendErrorMail(String title, Exception error) {
-        StringBuilder msgBody = new StringBuilder();
-        msgBody.append("<h1>")
-                .append(title)
-                .append("</h1>")
-                .append("<h3>")
-                .append("Below is the stack trace:")
-                .append("</h3>");
-        for (StackTraceElement stackTraceElement : error.getStackTrace()) {
-            msgBody.append(stackTraceElement)
-                    .append("\n");
-        }
-        try {
-            emailService.sendSimpleMail(
-                    EmailDetails
-                            .builder()
-                            .recipient(devMail)
-                            .subject(title)
-                            .msgBody(msgBody.toString())
-                            .build()
-            );
-        } catch (Exception ignored) {
-        }
-    }
 }

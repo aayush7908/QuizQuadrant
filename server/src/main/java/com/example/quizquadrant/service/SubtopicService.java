@@ -1,8 +1,8 @@
 package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.SubtopicDto;
-import com.example.quizquadrant.dto.SubtopicRequestDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicRequestDto;
 import com.example.quizquadrant.model.Subtopic;
 import org.springframework.http.ResponseEntity;
 

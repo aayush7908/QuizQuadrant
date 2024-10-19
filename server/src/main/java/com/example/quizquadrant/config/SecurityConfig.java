@@ -32,13 +32,15 @@ public class SecurityConfig {
                                 "/api/user/reset-password",
                                 "/api/subject/get/**",
                                 "/api/subtopic/get/**",
-                                "/api/question/get/**"
+                                "/api/question/get/by-id/**",
+                                "/api/question/get/by-subject/**",
+                                "/api/question/get/by-subtopic/**"
                         ).permitAll()
                         .requestMatchers(
                                 "/api/question/create",
                                 "/api/question/update/**",
                                 "/api/question/delete/**",
-                                "/api/question/my-created",
+                                "/api/question/get/my/created",
                                 "/api/draft/**"
                         ).hasAnyAuthority(Role.TEACHER.name(), Role.ADMIN.name())
                         .requestMatchers(

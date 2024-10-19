@@ -15,4 +15,7 @@ public interface UserRepository extends JpaRepository<User, UUID> {
     @Query("SELECT CASE WHEN COUNT(u) > 0 THEN TRUE ELSE FALSE END FROM User u WHERE u.email = :email")
     Boolean existsByEmail(String email);
 
+    @Query("SELECT COUNT(u) FROM User u")
+    Integer countAll();
+
 }

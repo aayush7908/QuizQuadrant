@@ -1,10 +1,10 @@
 "use client"
 
-import ConfirmForm from "@/components/custom/account/delete-account/ConfirmForm";
+import ConfirmForm from "@/app/account/delete-account/_components/ConfirmForm";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/components/hooks/use-toast";
 import { AuthContext } from "@/context/auth/AuthContext";
-import { validateUserAccess } from "@/lib/validation/validate-access";
+import { validateUserAccess } from "@/app/_lib/user-access-validation-utils";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect } from "react";
 

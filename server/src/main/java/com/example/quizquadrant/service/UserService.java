@@ -1,22 +1,27 @@
 package com.example.quizquadrant.service;
 
 import com.example.quizquadrant.dto.*;
+import com.example.quizquadrant.dto.authentication.AuthenticationResponseDto;
+import com.example.quizquadrant.dto.user.*;
 import com.example.quizquadrant.model.User;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
 import java.util.UUID;
 
 public interface UserService {
 
     //    controller service methods
     ResponseEntity<BooleanResponseDto> resetPassword(
-            ResetPasswordDto resetPasswordDto
+            ResetPasswordRequestDto resetPasswordRequestDto
     ) throws Exception;
 
     ResponseEntity<AuthenticationResponseDto> authenticate();
 
-    ResponseEntity<BooleanResponseDto> verifyEmail(
-            VerifyEmailRequestDto verifyEmailRequestDto
+    ResponseEntity<BooleanResponseDto> sendVerifyEmailOtp() throws Exception;
+
+    ResponseEntity<BooleanResponseDto> verifyVerifyEmailOtp(
+            VerifyEmailOtpRequestDto verifyEmailOtpRequestDto
     ) throws Exception;
 
     ResponseEntity<BooleanResponseDto> updateName(
@@ -47,9 +52,16 @@ public interface UserService {
             UUID id
     ) throws Exception;
 
+    List<User> getAllUsers(
+            Integer pageNumber,
+            Integer pageSize
+    );
+
     boolean checkUserExistsByEmail(
             String email
     );
+
+    Integer countTotalUsers();
 
 
     //    helper methods

@@ -1,8 +1,8 @@
 package com.example.quizquadrant.service.implementation;
 
 import com.example.quizquadrant.dto.BooleanResponseDto;
-import com.example.quizquadrant.dto.SubtopicDto;
-import com.example.quizquadrant.dto.SubtopicRequestDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicDto;
+import com.example.quizquadrant.dto.subtopic.SubtopicRequestDto;
 import com.example.quizquadrant.dto.mapper.BooleanResponseDtoMapper;
 import com.example.quizquadrant.dto.mapper.SubtopicDtoMapper;
 import com.example.quizquadrant.model.Subject;
@@ -142,7 +142,7 @@ public class SubtopicServiceImpl implements SubtopicService {
                 .status(200)
                 .body(
                         subtopicDtoMapper
-                                .toDto(subtopic, subtopic.getSubject().getId())
+                                .toDto(subtopic, true)
                 );
     }
 

@@ -100,5 +100,12 @@ public class Question {
             cascade = CascadeType.REMOVE
     )
     @JsonBackReference
-    private List<ExamQuestion> exams;
+    private List<SavedQuestion> savedQuestions;
+
+//    @OneToMany(
+//            mappedBy = "question",
+//            cascade = CascadeType.REMOVE
+//    )
+//    @JsonBackReference
+//    private List<ExamQuestion> exams;
 }
