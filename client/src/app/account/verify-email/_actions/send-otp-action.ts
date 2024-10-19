@@ -1,9 +1,8 @@
 import { getToken } from "@/app/_lib/cookie-utils";
 import { serverEnv } from "@/app/_lib/env-utils";
 import ErrorResponse from "@/app/_types/error-response";
-import VerifyOtpRequest from "../_types/verify-otp-request";
 
-const verifyOtpAction = async (body: VerifyOtpRequest) => {
+const sendOtpAction = async () => {
     try {
         // extract token from cookies
         const token: string | undefined = getToken();
@@ -14,14 +13,13 @@ const verifyOtpAction = async (body: VerifyOtpRequest) => {
         }
 
         // API call
-        const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/user/verify-email/otp/verify`, {
+        const res = await fetch(`${serverEnv.BACKEND_BASE_URL}/user/verify-email/otp/send`, {
             method: "POST",
             cache: "no-cache",
             headers: {
                 "Content-Type": "application/json",
                 "Authorization": `Bearer ${token}`
-            },
-            body: JSON.stringify(body)
+            }
         });
 
         // if successfull
@@ -49,5 +47,5 @@ const verifyOtpAction = async (body: VerifyOtpRequest) => {
 }
 
 export {
-    verifyOtpAction
+    sendOtpAction
 }

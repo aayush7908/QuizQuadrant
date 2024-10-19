@@ -20,7 +20,6 @@ public interface EmailService {
             maxAttempts = 4,
             backoff = @Backoff(delay = 1000)
     )
-    @Async
     void sendSimpleMail(
             EmailDetails emailDetails
     ) throws Exception;

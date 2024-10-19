@@ -26,7 +26,6 @@ const resetPasswordAction = async (body: ResetPasswordRequest) => {
 
         // if successfull
         if (res.status === 200) {
-            removePasswordResetToken();
             return {
                 success: true
             };
@@ -46,6 +45,9 @@ const resetPasswordAction = async (body: ResetPasswordRequest) => {
                 errorMessage: "Some Error Occurred"
             } as ErrorResponse
         };
+
+    } finally {
+        removePasswordResetToken();
     }
 }
 
