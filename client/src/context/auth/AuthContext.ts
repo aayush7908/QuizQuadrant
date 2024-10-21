@@ -1,9 +1,9 @@
-import { User } from "@/lib/type/model/User";
+import { AuthenticatedUser } from "@/app/_types/authenticated-user";
 import { createContext } from "react";
 
 type authContextType = {
-    user: User | undefined,
-    authenticate: (user: User) => void,
+    user: AuthenticatedUser | undefined,
+    authenticate: (user: AuthenticatedUser) => void,
     logout: () => void,
     verifyEmail: () => void
 };

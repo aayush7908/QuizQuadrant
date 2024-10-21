@@ -4,5 +4,5 @@ env.properties
 test.env.properties
 .vscode
 .idea
-todo.txt
 .next
+build

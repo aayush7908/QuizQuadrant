@@ -2,14 +2,14 @@
 
 import React, { ReactNode, useState } from "react";
 import { AuthContext } from "./AuthContext";
-import { User } from "@/lib/type/model/User";
+import { AuthenticatedUser } from "@/app/_types/authenticated-user";
 
 export default function AuthState({ children }: { children: ReactNode }) {
 
-    const [user, setUser] = useState<User | undefined>(undefined);
+    const [user, setUser] = useState<AuthenticatedUser | undefined>(undefined);
 
-    const authenticate = (data: User) => {
-        const newUser = { ...data } as User;
+    const authenticate = (data: AuthenticatedUser) => {
+        const newUser = { ...data } as AuthenticatedUser;
         setUser(newUser);
     };
 
@@ -18,7 +18,7 @@ export default function AuthState({ children }: { children: ReactNode }) {
     };
 
     const verifyEmail = () => {
-        const newUser = { ...user } as User;
+        const newUser = { ...user } as AuthenticatedUser;
         newUser.isEmailVerified = true;
         setUser(newUser);
     }

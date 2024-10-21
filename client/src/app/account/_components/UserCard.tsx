@@ -32,7 +32,7 @@ export default function UserCard({
         <div className="grid gap-5">
             <div className="grid gap-2 justify-center">
                 <CircleUser className="size-[10rem]" />
-                <div className="flex justify-center">
+                {/* <div className="flex justify-center">
                     <label
                         htmlFor="profileImage"
                         className="bg-black text-center text-white py-2 px-3 rounded-md cursor-pointer"
@@ -44,7 +44,7 @@ export default function UserCard({
                         type="file"
                         className="hidden"
                     />
-                </div>
+                </div> */}
             </div>
             <div>
                 <Card>

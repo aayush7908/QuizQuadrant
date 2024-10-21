@@ -1,12 +1,12 @@
-import { User } from "../type/model/User"
+import { AuthenticatedUser } from "../_types/authenticated-user";
 
-const validateAdminAccess = (user: User | undefined) => {
+const validateAdminAccess = (user: AuthenticatedUser | undefined) => {
     return (
         user && user.role === "ADMIN"
     );
 }
 
-const validateTeacherAccess = (user: User | undefined) => {
+const validateTeacherAccess = (user: AuthenticatedUser | undefined) => {
     return (
         user && (
             user.role === "ADMIN" || (
@@ -17,7 +17,7 @@ const validateTeacherAccess = (user: User | undefined) => {
     );
 }
 
-const validateStudentAccess = (user: User | undefined) => {
+const validateStudentAccess = (user: AuthenticatedUser | undefined) => {
     return (
         user && (
             user.role === "ADMIN" || (
@@ -28,7 +28,7 @@ const validateStudentAccess = (user: User | undefined) => {
     );
 }
 
-const validateUserAccess = (user: User | undefined) => {
+const validateUserAccess = (user: AuthenticatedUser | undefined) => {
     return (
         user && (
             user.role === "ADMIN" ||

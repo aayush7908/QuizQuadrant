@@ -1,14 +1,14 @@
-import { Subject } from "@/lib/type/model/Subject";
+import Subject from "@/app/_types/subject";
 import { createContext } from "react";
 
 type subjectContextType = {
     subjects: Map<string, Subject> | undefined,
-    addSubjects: (subjects: Array<Subject>) => void
+    addSubjects: (subjects: Subject[]) => void
 };
 
 const subjectContextDefaultValue: subjectContextType = {
     subjects: undefined,
-    addSubjects: (subjects: Array<Subject>) => { }
+    addSubjects: (subjects: Subject[]) => { }
 };
 
 const subjectContext = createContext<subjectContextType>(subjectContextDefaultValue);
