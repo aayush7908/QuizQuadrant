@@ -85,12 +85,16 @@ export function SubjectCard({
                         <Link href={`/subject/edit/${subject.id}`}>
                             <PenLineIcon className="cursor-pointer" />
                         </Link>
-                        <Trash2
-                            className="cursor-pointer"
-                            onClick={() => {
-                                handleDeleteSubject(subject.id)
-                            }}
-                        />
+                        {
+                            !isProcessing && (
+                                <Trash2
+                                    className="cursor-pointer"
+                                    onClick={() => {
+                                        handleDeleteSubject(subject.id)
+                                    }}
+                                />
+                            )
+                        }
                     </div>
                 </CardTitle>
             </CardHeader>
@@ -106,12 +110,16 @@ export function SubjectCard({
                                 <Link href={`/subtopic/edit/${subtopic.id}`}>
                                     <PenLineIcon className="size-5 cursor-pointer" />
                                 </Link>
-                                <Trash2
-                                    className="size-5 cursor-pointer"
-                                    onClick={() => {
-                                        handleDeleteSubtopic(subtopic.id)
-                                    }}
-                                />
+                                {
+                                    !isProcessing && (
+                                        <Trash2
+                                            className="size-5 cursor-pointer"
+                                            onClick={() => {
+                                                handleDeleteSubtopic(subtopic.id)
+                                            }}
+                                        />
+                                    )
+                                }
                             </div>
                         )
                     })

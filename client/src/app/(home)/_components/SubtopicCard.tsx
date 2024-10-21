@@ -5,7 +5,7 @@ import {
     CardTitle
 } from "@/components/ui/card";
 import Link from "next/link";
-import { Subject } from "@/lib/type/model/Subject";
+import Subject from "@/app/_types/subject";
 
 export function SubtopicCard({
     subject

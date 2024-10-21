@@ -1,17 +1,19 @@
 services:
   database:
-    image: mysql:latest
+    image: postgres:14-alpine
+    restart: always
     ports:
-      - 3306:3306
+      - 5432:5432
     expose:
-      - 3306
+      - 5432
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
-      MYSQL_DATABASE: quizquadrant
-      # MYSQL_USER: ${DB_USER}
-      # MYSQL_PASSWORD: ${DB_PASSWORD}
+        - POSTGRES_DB=${DB_NAME}
+        - POSTGRES_USER=${DB_USER}
+        - POSTGRES_PASSWORD=${DB_PASSWORD}
     networks:
       - quizquadrant-network
+    volumes:
+      - quizquadrant-volume:/data/db
   
   server:
     build:
@@ -40,17 +42,13 @@ services:
       dockerfile: Dockerfile
     ports:
       - 3000:3000
+    expose:
+      - 3000
     environment:
-      REACT_APP_API_BASE_URL: ${REACT_APP_API_BASE_URL}
-      REACT_APP_FIREBASE_API_KEY: ${REACT_APP_FIREBASE_API_KEY}
-      REACT_APP_FIREBASE_AUTH_DOMAIN: ${REACT_APP_FIREBASE_AUTH_DOMAIN}
-      REACT_APP_FIREBASE_PROJECT_ID: ${REACT_APP_FIREBASE_PROJECT_ID}
-      REACT_APP_FIREBASE_STORAGE_BUCKET: ${REACT_APP_FIREBASE_STORAGE_BUCKET}
-      REACT_APP_FIREBASE_MESSAGING_SENDER_ID: ${REACT_APP_FIREBASE_MESSAGING_SENDER_ID}
-      REACT_APP_FIREBASE_APP_ID: ${REACT_APP_FIREBASE_APP_ID}
-      REACT_APP_FIREBASE_MEASUREMENT_ID: ${REACT_APP_FIREBASE_MEASUREMENT_ID}
-    networks:
-      - quizquadrant-network
+      NEXT_PUBLIC_BACKEND_BASE_URL: ${NEXT_PUBLIC_BACKEND_BASE_URL}
 
 networks:
   quizquadrant-network:
+
+volumes:
+  quizquadrant-volume:

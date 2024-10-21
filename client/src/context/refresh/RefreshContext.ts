@@ -1,4 +1,3 @@
-import { Subject } from "@/lib/type/model/Subject";
 import { createContext } from "react";
 
 type refreshContextType = {
