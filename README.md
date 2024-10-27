@@ -1,12 +1,10 @@
 # QuizQuadrant
 
 ## Introduction
-
 QuizQuadrant is a web application designed to provide an online platform for practicing quiz questions. It has to two distinct types of users: Student and Teacher.
 
 
 ## Tech Stack
-
 - Spring Boot
 - PostgreSQL
 - Next.js
@@ -32,7 +30,6 @@ DEVELOPER_EMAIL=""
 SMTP_USERNAME=""
 SMTP_PASSWORD=""
 ```
-
 *__NOTE:__ Empty values have to be replaced by your own credentials.*
 
 After `.env` file is ready, use the following docker command to run the application:
@@ -40,7 +37,6 @@ After `.env` file is ready, use the following docker command to run the applicat
 ```
 docker-compose up --build -d
 ```
-
 *___INFO:___ Docker will create three containers, one for each of Client, Server and PostgreDQL Database. These containers will run in background. If you don't want them to run in background, then remove `-d` flag from docker command*
 
 After this, your application is ready. You can use the application by pasting following code in your browser:
@@ -50,14 +46,13 @@ http://localhost:3000
 ```
 
 To stop these containers, you can use the command:
+
 ```
 docker-compose down
 ```
 
 
-
 ## Key Features
-
 - Authentication using JWT.
 - Forgot Password Service.
 - Users can Practice publically available questions.
@@ -67,7 +62,6 @@ docker-compose down
 
 
 ## Learning Outcomes
-
 Developing QuizQuadrant provided with a practical exposure to:
 - Building backend services with Spring Boot.
 - Managing database with PostgreSQL.
@@ -76,6 +70,5 @@ Developing QuizQuadrant provided with a practical exposure to:
 
 
 ## Contributors
-
 - Aayush Dalal ([aayush7908](https://github.com/aayush7908))
 - Dhruv Bhatt ([dhruvbhatt553](https://github.com/dhruvbhatt553))
