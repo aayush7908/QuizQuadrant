@@ -1,0 +1,14 @@
+name: My Cron Job
+
+on:
+  schedule:
+    - cron: "15 * * * *"
+
+jobs:
+  run-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Make API request
+        run: |
+          curl -X GET "${{ secrets.API_PATH }}"
